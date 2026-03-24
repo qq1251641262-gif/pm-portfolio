@@ -55,6 +55,63 @@
             background-position: top center;
             background-size: cover;
             background-repeat: no-repeat;
+            overflow: hidden;
+        }
+        
+        /* 固定背景中的几何图形 */
+        .fixed-bg .bg-shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        .fixed-bg .bg-shape-1 {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #6BBCCF 0%, #9BCCDD 100%);
+            top: 15%;
+            right: 25%;
+            animation-delay: 0s;
+        }
+        
+        .fixed-bg .bg-shape-2 {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #9BCCDD 0%, #6EA4D2 100%);
+            top: 35%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+        
+        .fixed-bg .bg-ring {
+            position: absolute;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: pulse 6s ease-in-out infinite;
+        }
+        
+        .fixed-bg .bg-ring-1 {
+            width: 150px;
+            height: 150px;
+            top: 20%;
+            right: 20%;
+            animation-delay: 0s;
+        }
+        
+        .fixed-bg .bg-dots {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .fixed-bg .bg-dot {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: twinkle 4s ease-in-out infinite;
         }
         
         /* 页面内容区域使用透明背景，让固定背景显示 */
@@ -179,105 +236,14 @@
             border: 1px solid var(--color-border-sky);
         }
         
-        /* 抽象几何图形动画 */
-        .geometric-container {
-            position: relative;
-            width: 320px;
-            height: 320px;
-        }
-        
-        .geo-shape {
-            position: absolute;
-            border-radius: 50%;
-            opacity: 0.8;
-            animation: float 6s ease-in-out infinite;
-        }
-        
-        .geo-shape-1 {
-            width: 120px;
-            height: 120px;
-            background: linear-gradient(135deg, #6EA4D2 0%, #8B9DC5 100%);
-            top: 20px;
-            left: 30px;
-            animation-delay: 0s;
-        }
-        
-        .geo-shape-2 {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #6BBCCF 0%, #9BCCDD 100%);
-            top: 80px;
-            right: 40px;
-            animation-delay: 1s;
-        }
-        
-        .geo-shape-3 {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #9BCCDD 0%, #6EA4D2 100%);
-            bottom: 80px;
-            left: 60px;
-            animation-delay: 2s;
-        }
-        
-        .geo-shape-4 {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, #8B9DC5 0%, #6BBCCF 100%);
-            bottom: 40px;
-            right: 60px;
-            animation-delay: 3s;
-        }
-        
-        .geo-ring {
-            position: absolute;
-            border: 3px solid rgba(110, 164, 210, 0.4);
-            border-radius: 50%;
-            animation: pulse 4s ease-in-out infinite;
-        }
-        
-        .geo-ring-1 {
-            width: 200px;
-            height: 200px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            animation-delay: 0s;
-        }
-        
-        .geo-ring-2 {
-            width: 260px;
-            height: 260px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border-color: rgba(139, 157, 197, 0.3);
-            animation-delay: 1s;
-        }
-        
-        .geo-dots {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        }
-        
-        .geo-dot {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background: #9BCCDD;
-            border-radius: 50%;
-            animation: twinkle 3s ease-in-out infinite;
-        }
-        
         @keyframes float {
             0%, 100% { transform: translateY(0px) scale(1); }
             50% { transform: translateY(-15px) scale(1.05); }
         }
         
         @keyframes pulse {
-            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
-            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.2; }
+            0%, 100% { transform: scale(1); opacity: 0.4; }
+            50% { transform: scale(1.1); opacity: 0.2; }
         }
         
         @keyframes twinkle {
@@ -288,7 +254,20 @@
 </head>
 <body class="text-gray-800">
     <!-- 固定背景 -->
-    <div class="fixed-bg"></div>
+    <div class="fixed-bg">
+        <!-- 几何图形 - 两个小圆 -->
+        <div class="bg-shape bg-shape-1"></div>
+        <div class="bg-shape bg-shape-2"></div>
+        <!-- 圆环 -->
+        <div class="bg-ring bg-ring-1"></div>
+        <!-- 装饰点 -->
+        <div class="bg-dots">
+            <div class="bg-dot" style="top: 12%; right: 30%; animation-delay: 0.5s;"></div>
+            <div class="bg-dot" style="top: 25%; right: 12%; animation-delay: 1.2s;"></div>
+            <div class="bg-dot" style="top: 40%; right: 28%; animation-delay: 1.8s;"></div>
+            <div class="bg-dot" style="top: 18%; right: 18%; animation-delay: 2.5s;"></div>
+        </div>
+    </div>
     <!-- 导航栏 -->
     <nav class="fixed top-0 left-0 w-full bg-white shadow-md z-50">
         <div class="container mx-auto px-6 py-4">
@@ -350,26 +329,7 @@
                     </div>
                 </div>
                 <div class="md:w-1/2 flex justify-center">
-                    <!-- 抽象几何图形替代头像 -->
-                    <div class="geometric-container">
-                        <!-- 外环 -->
-                        <div class="geo-ring geo-ring-2"></div>
-                        <div class="geo-ring geo-ring-1"></div>
-                        <!-- 浮动形状 -->
-                        <div class="geo-shape geo-shape-1"></div>
-                        <div class="geo-shape geo-shape-2"></div>
-                        <div class="geo-shape geo-shape-3"></div>
-                        <div class="geo-shape geo-shape-4"></div>
-                        <!-- 装饰点 -->
-                        <div class="geo-dots">
-                            <div class="geo-dot" style="top: 10%; left: 20%; animation-delay: 0.5s;"></div>
-                            <div class="geo-dot" style="top: 30%; right: 15%; animation-delay: 1.2s;"></div>
-                            <div class="geo-dot" style="bottom: 25%; left: 10%; animation-delay: 1.8s;"></div>
-                            <div class="geo-dot" style="bottom: 15%; right: 25%; animation-delay: 2.5s;"></div>
-                            <div class="geo-dot" style="top: 50%; left: 5%; animation-delay: 0.8s;"></div>
-                            <div class="geo-dot" style="top: 60%; right: 10%; animation-delay: 1.5s;"></div>
-                        </div>
-                    </div>
+                    <!-- 头像区域已移至固定背景 -->
                 </div>
             </div>
         </div>
