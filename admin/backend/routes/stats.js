@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { query, run } = require('../utils/db');
+const { query, queryOne, run } = require('../utils/db');
 const { verifyToken } = require('../middleware/auth');
 
 // 记录访问

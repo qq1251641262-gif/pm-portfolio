@@ -3,23 +3,19 @@
  * 创建所有必要的表和初始数据
  */
 
-const sqlite3 = require('sqlite3').verbose();
+const Database = require('better-sqlite3');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 
 const DB_PATH = path.join(__dirname, '../database/portfolio.db');
 
 // 创建数据库连接
-const db = new sqlite3.Database(DB_PATH, (err) => {
-  if (err) {
-    console.error('数据库连接失败:', err);
-    process.exit(1);
-  }
-  console.log('数据库连接成功');
-});
+const db = new Database(DB_PATH);
+console.log('数据库连接成功');
 
 // 启用外键约束
-db.run('PRAGMA foreign_keys = ON');
+db.pragma('foreign_keys = ON');
+db.pragma('journal_mode = WAL');
 
 // 创建表的 SQL 语句
 const createTables = [
@@ -152,7 +148,7 @@ const createTables = [
     ip_address TEXT,
     user_agent TEXT,
     referrer TEXT,
-    visit_date DATE DEFAULT CURRENT_DATE,
+    visit_date DATE DEFAULT (date('now')),
     visit_time DATETIME DEFAULT CURRENT_TIMESTAMP
   )`
 ];
@@ -167,108 +163,67 @@ const createIndexes = [
   'CREATE INDEX IF NOT EXISTS idx_visitor_stats_date ON visitor_stats(visit_date)'
 ];
 
-// 初始化数据
-async function initData() {
-  // 创建默认管理员账号
-  const hashedPassword = await bcrypt.hash('123456', 10);
+// 执行初始化
+try {
+  console.log('开始创建数据表...');
   
-  return new Promise((resolve, reject) => {
-    db.run(
-      `INSERT OR IGNORE INTO admins (username, password, email, role) VALUES (?, ?, ?, ?)`,
-      ['admin', hashedPassword, 'admin@pmzwj.tech', 'admin'],
-      (err) => {
-        if (err) reject(err);
-        else resolve();
-      }
-    );
-  });
-}
+  // 创建表
+  for (const sql of createTables) {
+    db.exec(sql);
+  }
+  console.log('✓ 数据表创建完成');
 
-// 初始化个人资料
-function initProfile() {
-  return new Promise((resolve, reject) => {
-    db.run(
-      `INSERT OR IGNORE INTO profile (id, name, title, bio, email) VALUES (1, ?, ?, ?, ?)`,
-      ['张伟健', '产品经理', '3年产品经验，B2B/C电商+数字化转型产品经理', 'contact@pmzwj.tech'],
-      (err) => {
-        if (err) reject(err);
-        else resolve();
-      }
-    );
-  });
-}
+  // 创建索引
+  console.log('开始创建索引...');
+  for (const sql of createIndexes) {
+    db.exec(sql);
+  }
+  console.log('✓ 索引创建完成');
 
-// 初始化默认设置
-function initSettings() {
+  // 初始化管理员账号
+  console.log('开始初始化数据...');
+  const hashedPassword = bcrypt.hashSync('123456', 10);
+  
+  const insertAdmin = db.prepare(
+    'INSERT OR IGNORE INTO admins (username, password, email, role) VALUES (?, ?, ?, ?)'
+  );
+  insertAdmin.run('admin', hashedPassword, 'admin@pmzwj.tech', 'admin');
+  console.log('✓ 管理员账号创建完成');
+  
+  // 初始化个人资料
+  const insertProfile = db.prepare(
+    'INSERT OR IGNORE INTO profile (id, name, title, bio, email) VALUES (1, ?, ?, ?, ?)'
+  );
+  insertProfile.run('张伟健', '产品经理', '3年产品经验，B2B/C电商+数字化转型产品经理', 'contact@pmzwj.tech');
+  console.log('✓ 个人资料初始化完成');
+  
+  // 初始化默认设置
   const defaultSettings = [
     ['site_title', '张伟健 - 产品经理作品集', '网站标题'],
     ['site_description', '个人作品展示网站', '网站描述'],
     ['contact_email', 'contact@pmzwj.tech', '联系邮箱'],
     ['analytics_enabled', 'false', '是否启用统计']
   ];
-
-  return new Promise((resolve, reject) => {
-    const stmt = db.prepare('INSERT OR IGNORE INTO settings (key, value, description) VALUES (?, ?, ?)');
-    
-    defaultSettings.forEach(([key, value, desc]) => {
-      stmt.run(key, value, desc);
-    });
-    
-    stmt.finalize((err) => {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
-}
-
-// 执行初始化
-async function initialize() {
-  try {
-    console.log('开始创建数据表...');
-    
-    // 创建表
-    for (const sql of createTables) {
-      await new Promise((resolve, reject) => {
-        db.run(sql, (err) => {
-          if (err) reject(err);
-          else resolve();
-        });
-      });
-    }
-    console.log('✓ 数据表创建完成');
-
-    // 创建索引
-    console.log('开始创建索引...');
-    for (const sql of createIndexes) {
-      await new Promise((resolve, reject) => {
-        db.run(sql, (err) => {
-          if (err) reject(err);
-          else resolve();
-        });
-      });
-    }
-    console.log('✓ 索引创建完成');
-
-    // 初始化数据
-    console.log('开始初始化数据...');
-    await initData();
-    console.log('✓ 管理员账号创建完成');
-    
-    await initProfile();
-    console.log('✓ 个人资料初始化完成');
-    
-    await initSettings();
-    console.log('✓ 默认设置初始化完成');
-
-    console.log('\n数据库初始化成功！');
-    console.log('默认管理员账号: admin');
-    console.log('默认管理员密码: 123456');
-    
-  } catch (error) {
-    console.error('初始化失败:', error);
-  } finally {
-    db.close();
+  
+  const insertSetting = db.prepare(
+    'INSERT OR IGNORE INTO settings (key, value, description) VALUES (?, ?, ?)'
+  );
+  
+  for (const [key, value, desc] of defaultSettings) {
+    insertSetting.run(key, value, desc);
   }
-}
+  console.log('✓ 默认设置初始化完成');
 
-initialize();
+  console.log('\n========================================');
+  console.log('数据库初始化成功！');
+  console.log('========================================');
+  console.log('默认管理员账号: admin');
+  console.log('默认管理员密码: 123456');
+  console.log('========================================');
+  
+} catch (error) {
+  console.error('初始化失败:', error);
+  process.exit(1);
+} finally {
+  db.close();
+}

@@ -13,6 +13,10 @@
         .nav-item:hover { background: rgba(255,255,255,0.1); }
         .nav-item.active { background: rgba(255,255,255,0.2); border-left: 4px solid #6EA4D2; }
         .content-area { min-height: calc(100vh - 64px); }
+        .fade-in { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f3f3; border-top: 3px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -24,7 +28,7 @@
                 <p class="text-sm text-gray-400 mt-1">张伟健个人网站</p>
             </div>
             
-            <nav class="flex-1 py-4">
+            <nav class="flex-1 py-4 overflow-y-auto">
                 <a href="#dashboard" class="nav-item active flex items-center px-6 py-3 transition" data-page="dashboard">
                     <i class="fas fa-tachometer-alt w-6"></i>
                     <span>仪表盘</span>
@@ -78,7 +82,7 @@
             <header class="bg-white shadow-sm h-16 flex items-center justify-between px-6">
                 <h2 class="text-xl font-semibold text-gray-800" id="pageTitle">仪表盘</h2>
                 <div class="flex items-center space-x-4">
-                    <a href="../index.html" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm">
+                    <a href="../../index.html" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm">
                         <i class="fas fa-external-link-alt mr-1"></i>查看网站
                     </a>
                 </div>
@@ -86,8 +90,102 @@
             
             <!-- 内容区域 -->
             <div class="content-area overflow-y-auto p-6" id="contentArea">
-                <!-- 仪表盘 -->
-                <div id="dashboard-page" class="page-content">
+                <!-- 动态加载页面内容 -->
+            </div>
+        </main>
+    </div>
+
+    <!-- 通用模态框 -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b flex justify-between items-center">
+                <h3 id="modalTitle" class="text-xl font-semibold">标题</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="modalContent" class="p-6">
+                <!-- 动态内容 -->
+            </div>
+            <div class="p-6 border-t flex justify-end space-x-3">
+                <button onclick="closeModal()" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">取消</button>
+                <button id="modalConfirmBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提示消息 -->
+    <div id="toast" class="fixed top-4 right-4 z-50 hidden">
+        <div class="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span id="toastMessage">操作成功</span>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8313/api';
+        
+        // 检查登录状态
+        function checkAuth() {
+            const token = localStorage.getItem('admin_token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return false;
+            }
+            return token;
+        }
+        
+        const token = checkAuth();
+        const user = JSON.parse(localStorage.getItem('admin_user') || '{}');
+        document.getElementById('userName').textContent = user.username || '管理员';
+        
+        function logout() {
+            localStorage.removeItem('admin_token');
+            localStorage.removeItem('admin_user');
+            window.location.href = 'login.html';
+        }
+        
+        // API请求封装
+        async function apiRequest(url, options = {}) {
+            const response = await fetch(`${API_BASE_URL}${url}`, {
+                ...options,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                }
+            });
+            return response.json();
+        }
+        
+        // 显示提示
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+        
+        // 模态框操作
+        function openModal(title, content, onConfirm) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('modal').classList.remove('hidden');
+            document.getElementById('modalConfirmBtn').onclick = () => {
+                onConfirm();
+                closeModal();
+            };
+        }
+        
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+        
+        // 页面内容生成函数
+        const pageContents = {
+            dashboard: () => `
+                <div class="fade-in">
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                         <div class="bg-white rounded-xl shadow p-6">
                             <div class="flex items-center justify-between">
@@ -150,90 +248,392 @@
                         </table>
                     </div>
                 </div>
-                
-                <!-- 其他页面内容将通过JS动态加载 -->
-                <div id="other-pages" class="page-content hidden">
-                    <div class="bg-white rounded-xl shadow p-8 text-center">
-                        <i class="fas fa-construction text-6xl text-gray-300 mb-4"></i>
-                        <p class="text-gray-500">功能开发中...</p>
+            `,
+            
+            profile: () => `
+                <div class="fade-in max-w-4xl mx-auto">
+                    <div class="bg-white rounded-xl shadow p-8">
+                        <h3 class="text-xl font-semibold mb-6">个人资料</h3>
+                        <form id="profileForm" class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">姓名</label>
+                                    <input type="text" name="name" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">职位</label>
+                                    <input type="text" name="title" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">邮箱</label>
+                                    <input type="email" name="email" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">电话</label>
+                                    <input type="tel" name="phone" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">位置</label>
+                                    <input type="text" name="location" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">简历链接</label>
+                                    <input type="text" name="resume_url" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">个人简介</label>
+                                <textarea name="bio" rows="4" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">保存修改</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-            </div>
-        </main>
-    </div>
-
-    <script>
-        const API_BASE_URL = 'http://localhost:8313/api';
+            `,
+            
+            skills: () => `
+                <div class="fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-semibold">技能管理</h3>
+                        <button onclick="openSkillModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-plus mr-2"></i>添加技能
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-xl shadow overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">技能名称</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">分类</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">熟练度</th>
+                                    <th class="px-4 py-3 text-right text-sm font-medium text-gray-600">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="skillsTable">
+                                <tr><td colspan="4" class="px-4 py-4 text-center text-gray-500">加载中...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `,
+            
+            experiences: () => `
+                <div class="fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-semibold">工作经历</h3>
+                        <button onclick="openExperienceModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-plus mr-2"></i>添加经历
+                        </button>
+                    </div>
+                    <div id="experiencesList" class="space-y-4">
+                        <div class="text-center text-gray-500 py-8">加载中...</div>
+                    </div>
+                </div>
+            `,
+            
+            projects: () => `
+                <div class="fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-semibold">项目管理</h3>
+                        <button onclick="openProjectModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-plus mr-2"></i>添加项目
+                        </button>
+                    </div>
+                    <div id="projectsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="text-center text-gray-500 py-8 col-span-full">加载中...</div>
+                    </div>
+                </div>
+            `,
+            
+            'ai-demos': () => `
+                <div class="fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-semibold">AI Demo 管理</h3>
+                        <button onclick="openAiDemoModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-plus mr-2"></i>添加 Demo
+                        </button>
+                    </div>
+                    <div id="aiDemosGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="text-center text-gray-500 py-8 col-span-full">加载中...</div>
+                    </div>
+                </div>
+            `,
+            
+            documents: () => `
+                <div class="fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-semibold">文档管理</h3>
+                        <button onclick="openDocumentModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-plus mr-2"></i>添加文档
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-xl shadow overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">文档名称</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">分类</th>
+                                    <th class="px-4 py-3 text-right text-sm font-medium text-gray-600">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="documentsTable">
+                                <tr><td colspan="3" class="px-4 py-4 text-center text-gray-500">加载中...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `,
+            
+            settings: () => `
+                <div class="fade-in max-w-2xl mx-auto">
+                    <div class="bg-white rounded-xl shadow p-8">
+                        <h3 class="text-xl font-semibold mb-6">系统设置</h3>
+                        <form id="settingsForm" class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">网站标题</label>
+                                <input type="text" name="site_title" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">网站描述</label>
+                                <input type="text" name="site_description" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">联系邮箱</label>
+                                <input type="email" name="contact_email" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">保存设置</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `
+        };
         
-        // 检查登录状态
-        function checkAuth() {
-            const token = localStorage.getItem('admin_token');
-            if (!token) {
-                window.location.href = 'login.html';
-                return false;
-            }
-            return token;
-        }
-        
-        // 获取token
-        const token = checkAuth();
-        
-        // 显示用户名
-        const user = JSON.parse(localStorage.getItem('admin_user') || '{}');
-        document.getElementById('userName').textContent = user.username || '管理员';
-        
-        // 退出登录
-        function logout() {
-            localStorage.removeItem('admin_token');
-            localStorage.removeItem('admin_user');
-            window.location.href = 'login.html';
-        }
-        
-        // API请求封装
-        async function apiRequest(url, options = {}) {
-            const response = await fetch(`${API_BASE_URL}${url}`, {
-                ...options,
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    ...options.headers
+        // 页面数据加载函数
+        const pageLoaders = {
+            dashboard: async () => {
+                try {
+                    const stats = await apiRequest('/stats');
+                    if (stats.success) {
+                        document.getElementById('totalVisits').textContent = stats.data.total || 0;
+                        document.getElementById('todayVisits').textContent = stats.data.today || 0;
+                        const tableBody = document.getElementById('pageStatsTable');
+                        if (stats.data.pages?.length > 0) {
+                            tableBody.innerHTML = stats.data.pages.map(page => `
+                                <tr class="border-b"><td class="px-4 py-3 text-sm">${page.page_path || '/'}</td>
+                                <td class="px-4 py-3 text-sm text-right">${page.count}</td></tr>
+                            `).join('');
+                        } else {
+                            tableBody.innerHTML = '<tr><td colspan="2" class="px-4 py-4 text-center text-gray-500">暂无数据</td></tr>';
+                        }
+                    }
+                    const projects = await apiRequest('/projects');
+                    document.getElementById('projectCount').textContent = projects.data?.length || 0;
+                    const skills = await apiRequest('/skills');
+                    document.getElementById('skillCount').textContent = skills.data?.length || 0;
+                } catch (error) {
+                    console.error('加载仪表盘失败:', error);
                 }
-            });
-            return response.json();
-        }
-        
-        // 加载统计数据
-        async function loadStats() {
-            try {
-                const stats = await apiRequest('/stats');
-                if (stats.success) {
-                    document.getElementById('totalVisits').textContent = stats.data.total || 0;
-                    document.getElementById('todayVisits').textContent = stats.data.today || 0;
-                    
-                    const tableBody = document.getElementById('pageStatsTable');
-                    if (stats.data.pages && stats.data.pages.length > 0) {
-                        tableBody.innerHTML = stats.data.pages.map(page => `
-                            <tr class="border-b">
-                                <td class="px-4 py-3 text-sm">${page.page_path || '/'}</td>
-                                <td class="px-4 py-3 text-sm text-right">${page.count}</td>
+            },
+            
+            profile: async () => {
+                try {
+                    const result = await apiRequest('/profile');
+                    if (result.success && result.data) {
+                        const form = document.getElementById('profileForm');
+                        Object.keys(result.data).forEach(key => {
+                            const input = form.querySelector(`[name="${key}"]`);
+                            if (input) input.value = result.data[key] || '';
+                        });
+                    }
+                    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const formData = new FormData(e.target);
+                        const data = Object.fromEntries(formData);
+                        const result = await apiRequest('/profile', {
+                            method: 'PUT',
+                            body: JSON.stringify(data)
+                        });
+                        if (result.success) showToast('保存成功');
+                    });
+                } catch (error) {
+                    console.error('加载个人资料失败:', error);
+                }
+            },
+            
+            skills: async () => {
+                try {
+                    const result = await apiRequest('/skills');
+                    const tbody = document.getElementById('skillsTable');
+                    if (result.success && result.data?.length > 0) {
+                        tbody.innerHTML = result.data.map(skill => `
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="px-4 py-3 text-sm">${skill.name}</td>
+                                <td class="px-4 py-3 text-sm">${skill.category || '-'}</td>
+                                <td class="px-4 py-3 text-sm">
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-600 h-2 rounded-full" style="width: ${skill.level || 0}%"></div>
+                                    </div>
+                                    <span class="text-xs text-gray-500">${skill.level || 0}%</span>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-right">
+                                    <button onclick="editSkill(${skill.id})" class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                                    <button onclick="deleteSkill(${skill.id})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                </td>
                             </tr>
                         `).join('');
                     } else {
-                        tableBody.innerHTML = '<tr><td colspan="2" class="px-4 py-4 text-center text-gray-500">暂无数据</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="4" class="px-4 py-4 text-center text-gray-500">暂无数据</td></tr>';
                     }
+                } catch (error) {
+                    console.error('加载技能失败:', error);
                 }
-                
-                // 加载项目数量
-                const projects = await apiRequest('/projects');
-                document.getElementById('projectCount').textContent = projects.data?.length || 0;
-                
-                // 加载技能数量
-                const skills = await apiRequest('/skills');
-                document.getElementById('skillCount').textContent = skills.data?.length || 0;
-            } catch (error) {
-                console.error('加载统计数据失败:', error);
+            },
+            
+            experiences: async () => {
+                try {
+                    const result = await apiRequest('/experiences');
+                    const container = document.getElementById('experiencesList');
+                    if (result.success && result.data?.length > 0) {
+                        container.innerHTML = result.data.map(exp => `
+                            <div class="bg-white rounded-xl shadow p-6">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-semibold text-lg">${exp.company}</h4>
+                                        <p class="text-blue-600">${exp.position}</p>
+                                        <p class="text-sm text-gray-500 mt-1">${exp.start_date} - ${exp.is_current ? '至今' : exp.end_date}</p>
+                                    </div>
+                                    <div>
+                                        <button onclick="editExperience(${exp.id})" class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                                        <button onclick="deleteExperience(${exp.id})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 mt-3">${exp.description || ''}</p>
+                            </div>
+                        `).join('');
+                    } else {
+                        container.innerHTML = '<div class="text-center text-gray-500 py-8">暂无工作经历</div>';
+                    }
+                } catch (error) {
+                    console.error('加载工作经历失败:', error);
+                }
+            },
+            
+            projects: async () => {
+                try {
+                    const result = await apiRequest('/projects');
+                    const container = document.getElementById('projectsGrid');
+                    if (result.success && result.data?.length > 0) {
+                        container.innerHTML = result.data.map(project => `
+                            <div class="bg-white rounded-xl shadow overflow-hidden">
+                                <div class="h-40 bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center">
+                                    <i class="fas fa-project-diagram text-6xl text-white opacity-50"></i>
+                                </div>
+                                <div class="p-6">
+                                    <h4 class="font-semibold text-lg mb-1">${project.title}</h4>
+                                    <p class="text-sm text-gray-500 mb-3">${project.subtitle || ''}</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">${project.category || '未分类'}</span>
+                                        <div>
+                                            <button onclick="editProject(${project.id})" class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                                            <button onclick="deleteProject(${project.id})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        container.innerHTML = '<div class="text-center text-gray-500 py-8 col-span-full">暂无项目</div>';
+                    }
+                } catch (error) {
+                    console.error('加载项目失败:', error);
+                }
+            },
+            
+            'ai-demos': async () => {
+                try {
+                    const result = await apiRequest('/ai-demos');
+                    const container = document.getElementById('aiDemosGrid');
+                    if (result.success && result.data?.length > 0) {
+                        container.innerHTML = result.data.map(demo => `
+                            <div class="bg-white rounded-xl shadow overflow-hidden">
+                                <div class="h-40 bg-gradient-to-r from-purple-400 to-pink-600 flex items-center justify-center">
+                                    <i class="fas fa-robot text-6xl text-white opacity-50"></i>
+                                </div>
+                                <div class="p-6">
+                                    <h4 class="font-semibold text-lg mb-1">${demo.title}</h4>
+                                    <p class="text-sm text-gray-500 mb-3">${demo.description || ''}</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">${demo.category || '未分类'}</span>
+                                        <div>
+                                            <button onclick="editAiDemo(${demo.id})" class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                                            <button onclick="deleteAiDemo(${demo.id})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        container.innerHTML = '<div class="text-center text-gray-500 py-8 col-span-full">暂无 AI Demo</div>';
+                    }
+                } catch (error) {
+                    console.error('加载 AI Demo 失败:', error);
+                }
+            },
+            
+            documents: async () => {
+                try {
+                    const result = await apiRequest('/documents');
+                    const tbody = document.getElementById('documentsTable');
+                    if (result.success && result.data?.length > 0) {
+                        tbody.innerHTML = result.data.map(doc => `
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="px-4 py-3 text-sm">${doc.title}</td>
+                                <td class="px-4 py-3 text-sm">${doc.category || '-'}</td>
+                                <td class="px-4 py-3 text-sm text-right">
+                                    <button onclick="editDocument(${doc.id})" class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                                    <button onclick="deleteDocument(${doc.id})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="3" class="px-4 py-4 text-center text-gray-500">暂无文档</td></tr>';
+                    }
+                } catch (error) {
+                    console.error('加载文档失败:', error);
+                }
+            },
+            
+            settings: async () => {
+                try {
+                    const result = await apiRequest('/settings');
+                    if (result.success && result.data) {
+                        const form = document.getElementById('settingsForm');
+                        Object.keys(result.data).forEach(key => {
+                            const input = form.querySelector(`[name="${key}"]`);
+                            if (input) input.value = result.data[key] || '';
+                        });
+                    }
+                    document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const formData = new FormData(e.target);
+                        const data = Object.fromEntries(formData);
+                        for (const [key, value] of Object.entries(data)) {
+                            await apiRequest(`/settings/${key}`, {
+                                method: 'PUT',
+                                body: JSON.stringify({ value })
+                            });
+                        }
+                        showToast('设置保存成功');
+                    });
+                } catch (error) {
+                    console.error('加载设置失败:', error);
+                }
             }
-        }
+        };
         
         // 导航切换
         document.querySelectorAll('.nav-item').forEach(item => {
@@ -241,27 +641,22 @@
                 e.preventDefault();
                 const page = item.dataset.page;
                 
-                // 更新导航状态
                 document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
                 item.classList.add('active');
-                
-                // 更新页面标题
                 document.getElementById('pageTitle').textContent = item.querySelector('span').textContent;
                 
-                // 显示对应页面内容
-                if (page === 'dashboard') {
-                    document.getElementById('dashboard-page').classList.remove('hidden');
-                    document.getElementById('other-pages').classList.add('hidden');
-                    loadStats();
-                } else {
-                    document.getElementById('dashboard-page').classList.add('hidden');
-                    document.getElementById('other-pages').classList.remove('hidden');
+                const contentArea = document.getElementById('contentArea');
+                contentArea.innerHTML = pageContents[page] ? pageContents[page]() : '<div class="text-center py-8">页面开发中...</div>';
+                
+                if (pageLoaders[page]) {
+                    pageLoaders[page]();
                 }
             });
         });
         
-        // 初始加载
-        loadStats();
+        // 初始加载仪表盘
+        document.getElementById('contentArea').innerHTML = pageContents.dashboard();
+        pageLoaders.dashboard();
     </script>
 </body>
 </html>

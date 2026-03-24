@@ -25,10 +25,11 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// CORS配置
+// CORS配置 - 允许所有来源(开发环境)
 app.use(cors({
-  origin: ['http://localhost:8314', 'http://127.0.0.1:8314'],
-  credentials: true
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // 解析JSON和URL编码数据
@@ -37,6 +38,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // 静态文件服务
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/admin', express.static(path.join(__dirname, '../frontend')));
 
 // 路由
 app.use('/api/auth', require('./routes/auth'));
@@ -49,6 +51,28 @@ app.use('/api/documents', require('./routes/documents'));
 app.use('/api/settings', require('./routes/settings'));
 app.use('/api/stats', require('./routes/stats'));
 app.use('/api/upload', require('./routes/upload'));
+
+// 根路径 - 返回服务信息
+app.get('/', (req, res) => {
+  res.json({
+    message: '个人网站后台管理系统 API 服务',
+    version: '1.0.0',
+    status: 'running',
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth',
+      profile: '/api/profile',
+      skills: '/api/skills',
+      experiences: '/api/experiences',
+      projects: '/api/projects',
+      aiDemos: '/api/ai-demos',
+      documents: '/api/documents',
+      settings: '/api/settings',
+      stats: '/api/stats',
+      upload: '/api/upload'
+    }
+  });
+});
 
 // 健康检查
 app.get('/api/health', (req, res) => {
