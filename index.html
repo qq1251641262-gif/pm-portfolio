@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>张伟健 - 产品经理作品集</title>
+    <!-- Favicon - SVG格式 -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 40 40' fill='none'%3E%3Ccircle cx='20' cy='20' r='19' stroke='%236EA4D2' stroke-width='2' fill='none'/%3E%3Ccircle cx='20' cy='20' r='15' stroke='%239BCCDD' stroke-width='1.5' fill='none' opacity='0.6'/%3E%3Cpath d='M12 14L16 26L20 18L24 26L28 14' stroke='%237388A3' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Ccircle cx='20' cy='10' r='2' fill='%236BBCCF'/%3E%3C/svg%3E">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -275,7 +277,21 @@
     <nav class="fixed top-0 left-0 w-full bg-white shadow-md z-50">
         <div class="container mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
-                <a href="#" class="text-2xl font-bold text-gray-800">张伟健</a>
+                <a href="#" class="flex items-center gap-2 group">
+                    <!-- Logo SVG -->
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="transition-transform duration-300 group-hover:scale-105">
+                        <!-- 外圆环 - 地中海蓝 -->
+                        <circle cx="20" cy="20" r="19" stroke="#6EA4D2" stroke-width="2" fill="none"/>
+                        <!-- 内圆环 - 浅蓝 -->
+                        <circle cx="20" cy="20" r="15" stroke="#9BCCDD" stroke-width="1.5" fill="none" opacity="0.6"/>
+                        <!-- W字母 - 产品经理首字母，使用深色调 -->
+                        <path d="M12 14L16 26L20 18L24 26L28 14" stroke="#7388A3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <!-- 顶部小圆点 - 代表产品思维 -->
+                        <circle cx="20" cy="10" r="2" fill="#6BBCCF"/>
+                    </svg>
+                    <!-- 品牌文字 -->
+                    <span class="text-xl font-bold" style="color: var(--color-dark);">张伟健</span>
+                </a>
                 <div class="hidden md:flex space-x-8">
                     <a href="#about" class="nav-link text-gray-600 hover:text-gray-900">关于</a>
                     <a href="#skills" class="nav-link text-gray-600 hover:text-gray-900">技能</a>
@@ -441,7 +457,7 @@
                     <div>
                         <h3 class="text-xl font-bold mb-2" style="color: var(--text-primary);">产品经理</h3>
                         <p class="mb-1" style="color: var(--text-secondary);">软通动力技术服务有限公司（服务中国中化）</p>
-                        <p class="text-sm" style="color: var(--text-muted);">2023-2024</p>
+                        <p class="text-sm" style="color: var(--text-muted);">2024-2026</p>
                     </div>
                     <div class="mt-4 md:mt-0 flex gap-2 flex-wrap justify-end">
                         <span class="ability-tag px-5 py-2 rounded-full text-sm font-medium shadow-sm hover:shadow-md transition-shadow">集团电商业务一体化</span>
@@ -452,7 +468,7 @@
                     <div>
                         <h3 class="text-xl font-bold mb-2" style="color: var(--text-primary);">产品经理</h3>
                         <p class="mb-1" style="color: var(--text-secondary);">北京锐智互动网络科技有限公司</p>
-                        <p class="text-sm" style="color: var(--text-muted);">2024-2026</p>
+                        <p class="text-sm" style="color: var(--text-muted);">2023-2024</p>
                     </div>
                     <div class="mt-4 md:mt-0 flex gap-2 items-center">
                         <span class="tool-tag px-5 py-2 rounded-full text-sm font-medium shadow-sm hover:shadow-md transition-shadow">数字化转型</span>
