@@ -2,6 +2,15 @@
   "project_id": 4,
   "project_name": "企业级客户管理（CRM）系统",
   "last_updated": "2026-03-24",
+  "ai_demo_icon": {
+    "id": "p4-icon-001",
+    "filename": "icon.png",
+    "path": "images/ai-demos/project4/ico/icon.png",
+    "title": "CRM系统登录页",
+    "subtitle": "AI Demo展示图标 - CRM客户关系管理系统登录界面",
+    "category": "ai_demo_icon",
+    "sort_order": 1
+  },
   "prototype_images": [
     {
       "id": "p4-001",

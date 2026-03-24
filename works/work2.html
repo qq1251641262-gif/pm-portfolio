@@ -17,47 +17,6 @@
             background: linear-gradient(135deg, #6EA4D2 0%, #8B9DC5 50%, #9BCCDD 100%);
         }
         
-        .slideshow-container {
-            position: relative;
-            width: 100%;
-            height: calc(100vh - 200px);
-            min-height: 500px;
-            max-height: 900px;
-        }
-        
-        .slide {
-            display: none;
-            animation: fade 0.5s ease;
-            width: 100%;
-            height: 100%;
-        }
-        
-        .slide.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .slide-content {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        @keyframes fade {
-            from { opacity: 0.4; }
-            to { opacity: 1; }
-        }
-        
-        @media (max-width: 768px) {
-            .slideshow-container {
-                height: calc(100vh - 150px);
-                min-height: 350px;
-            }
-        }
-        
         .nav-link {
             position: relative;
         }
@@ -133,67 +92,258 @@
     <!-- 项目图片轮播 -->
     <section class="py-8 bg-white">
         <div class="container mx-auto px-4 md:px-6">
-            <div class="slideshow-container rounded-2xl overflow-hidden shadow-xl">
-                <div class="slide active" style="background: linear-gradient(135deg, #6EA4D2 0%, #8B9DC5 50%, #9BCCDD 100%);">
-                    <div class="text-center text-white">
-                        <i class="fas fa-users-cog text-8xl mb-6 opacity-80"></i>
-                        <h3 class="text-4xl font-bold mb-4">CRM系统首页</h3>
-                        <p class="text-xl opacity-90">客户全生命周期管理</p>
-                    </div>
-                </div>
-                <div class="slide" style="background: linear-gradient(135deg, #8B9DC5 0%, #9BCCDD 50%, #6BBCCF 100%);">
-                    <div class="text-center text-white">
-                        <i class="fas fa-address-book text-8xl mb-6 opacity-80"></i>
-                        <h3 class="text-4xl font-bold mb-4">客户管理界面</h3>
-                        <p class="text-xl opacity-90">360度客户视图</p>
-                    </div>
-                </div>
-                <div class="slide" style="background: linear-gradient(135deg, #9BCCDD 0%, #6BBCCF 50%, #6EA4D2 100%);">
-                    <div class="text-center text-white">
-                        <i class="fas fa-filter text-8xl mb-6 opacity-80"></i>
-                        <h3 class="text-4xl font-bold mb-4">销售漏斗分析</h3>
-                        <p class="text-xl opacity-90">可视化销售流程</p>
-                    </div>
-                </div>
-                <div class="slide" style="background: linear-gradient(135deg, #6BBCCF 0%, #6EA4D2 50%, #8B9DC5 100%);">
-                    <div class="text-center text-white">
-                        <i class="fas fa-bullhorn text-8xl mb-6 opacity-80"></i>
-                        <h3 class="text-4xl font-bold mb-4">营销活动管理</h3>
-                        <p class="text-xl opacity-90">精准营销自动化</p>
-                    </div>
-                </div>
-                <div class="slide" style="background: linear-gradient(135deg, #6EA4D2 0%, #9BCCDD 50%, #8B9DC5 100%);">
-                    <div class="text-center text-white">
-                        <i class="fas fa-chart-bar text-8xl mb-6 opacity-80"></i>
-                        <h3 class="text-4xl font-bold mb-4">数据报表中心</h3>
-                        <p class="text-xl opacity-90">多维度数据分析</p>
-                    </div>
-                </div>
-                
-                <!-- 轮播控制 -->
-                <div class="absolute bottom-6 left-0 right-0 flex justify-center items-center space-x-4 z-10">
-                    <button onclick="changeSlide(-1)" class="w-12 h-12 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center transition backdrop-blur-sm">
-                        <i class="fas fa-chevron-left text-gray-700"></i>
-                    </button>
-                    <span class="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-gray-700 font-medium shadow-lg">
-                        <span id="current-slide">1</span> / <span id="total-slides">5</span>
-                    </span>
-                    <button onclick="changeSlide(1)" class="w-12 h-12 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center transition backdrop-blur-sm">
-                        <i class="fas fa-chevron-right text-gray-700"></i>
-                    </button>
-                </div>
-                
-                <!-- 指示器 -->
-                <div class="absolute bottom-20 left-0 right-0 flex justify-center space-x-2 z-10">
-                    <span class="dot w-3 h-3 rounded-full bg-white/60 cursor-pointer hover:bg-white transition" onclick="goToSlide(0)"></span>
-                    <span class="dot w-3 h-3 rounded-full bg-white/60 cursor-pointer hover:bg-white transition" onclick="goToSlide(1)"></span>
-                    <span class="dot w-3 h-3 rounded-full bg-white/60 cursor-pointer hover:bg-white transition" onclick="goToSlide(2)"></span>
-                    <span class="dot w-3 h-3 rounded-full bg-white/60 cursor-pointer hover:bg-white transition" onclick="goToSlide(3)"></span>
-                    <span class="dot w-3 h-3 rounded-full bg-white/60 cursor-pointer hover:bg-white transition" onclick="goToSlide(4)"></span>
-                </div>
-            </div>
+            <div id="project-carousel" class="rounded-2xl overflow-hidden shadow-xl"></div>
         </div>
     </section>
+    
+    <script>
+        // 高级轮播图组件 - 内联版本
+        class AdvancedCarousel {
+            constructor(container, options = {}) {
+                this.container = typeof container === 'string' ? document.querySelector(container) : container;
+                if (!this.container) {
+                    console.error('Carousel container not found');
+                    return;
+                }
+                this.config = {
+                    images: options.images || [],
+                    autoPlay: options.autoPlay !== false,
+                    autoPlayInterval: options.autoPlayInterval || 5000,
+                    transitionDuration: options.transitionDuration || 500,
+                    thumbnailsVisible: options.thumbnailsVisible || 4,
+                    ...options
+                };
+                this.currentIndex = 0;
+                this.isPlaying = true;
+                this.touchStartX = 0;
+                this.touchEndX = 0;
+                this.init();
+            }
+
+            init() {
+                this.render();
+                this.bindEvents();
+                this.startAutoPlay();
+            }
+
+            render() {
+                const { images } = this.config;
+                this.preloadImages(images.slice(0, 3));
+                this.container.innerHTML = `
+                    <div class="carousel-wrapper">
+                        <div class="carousel-main">
+                            <div class="carousel-main-inner">
+                                ${images.map((img, index) => `
+                                    <div class="carousel-main-item ${index === 0 ? 'active' : ''}" data-index="${index}">
+                                        <div class="image-wrapper">
+                                            <img src="${img.src}" alt="${img.alt || ''}" 
+                                                 loading="${index === 0 ? 'eager' : 'lazy'}" 
+                                                 fetchpriority="${index === 0 ? 'high' : 'low'}"
+                                                 class="carousel-image ${index === 0 ? 'loaded' : ''}"
+                                                 onload="this.classList.add('loaded'); this.nextElementSibling?.remove()"
+                                                 onerror="this.classList.add('error'); this.nextElementSibling?.remove()">
+                                            ${img.title ? `
+                                                <div class="image-overlay">
+                                                    <div class="image-info">
+                                                        <h3 class="image-title">${img.title}</h3>
+                                                        <p class="image-desc">${img.description || ''}</p>
+                                                    </div>
+                                                </div>
+                                            ` : ''}
+                                            ${index === 0 ? '<div class="image-loading">加载中...</div>' : ''}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <button class="carousel-arrow carousel-arrow-prev" aria-label="Previous">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="carousel-arrow carousel-arrow-next" aria-label="Next">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div class="carousel-thumbnails">
+                            <div class="thumbnails-track">
+                                ${images.map((img, index) => `
+                                    <div class="thumbnail-item ${index === 0 ? 'active' : ''}" 
+                                         data-index="${index}" 
+                                         tabindex="0"
+                                         role="button"
+                                         aria-label="View image ${index + 1}">
+                                        <img src="${img.src}" alt="${img.alt || ''}" loading="lazy" class="thumbnail-image">
+                                        <div class="thumbnail-overlay"></div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                this.addStyles();
+                setTimeout(() => this.preloadNextImage(), 1000);
+            }
+
+            preloadImages(imageList) {
+                imageList.forEach(img => {
+                    const image = new Image();
+                    image.src = img.src;
+                });
+            }
+
+            preloadNextImage() {
+                const nextIndex = (this.currentIndex + 1) % this.config.images.length;
+                const image = new Image();
+                image.src = this.config.images[nextIndex].src;
+            }
+
+            addStyles() {
+                const styleId = 'carousel-styles';
+                if (document.getElementById(styleId)) return;
+                const styles = document.createElement('style');
+                styles.id = styleId;
+                styles.textContent = `
+                    .carousel-wrapper { display: flex; gap: 20px; height: 600px; position: relative; }
+                    .carousel-main { flex: 0 0 70%; position: relative; overflow: hidden; border-radius: 12px; background: #f5f5f5; }
+                    .carousel-main-inner { position: relative; height: 100%; }
+                    .carousel-main-item { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; visibility: hidden; transition: opacity ${this.config.transitionDuration}ms ease, visibility ${this.config.transitionDuration}ms ease; }
+                    .carousel-main-item.active { opacity: 1; visibility: visible; z-index: 1; }
+                    .image-wrapper { position: relative; width: 100%; height: 100%; overflow: hidden; }
+                    .carousel-image { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.3s ease; }
+                    .carousel-image.loaded { opacity: 1; }
+                    .carousel-image.error { display: none; }
+                    .image-loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #666; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+                    .image-loading::after { content: ''; width: 20px; height: 20px; border: 2px solid #e0e0e0; border-top-color: #6EA4D2; border-radius: 50%; animation: spin 0.8s linear infinite; }
+                    @keyframes spin { to { transform: rotate(360deg); } }
+                    .image-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%); padding: 40px 30px 30px; color: white; }
+                    .image-title { font-size: 28px; font-weight: bold; margin-bottom: 8px; }
+                    .image-desc { font-size: 16px; opacity: 0.9; }
+                    .carousel-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; background: rgba(255, 255, 255, 0.9); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; z-index: 10; backdrop-filter: blur(10px); }
+                    .carousel-arrow:hover { background: white; transform: translateY(-50%) scale(1.1); }
+                    .carousel-arrow-prev { left: 20px; }
+                    .carousel-arrow-next { right: 20px; }
+                    .carousel-arrow i { color: #333; font-size: 18px; }
+                    .carousel-thumbnails { flex: 0 0 30%; overflow-y: auto; border-radius: 12px; background: #f9f9f9; padding: 15px; }
+                    .thumbnails-track { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+                    .thumbnail-item { position: relative; width: 100%; aspect-ratio: 16/9; border-radius: 8px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent; outline: none; }
+                    .thumbnail-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; background: #e0e0e0; }
+                    .thumbnail-item:hover img { transform: scale(1.05); }
+                    .thumbnail-item.active { border-color: #6EA4D2; box-shadow: 0 4px 12px rgba(110, 164, 210, 0.4); }
+                    .thumbnail-item.active img { transform: scale(1.02); }
+                    .thumbnail-overlay { position: absolute; inset: 0; background: rgba(110, 164, 210, 0); transition: background 0.3s ease; }
+                    .thumbnail-item.active .thumbnail-overlay { background: rgba(110, 164, 210, 0.1); }
+                    @media (max-width: 768px) { .carousel-wrapper { flex-direction: column; height: auto; } .carousel-main { flex: none; width: 100%; height: 400px; } .carousel-thumbnails { flex: none; width: 100%; overflow-x: auto; overflow-y: hidden; } .thumbnails-track { grid-template-columns: repeat(4, 1fr); } .thumbnail-item { width: 100px; flex: 0 0 100px; } }
+                    .carousel-thumbnails::-webkit-scrollbar { width: 6px; }
+                    .carousel-thumbnails::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
+                    .carousel-thumbnails::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+                    .carousel-thumbnails::-webkit-scrollbar-thumb:hover { background: #a1a1a1; }
+                    @media (max-width: 768px) { .carousel-thumbnails::-webkit-scrollbar { height: 6px; width: auto; } }
+                `;
+                document.head.appendChild(styles);
+            }
+
+            bindEvents() {
+                this.container.querySelectorAll('.thumbnail-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const index = parseInt(item.dataset.index);
+                        this.goToSlide(index);
+                    });
+                });
+                const prevBtn = this.container.querySelector('.carousel-arrow-prev');
+                const nextBtn = this.container.querySelector('.carousel-arrow-next');
+                prevBtn?.addEventListener('click', () => this.prev());
+                nextBtn?.addEventListener('click', () => this.next());
+                this.container.querySelector('.carousel-main').addEventListener('touchstart', (e) => {
+                    this.touchStartX = e.touches[0].clientX;
+                    this.stopAutoPlay();
+                });
+                this.container.querySelector('.carousel-main').addEventListener('touchend', (e) => {
+                    this.touchEndX = e.changedTouches[0].clientX;
+                    const diff = this.touchStartX - this.touchEndX;
+                    if (Math.abs(diff) > 50) {
+                        if (diff > 0) this.next();
+                        else this.prev();
+                    }
+                    this.startAutoPlay();
+                });
+                this.container.addEventListener('mouseenter', () => this.stopAutoPlay());
+                this.container.addEventListener('mouseleave', () => this.startAutoPlay());
+            }
+
+            goToSlide(index) {
+                if (index === this.currentIndex) return;
+                const mainItems = this.container.querySelectorAll('.carousel-main-item');
+                const thumbnailItems = this.container.querySelectorAll('.thumbnail-item');
+                mainItems[this.currentIndex]?.classList.remove('active');
+                mainItems[index]?.classList.add('active');
+                thumbnailItems[this.currentIndex]?.classList.remove('active');
+                thumbnailItems[index]?.classList.add('active');
+                this.currentIndex = index;
+                this.updateThumbnailsScroll();
+            }
+
+            prev() {
+                const newIndex = (this.currentIndex - 1 + this.config.images.length) % this.config.images.length;
+                this.goToSlide(newIndex);
+            }
+
+            next() {
+                const newIndex = (this.currentIndex + 1) % this.config.images.length;
+                this.goToSlide(newIndex);
+            }
+
+            updateThumbnailsScroll() {
+                const thumbnailsContainer = this.container.querySelector('.carousel-thumbnails');
+                const activeThumbnail = this.container.querySelector('.thumbnail-item.active');
+                if (activeThumbnail && thumbnailsContainer) {
+                    const containerRect = thumbnailsContainer.getBoundingClientRect();
+                    const itemRect = activeThumbnail.getBoundingClientRect();
+                    if (itemRect.top < containerRect.top || itemRect.bottom > containerRect.bottom) {
+                        thumbnailsContainer.scrollTop = activeThumbnail.offsetTop - thumbnailsContainer.offsetHeight / 2 + activeThumbnail.offsetHeight / 2;
+                    }
+                }
+            }
+
+            startAutoPlay() {
+                if (!this.config.autoPlay || this.intervalId) return;
+                this.intervalId = setInterval(() => this.next(), this.config.autoPlayInterval);
+            }
+
+            stopAutoPlay() {
+                if (!this.intervalId) return;
+                clearInterval(this.intervalId);
+                this.intervalId = null;
+            }
+        }
+
+        // 项目2轮播图片数据
+        const carouselImages = [
+            {
+                src: '../images/projects/project2/prototype/买家-我的询价.png',
+                alt: '我的询价',
+                title: '我的询价',
+                description: '买家询价管理界面，支持多供应商比价和报价跟踪'
+            },
+            {
+                src: '../images/projects/project2/prototype/门户首页.png',
+                alt: '门户首页',
+                title: '门户首页',
+                description: '电商平台门户首页，集成产品展示和快捷入口'
+            }
+        ];
+        
+        // 初始化轮播
+        document.addEventListener('DOMContentLoaded', function() {
+            const carouselContainer = document.getElementById('project-carousel');
+            if (carouselContainer && carouselImages.length > 0) {
+                const carousel = new AdvancedCarousel('#project-carousel', {
+                    images: carouselImages,
+                    autoPlay: true,
+                    autoPlayInterval: 5000,
+                    transitionDuration: 500,
+                    thumbnailsVisible: 4
+                });
+            }
+        });
+    </script>
 
     <!-- 项目概述 -->
     <section class="py-16 bg-[#F9F9F1]">
@@ -371,55 +521,6 @@
             mobileMenu.classList.toggle('hidden');
         });
         
-        // 轮播功能
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide');
-        const dots = document.querySelectorAll('.dot');
-        const totalSlides = slides.length;
-        
-        document.getElementById('total-slides').textContent = totalSlides;
-        
-        function showSlide(index) {
-            slides.forEach((slide, i) => {
-                slide.classList.remove('active');
-                if (i === index) {
-                    slide.classList.add('active');
-                }
-            });
-            dots.forEach((dot, i) => {
-                dot.classList.remove('bg-white');
-                dot.classList.add('bg-white/60');
-                if (i === index) {
-                    dot.classList.remove('bg-white/60');
-                    dot.classList.add('bg-white');
-                }
-            });
-            document.getElementById('current-slide').textContent = index + 1;
-        }
-        
-        function changeSlide(direction) {
-            currentSlide += direction;
-            if (currentSlide < 0) currentSlide = totalSlides - 1;
-            if (currentSlide >= totalSlides) currentSlide = 0;
-            showSlide(currentSlide);
-        }
-        
-        function goToSlide(index) {
-            currentSlide = index;
-            showSlide(currentSlide);
-        }
-        
-        // 初始化第一个指示器
-        if (dots.length > 0) {
-            dots[0].classList.remove('bg-white/60');
-            dots[0].classList.add('bg-white');
-        }
-        
-        // 自动轮播
-        setInterval(() => {
-            changeSlide(1);
-        }, 5000);
-        
         // Demo链接点击处理 - 集成缺省页面检查
         document.querySelectorAll('a[href*="demo"]').forEach(link => {
             link.addEventListener('click', function(e) {
@@ -447,18 +548,122 @@
         }
     </script>
     
-    <!-- 原型展示模块 -->
-    <script src="../js/prototype-gallery.js"></script>
+    <!-- 原型展示模块 - 内联实现 -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 初始化原型展示模块
-            const prototypeGallery = new PrototypeGallery('prototype-gallery-container', {
-                projectId: 2,
-                imagesPerPage: 4,
-                imageHeight: 200,
-                gap: 16
+            // 项目2的原型图片数据
+            const prototypeImages = [
+                {
+                    id: 'p2-001',
+                    path: '../images/projects/project2/prototype/买家-我的询价.png',
+                    title: '我的询价',
+                    subtitle: '买家询价管理界面，支持多供应商比价和报价跟踪'
+                },
+                {
+                    id: 'p2-002',
+                    path: '../images/projects/project2/prototype/门户首页.png',
+                    title: '门户首页',
+                    subtitle: '电商平台门户首页，集成产品展示和快捷入口'
+                }
+            ];
+            
+            const container = document.getElementById('prototype-gallery-container');
+            if (!container || prototypeImages.length === 0) {
+                if (container) container.style.display = 'none';
+                return;
+            }
+            
+            // 配置
+            const imagesPerPage = 4;
+            const imageHeight = 200;
+            let currentPage = 0;
+            const totalPages = Math.ceil(prototypeImages.length / imagesPerPage);
+            
+            // 渲染原型展示模块
+            container.innerHTML = `
+                <div class="prototype-gallery bg-white rounded-2xl p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">原型展示</h2>
+                            <p class="text-sm text-gray-500 mt-1">项目界面原型与功能模块展示</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm text-gray-500">${prototypeImages.length} 个原型</span>
+                            <div class="flex gap-2">
+                                <button id="proto-prev-btn" class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors" aria-label="上一页">
+                                    <i class="fas fa-chevron-left text-gray-600"></i>
+                                </button>
+                                <button id="proto-next-btn" class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors" aria-label="下一页">
+                                    <i class="fas fa-chevron-right text-gray-600"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4" style="min-height: ${imageHeight}px;">
+                        ${prototypeImages.map((img, index) => `
+                            <div class="gallery-item group relative rounded-xl overflow-hidden cursor-pointer bg-gray-100" 
+                                 data-index="${index}" 
+                                 style="height: ${imageHeight}px; display: ${index < imagesPerPage ? 'block' : 'none'};">
+                                <img src="${img.path}" alt="${img.title}" 
+                                     class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                     loading="lazy">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <div class="absolute bottom-0 left-0 right-0 p-4">
+                                        <h3 class="text-white font-semibold text-sm truncate">${img.title}</h3>
+                                        <p class="text-white/80 text-xs mt-1 line-clamp-2">${img.subtitle}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    ${totalPages > 1 ? `
+                        <div class="flex justify-center mt-6 gap-2">
+                            ${Array(totalPages).fill(0).map((_, i) => `
+                                <button class="gallery-dot w-2 h-2 rounded-full transition-colors ${i === 0 ? 'bg-blue-500' : 'bg-gray-300'}" data-page="${i}" aria-label="第${i + 1}页"></button>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            // 绑定事件
+            document.getElementById('proto-prev-btn').addEventListener('click', () => {
+                if (currentPage > 0) {
+                    currentPage--;
+                    updateDisplay();
+                }
             });
-            console.log('原型展示模块初始化完成');
+            
+            document.getElementById('proto-next-btn').addEventListener('click', () => {
+                if (currentPage < totalPages - 1) {
+                    currentPage++;
+                    updateDisplay();
+                }
+            });
+            
+            document.querySelectorAll('.gallery-dot').forEach(dot => {
+                dot.addEventListener('click', (e) => {
+                    currentPage = parseInt(e.target.dataset.page);
+                    updateDisplay();
+                });
+            });
+            
+            function updateDisplay() {
+                const items = container.querySelectorAll('.gallery-item');
+                const startIndex = currentPage * imagesPerPage;
+                const endIndex = startIndex + imagesPerPage;
+                
+                items.forEach((item, index) => {
+                    item.style.display = (index >= startIndex && index < endIndex) ? 'block' : 'none';
+                });
+                
+                container.querySelectorAll('.gallery-dot').forEach((dot, index) => {
+                    dot.classList.toggle('bg-blue-500', index === currentPage);
+                    dot.classList.toggle('bg-gray-300', index !== currentPage);
+                });
+            }
         });
     </script>
 </body>

@@ -17,47 +17,6 @@
             background: linear-gradient(135deg, #6EA4D2 0%, #8B9DC5 50%, #9BCCDD 100%);
         }
         
-        .slideshow-container {
-            position: relative;
-            width: 100%;
-            height: calc(100vh - 200px);
-            min-height: 500px;
-            max-height: 900px;
-        }
-        
-        .slide {
-            display: none;
-            animation: fade 0.5s ease;
-            width: 100%;
-            height: 100%;
-        }
-        
-        .slide.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .slide-content {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        @keyframes fade {
-            from { opacity: 0.4; }
-            to { opacity: 1; }
-        }
-        
-        @media (max-width: 768px) {
-            .slideshow-container {
-                height: calc(100vh - 150px);
-                min-height: 350px;
-            }
-        }
-        
         .nav-link {
             position: relative;
         }
@@ -121,67 +80,48 @@
     <!-- 项目图片轮播 -->
     <section class="py-8 bg-white">
         <div class="container mx-auto px-4 md:px-6">
-            <div class="slideshow-container rounded-2xl overflow-hidden shadow-xl">
-                <div class="slide active" style="background: linear-gradient(135deg, #6EA4D2 0%, #8B9DC5 50%, #9BCCDD 100%);">
-                    <div class="text-center text-white">
-                        <i class="fas fa-chart-line text-8xl mb-6 opacity-80"></i>
-                        <h3 class="text-4xl font-bold mb-4">BI数据看板</h3>
-                        <p class="text-xl opacity-90">实时业务数据可视化</p>
-                    </div>
-                </div>
-                <div class="slide" style="background: linear-gradient(135deg, #8B9DC5 0%, #9BCCDD 50%, #6BBCCF 100%);">
-                    <div class="text-center text-white">
-                        <i class="fas fa-chart-pie text-8xl mb-6 opacity-80"></i>
-                        <h3 class="text-4xl font-bold mb-4">多维度分析</h3>
-                        <p class="text-xl opacity-90">灵活的数据钻取</p>
-                    </div>
-                </div>
-                <div class="slide" style="background: linear-gradient(135deg, #9BCCDD 0%, #6BBCCF 50%, #6EA4D2 100%);">
-                    <div class="text-center text-white">
-                        <i class="fas fa-database text-8xl mb-6 opacity-80"></i>
-                        <h3 class="text-4xl font-bold mb-4">数据整合</h3>
-                        <p class="text-xl opacity-90">多源数据统一管理</p>
-                    </div>
-                </div>
-                <div class="slide" style="background: linear-gradient(135deg, #6BBCCF 0%, #6EA4D2 50%, #8B9DC5 100%);">
-                    <div class="text-center text-white">
-                        <i class="fas fa-file-export text-8xl mb-6 opacity-80"></i>
-                        <h3 class="text-4xl font-bold mb-4">报表导出</h3>
-                        <p class="text-xl opacity-90">自动化报表生成</p>
-                    </div>
-                </div>
-                <div class="slide" style="background: linear-gradient(135deg, #6EA4D2 0%, #9BCCDD 50%, #8B9DC5 100%);">
-                    <div class="text-center text-white">
-                        <i class="fas fa-bell text-8xl mb-6 opacity-80"></i>
-                        <h3 class="text-4xl font-bold mb-4">智能预警</h3>
-                        <p class="text-xl opacity-90">异常数据实时监控</p>
-                    </div>
-                </div>
-                
-                <!-- 轮播控制 -->
-                <div class="absolute bottom-6 left-0 right-0 flex justify-center items-center space-x-4 z-10">
-                    <button onclick="changeSlide(-1)" class="w-12 h-12 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center transition backdrop-blur-sm">
-                        <i class="fas fa-chevron-left text-gray-700"></i>
-                    </button>
-                    <span class="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-gray-700 font-medium shadow-lg">
-                        <span id="current-slide">1</span> / <span id="total-slides">5</span>
-                    </span>
-                    <button onclick="changeSlide(1)" class="w-12 h-12 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center transition backdrop-blur-sm">
-                        <i class="fas fa-chevron-right text-gray-700"></i>
-                    </button>
-                </div>
-                
-                <!-- 指示器 -->
-                <div class="absolute bottom-20 left-0 right-0 flex justify-center space-x-2 z-10">
-                    <span class="dot w-3 h-3 rounded-full bg-white/60 cursor-pointer hover:bg-white transition" onclick="goToSlide(0)"></span>
-                    <span class="dot w-3 h-3 rounded-full bg-white/60 cursor-pointer hover:bg-white transition" onclick="goToSlide(1)"></span>
-                    <span class="dot w-3 h-3 rounded-full bg-white/60 cursor-pointer hover:bg-white transition" onclick="goToSlide(2)"></span>
-                    <span class="dot w-3 h-3 rounded-full bg-white/60 cursor-pointer hover:bg-white transition" onclick="goToSlide(3)"></span>
-                    <span class="dot w-3 h-3 rounded-full bg-white/60 cursor-pointer hover:bg-white transition" onclick="goToSlide(4)"></span>
-                </div>
-            </div>
+            <div id="project-carousel" class="rounded-2xl overflow-hidden shadow-xl"></div>
         </div>
     </section>
+    
+    <script>
+        // 项目3轮播图片数据
+        const carouselImages = [
+            {
+                src: '../images/projects/project3/页面结构图.PNG',
+                alt: '页面结构图',
+                title: '页面结构图',
+                description: 'BI平台整体架构设计，展示数据流转和模块关系'
+            }
+        ];
+        
+        // 初始化轮播
+        document.addEventListener('DOMContentLoaded', function() {
+            const carouselContainer = document.getElementById('project-carousel');
+            if (carouselContainer && carouselImages.length > 0) {
+                let currentIndex = 0;
+                
+                function renderCarousel() {
+                    const currentImg = carouselImages[currentIndex];
+                    carouselContainer.innerHTML = `
+                        <div class="relative w-full" style="height: 500px;">
+                            <img src="${currentImg.src}" alt="${currentImg.alt}" 
+                                 class="w-full h-full object-cover">
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
+                                <h3 class="text-white text-2xl font-bold">${currentImg.title}</h3>
+                                <p class="text-white/80 mt-2">${currentImg.description}</p>
+                            </div>
+                            <div class="absolute top-6 right-6 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                                ${currentIndex + 1} / ${carouselImages.length}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                renderCarousel();
+            }
+        });
+    </script>
 
     <!-- 项目概述 -->
     <section class="py-16 bg-[#F9F9F1]">
@@ -351,60 +291,6 @@
     </footer>
 
     <script>
-        // 轮播功能
-        let slideIndex = 0;
-        const slides = document.getElementsByClassName('slide');
-        const dots = document.getElementsByClassName('dot');
-        const currentSlideSpan = document.getElementById('current-slide');
-        const totalSlidesSpan = document.getElementById('total-slides');
-        
-        if (totalSlidesSpan) {
-            totalSlidesSpan.textContent = slides.length;
-        }
-        
-        function showSlides(n) {
-            if (n >= slides.length) slideIndex = 0;
-            if (n < 0) slideIndex = slides.length - 1;
-            
-            for (let i = 0; i < slides.length; i++) {
-                slides[i].classList.remove('active');
-            }
-            
-            for (let i = 0; i < dots.length; i++) {
-                dots[i].classList.remove('bg-white');
-                dots[i].classList.add('bg-white/60');
-            }
-            
-            slides[slideIndex].classList.add('active');
-            if (dots[slideIndex]) {
-                dots[slideIndex].classList.remove('bg-white/60');
-                dots[slideIndex].classList.add('bg-white');
-            }
-            
-            if (currentSlideSpan) {
-                currentSlideSpan.textContent = slideIndex + 1;
-            }
-        }
-        
-        function changeSlide(n) {
-            slideIndex += n;
-            showSlides(slideIndex);
-        }
-        
-        function goToSlide(n) {
-            slideIndex = n;
-            showSlides(slideIndex);
-        }
-        
-        // 自动轮播
-        setInterval(() => {
-            slideIndex++;
-            showSlides(slideIndex);
-        }, 5000);
-        
-        // 初始化
-        showSlides(slideIndex);
-        
         // 移动端菜单
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
@@ -442,18 +328,63 @@
         }
     </script>
     
-    <!-- 原型展示模块 -->
-    <script src="../js/prototype-gallery.js"></script>
+    <!-- 原型展示模块 - 内联实现 -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 初始化原型展示模块
-            const prototypeGallery = new PrototypeGallery('prototype-gallery-container', {
-                projectId: 3,
-                imagesPerPage: 4,
-                imageHeight: 200,
-                gap: 16
-            });
-            console.log('原型展示模块初始化完成');
+            // 项目3的原型图片数据
+            const prototypeImages = [
+                {
+                    id: 'p3-001',
+                    path: '../images/projects/project3/页面结构图.PNG',
+                    title: '页面结构图',
+                    subtitle: 'BI平台整体架构设计，展示数据流转和模块关系'
+                }
+            ];
+            
+            const container = document.getElementById('prototype-gallery-container');
+            if (!container || prototypeImages.length === 0) {
+                if (container) container.style.display = 'none';
+                return;
+            }
+            
+            // 配置
+            const imagesPerPage = 4;
+            const imageHeight = 200;
+            let currentPage = 0;
+            const totalPages = Math.ceil(prototypeImages.length / imagesPerPage);
+            
+            // 渲染原型展示模块
+            container.innerHTML = `
+                <div class="prototype-gallery bg-white rounded-2xl p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">原型展示</h2>
+                            <p class="text-sm text-gray-500 mt-1">项目界面原型与功能模块展示</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm text-gray-500">${prototypeImages.length} 个原型</span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 gap-4" style="min-height: ${imageHeight}px;">
+                        ${prototypeImages.map((img, index) => `
+                            <div class="gallery-item group relative rounded-xl overflow-hidden cursor-pointer bg-gray-100" 
+                                 data-index="${index}" 
+                                 style="height: ${imageHeight}px;">
+                                <img src="${img.path}" alt="${img.title}" 
+                                     class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                     loading="lazy">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <div class="absolute bottom-0 left-0 right-0 p-4">
+                                        <h3 class="text-white font-semibold text-sm truncate">${img.title}</h3>
+                                        <p class="text-white/80 text-xs mt-1 line-clamp-2">${img.subtitle}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
         });
     </script>
 </body>

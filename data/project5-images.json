@@ -2,6 +2,15 @@
   "project_id": 5,
   "project_name": "新零售电商解决方案",
   "last_updated": "2026-03-24",
+  "ai_demo_icon": {
+    "id": "p5-icon-001",
+    "filename": "icon.png",
+    "path": "images/ai-demos/project5/ico/icon.png",
+    "title": "杜夫朗格登录页",
+    "subtitle": "AI Demo展示图标 - 新零售电商平台登录界面",
+    "category": "ai_demo_icon",
+    "sort_order": 1
+  },
   "prototype_images": [
     {
       "id": "p5-001",
