@@ -39,23 +39,38 @@
             color: var(--text-primary);
         }
         
-        /* 固定背景效果 - 渐变背景 + 流动动画 */
+        /* 固定背景效果 - 背景固定在视口顶部 */
         .fixed-bg {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
+            height: 100vh;
             z-index: -1;
-            background: linear-gradient(135deg, #F9F9F1 0%, #E9E7F5 25%, #D9E8E3 50%, #D0DDE3 75%, #F5F0C6 100%);
-            background-size: 400% 400%;
-            animation: gradientFlow 8s ease infinite;
+            background: linear-gradient(135deg, #6EA4D2 0%, #8B9DC5 30%, #9BCCDD 60%, #D9E8E3 100%);
+            background-attachment: fixed;
+            background-position: top center;
+            background-size: cover;
+            background-repeat: no-repeat;
         }
         
-        @keyframes gradientFlow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* 页面内容区域使用透明背景，让固定背景显示 */
+        section {
+            background: transparent !important;
+        }
+        
+        /* 内容卡片使用半透明背景，确保文字可读性 */
+        .card-hover,
+        .project-card,
+        .demo-card {
+            background: rgba(249, 249, 241, 0.92) !important;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* 导航栏半透明效果 */
+        nav {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
         }
         
         .hero-bg {
@@ -356,7 +371,7 @@
     </section>
 
     <!-- 个人优势 -->
-    <section id="about" class="py-20 bg-white/80 backdrop-blur-sm">
+    <section id="about" class="py-20">
         <div class="container mx-auto px-6">
             <h2 class="section-title text-3xl font-bold mb-12">个人优势</h2>
             <div class="grid md:grid-cols-2 gap-8">
@@ -401,7 +416,7 @@
     </section>
 
     <!-- 技能标签 -->
-    <section id="skills" class="py-20 bg-[#F9F9F1]/80 backdrop-blur-sm">
+    <section id="skills" class="py-20">
         <div class="container mx-auto px-6">
             <h2 class="section-title text-3xl font-bold mb-12">技能</h2>
             
@@ -450,7 +465,7 @@
     </section>
 
     <!-- 工作经验 -->
-    <section id="experience" class="py-20 bg-white/80 backdrop-blur-sm">
+    <section id="experience" class="py-20">
         <div class="container mx-auto px-6">
             <h2 class="section-title text-3xl font-bold mb-12">工作经历</h2>
             <div class="space-y-8">
@@ -492,7 +507,7 @@
     </section>
 
     <!-- 项目展示 -->
-    <section id="projects" class="py-20 bg-[#F9F9F1]/80 backdrop-blur-sm">
+    <section id="projects" class="py-20">
         <div class="container mx-auto px-6">
             <h2 class="section-title text-3xl font-bold mb-12">项目展示</h2>
             
@@ -609,7 +624,7 @@
     </section>
 
     <!-- AI Demo 展示 -->
-    <section id="demo" class="py-20 bg-white/80 backdrop-blur-sm">
+    <section id="demo" class="py-20">
         <div class="container mx-auto px-6">
             <div class="text-center mb-12">
                 <h2 class="section-title text-3xl font-bold mb-4">AI 代码实现 Demo</h2>
