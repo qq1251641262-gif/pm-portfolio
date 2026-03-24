@@ -1,0 +1,23 @@
+[
+  { "id": 1, "name": "市场调研", "category": "能力", "sort_order": 1, "is_active": 1 },
+  { "id": 2, "name": "需求调研", "category": "能力", "sort_order": 2, "is_active": 1 },
+  { "id": 3, "name": "产品设计", "category": "能力", "sort_order": 3, "is_active": 1 },
+  { "id": 4, "name": "文档撰写", "category": "能力", "sort_order": 4, "is_active": 1 },
+  { "id": 5, "name": "开发跟进", "category": "能力", "sort_order": 5, "is_active": 1 },
+  { "id": 6, "name": "迭代规划", "category": "能力", "sort_order": 6, "is_active": 1 },
+  { "id": 7, "name": "数据ETL", "category": "能力", "sort_order": 7, "is_active": 1 },
+  { "id": 8, "name": "Axure", "category": "工具", "sort_order": 8, "is_active": 1 },
+  { "id": 9, "name": "Office", "category": "工具", "sort_order": 9, "is_active": 1 },
+  { "id": 10, "name": "Photoshop", "category": "工具", "sort_order": 10, "is_active": 1 },
+  { "id": 11, "name": "AI Chat", "category": "工具", "sort_order": 11, "is_active": 1 },
+  { "id": 12, "name": "AIGC", "category": "工具", "sort_order": 12, "is_active": 1 },
+  { "id": 13, "name": "ComfyUI", "category": "工具", "sort_order": 13, "is_active": 1 },
+  { "id": 14, "name": "AI写代码", "category": "工具", "sort_order": 14, "is_active": 1 },
+  { "id": 15, "name": "电商", "category": "标签", "sort_order": 15, "is_active": 1 },
+  { "id": 16, "name": "CRM", "category": "标签", "sort_order": 16, "is_active": 1 },
+  { "id": 17, "name": "BI", "category": "标签", "sort_order": 17, "is_active": 1 },
+  { "id": 18, "name": "化工", "category": "标签", "sort_order": 18, "is_active": 1 },
+  { "id": 19, "name": "Web", "category": "标签", "sort_order": 19, "is_active": 1 },
+  { "id": 20, "name": "前后台", "category": "标签", "sort_order": 20, "is_active": 1 },
+  { "id": 21, "name": "0-1", "category": "标签", "sort_order": 21, "is_active": 1 }
+]

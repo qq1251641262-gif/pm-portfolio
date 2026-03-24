@@ -1,0 +1,15 @@
+[
+  {
+    "id": 1,
+    "school": "某某大学",
+    "degree": "本科",
+    "major": "油气储运工程",
+    "start_date": "2017-09",
+    "end_date": "2021-06",
+    "is_current": 0,
+    "description": "主修油气储运工程",
+    "achievements": "获得优秀毕业生称号",
+    "sort_order": 1,
+    "is_active": 1
+  }
+]

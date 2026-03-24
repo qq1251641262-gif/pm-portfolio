@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "title": "B2B 电商平台（产品化方案）",
+    "description": "基于原型与文档通过 AI 独立开发的可交互技术 Demo",
+    "icon": "fa-shopping-cart",
+    "gradient": "from-[#6EA4D2] to-[#8B9DC5]",
+    "demo_url": "works/demo-placeholder.html?id=1",
+    "sort_order": 1,
+    "is_active": 1
+  },
+  {
+    "id": 2,
+    "title": "电商 CRM 融合系统",
+    "description": "电商与CRM融合系统 Demo",
+    "icon": "fa-sync-alt",
+    "gradient": "from-[#8B9DC5] to-[#6EA4D2]",
+    "demo_url": "works/demo-placeholder.html?id=2",
+    "sort_order": 2,
+    "is_active": 1
+  },
+  {
+    "id": 3,
+    "title": "BI 数据可视化平台",
+    "description": "数据可视化大屏 Demo",
+    "icon": "fa-chart-pie",
+    "gradient": "from-[#6BBCCF] to-[#9BCCDD]",
+    "demo_url": "works/demo-placeholder.html?id=3",
+    "sort_order": 3,
+    "is_active": 1
+  },
+  {
+    "id": 4,
+    "title": "企业级客户管理（CRM）系统",
+    "description": "企业级CRM系统 Demo",
+    "icon": "fa-users-cog",
+    "gradient": "from-[#9BCCDD] to-[#6BBCCF]",
+    "demo_url": "https://crm.pmzwj.tech",
+    "sort_order": 4,
+    "is_active": 1
+  },
+  {
+    "id": 5,
+    "title": "新零售电商解决方案",
+    "description": "新零售电商 Demo",
+    "icon": "fa-store",
+    "gradient": "from-[#7388A3] to-[#8B9DC5]",
+    "demo_url": "https://detail.pmzwj.tech",
+    "sort_order": 5,
+    "is_active": 1
+  },
+  {
+    "id": 6,
+    "title": "企业品牌官网（营销型）",
+    "description": "营销型官网 Demo",
+    "icon": "fa-globe",
+    "gradient": "from-[#6EA4D2] to-[#6BBCCF]",
+    "demo_url": "works/demo-placeholder.html?id=6",
+    "sort_order": 6,
+    "is_active": 1
+  }
+]

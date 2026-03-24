@@ -1,0 +1,28 @@
+[
+  {
+    "id": 1,
+    "company": "某科技公司",
+    "position": "高级产品经理",
+    "start_date": "2023-01",
+    "end_date": "",
+    "is_current": 1,
+    "description": "负责B2B电商平台的产品规划和设计",
+    "achievements": "主导完成电商平台从0到1搭建",
+    "keywords": "电商平台,B2B,产品规划",
+    "sort_order": 1,
+    "is_active": 1
+  },
+  {
+    "id": 2,
+    "company": "某互联网公司",
+    "position": "产品经理",
+    "start_date": "2021-06",
+    "end_date": "2022-12",
+    "is_current": 0,
+    "description": "负责CRM系统的产品设计和优化",
+    "achievements": "提升客户转化率30%",
+    "keywords": "CRM,数据分析,用户增长",
+    "sort_order": 2,
+    "is_active": 1
+  }
+]

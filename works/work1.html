@@ -17,47 +17,6 @@
             background: linear-gradient(135deg, #6EA4D2 0%, #8B9DC5 50%, #9BCCDD 100%);
         }
         
-        .slideshow-container {
-            position: relative;
-            width: 100%;
-            height: calc(100vh - 200px);
-            min-height: 500px;
-            max-height: 900px;
-        }
-        
-        .slide {
-            display: none;
-            animation: fade 0.5s ease;
-            width: 100%;
-            height: 100%;
-        }
-        
-        .slide.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .slide-content {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        @keyframes fade {
-            from { opacity: 0.4; }
-            to { opacity: 1; }
-        }
-        
-        @media (max-width: 768px) {
-            .slideshow-container {
-                height: calc(100vh - 150px);
-                min-height: 350px;
-            }
-        }
-        
         .nav-link {
             position: relative;
         }
@@ -77,6 +36,7 @@
             width: 100%;
         }
     </style>
+    <script src="../js/advanced-carousel.js"></script>
 </head>
 <body class="bg-[#F9F9F1] text-gray-800">
     <!-- 导航栏 -->
@@ -133,65 +93,7 @@
     <!-- 项目图片轮播 -->
     <section class="py-8 bg-white">
         <div class="container mx-auto px-4 md:px-6">
-            <div class="slideshow-container rounded-2xl overflow-hidden shadow-xl">
-                <div class="slide active" style="background: linear-gradient(135deg, #6EA4D2 0%, #8B9DC5 50%, #9BCCDD 100%);">
-                    <div class="text-center text-white">
-                        <i class="fas fa-shopping-cart text-8xl mb-6 opacity-80"></i>
-                        <h3 class="text-4xl font-bold mb-4">B2B电商平台首页</h3>
-                        <p class="text-xl opacity-90">模块化电商系统核心界面</p>
-                    </div>
-                </div>
-                <div class="slide" style="background: linear-gradient(135deg, #8B9DC5 0%, #9BCCDD 50%, #6BBCCF 100%);">
-                    <div class="text-center text-white">
-                        <i class="fas fa-boxes text-8xl mb-6 opacity-80"></i>
-                        <h3 class="text-4xl font-bold mb-4">产品管理后台</h3>
-                        <p class="text-xl opacity-90">SKU与目录管理系统</p>
-                    </div>
-                </div>
-                <div class="slide" style="background: linear-gradient(135deg, #9BCCDD 0%, #6BBCCF 50%, #6EA4D2 100%);">
-                    <div class="text-center text-white">
-                        <i class="fas fa-chart-pie text-8xl mb-6 opacity-80"></i>
-                        <h3 class="text-4xl font-bold mb-4">数据分析看板</h3>
-                        <p class="text-xl opacity-90">实时业务数据可视化</p>
-                    </div>
-                </div>
-                <div class="slide" style="background: linear-gradient(135deg, #6BBCCF 0%, #6EA4D2 50%, #8B9DC5 100%);">
-                    <div class="text-center text-white">
-                        <i class="fas fa-file-invoice text-8xl mb-6 opacity-80"></i>
-                        <h3 class="text-4xl font-bold mb-4">订单管理界面</h3>
-                        <p class="text-xl opacity-90">全链路订单流程追踪</p>
-                    </div>
-                </div>
-                <div class="slide" style="background: linear-gradient(135deg, #6EA4D2 0%, #9BCCDD 50%, #8B9DC5 100%);">
-                    <div class="text-center text-white">
-                        <i class="fas fa-mobile-alt text-8xl mb-6 opacity-80"></i>
-                        <h3 class="text-4xl font-bold mb-4">移动端适配</h3>
-                        <p class="text-xl opacity-90">响应式多终端体验</p>
-                    </div>
-                </div>
-                
-                <!-- 轮播控制 -->
-                <div class="absolute bottom-6 left-0 right-0 flex justify-center items-center space-x-4 z-10">
-                    <button onclick="changeSlide(-1)" class="w-12 h-12 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center transition backdrop-blur-sm">
-                        <i class="fas fa-chevron-left text-gray-700"></i>
-                    </button>
-                    <span class="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-gray-700 font-medium shadow-lg">
-                        <span id="current-slide">1</span> / <span id="total-slides">5</span>
-                    </span>
-                    <button onclick="changeSlide(1)" class="w-12 h-12 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center transition backdrop-blur-sm">
-                        <i class="fas fa-chevron-right text-gray-700"></i>
-                    </button>
-                </div>
-                
-                <!-- 指示器 -->
-                <div class="absolute bottom-20 left-0 right-0 flex justify-center space-x-2 z-10">
-                    <span class="dot w-3 h-3 rounded-full bg-white/60 cursor-pointer hover:bg-white transition" onclick="goToSlide(0)"></span>
-                    <span class="dot w-3 h-3 rounded-full bg-white/60 cursor-pointer hover:bg-white transition" onclick="goToSlide(1)"></span>
-                    <span class="dot w-3 h-3 rounded-full bg-white/60 cursor-pointer hover:bg-white transition" onclick="goToSlide(2)"></span>
-                    <span class="dot w-3 h-3 rounded-full bg-white/60 cursor-pointer hover:bg-white transition" onclick="goToSlide(3)"></span>
-                    <span class="dot w-3 h-3 rounded-full bg-white/60 cursor-pointer hover:bg-white transition" onclick="goToSlide(4)"></span>
-                </div>
-            </div>
+            <div id="project-carousel" class="carousel-container"></div>
         </div>
     </section>
 
@@ -250,18 +152,6 @@
                             <li><i class="fas fa-shield-alt text-blue-500 mr-2"></i>合规风险降低</li>
                         </ul>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 原型设计展示 -->
-    <section class="py-16 bg-white">
-        <div class="container mx-auto px-6">
-            <div class="max-w-6xl mx-auto">
-                <h2 class="text-3xl font-bold mb-12 text-center">原型设计</h2>
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="prototypeGallery">
-                    <!-- 原型图片将通过JS动态加载 -->
                 </div>
             </div>
         </div>
@@ -406,101 +296,7 @@
             mobileMenu.classList.toggle('hidden');
         });
         
-        // 轮播功能
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide');
-        const dots = document.querySelectorAll('.dot');
-        const totalSlides = slides.length;
-        
-        document.getElementById('total-slides').textContent = totalSlides;
-        
-        function showSlide(index) {
-            slides.forEach((slide, i) => {
-                slide.classList.remove('active');
-                if (i === index) {
-                    slide.classList.add('active');
-                }
-            });
-            dots.forEach((dot, i) => {
-                dot.classList.remove('bg-white');
-                dot.classList.add('bg-white/60');
-                if (i === index) {
-                    dot.classList.remove('bg-white/60');
-                    dot.classList.add('bg-white');
-                }
-            });
-            document.getElementById('current-slide').textContent = index + 1;
-        }
-        
-        function changeSlide(direction) {
-            currentSlide += direction;
-            if (currentSlide < 0) currentSlide = totalSlides - 1;
-            if (currentSlide >= totalSlides) currentSlide = 0;
-            showSlide(currentSlide);
-        }
-        
-        function goToSlide(index) {
-            currentSlide = index;
-            showSlide(currentSlide);
-        }
-        
-        // 初始化第一个指示器
-        if (dots.length > 0) {
-            dots[0].classList.remove('bg-white/60');
-            dots[0].classList.add('bg-white');
-        }
-        
-        // 自动轮播
-        setInterval(() => {
-            changeSlide(1);
-        }, 5000);
-        
-        // 加载原型图片
-        async function loadPrototypeImages() {
-            const gallery = document.getElementById('prototypeGallery');
-            if (!gallery) return;
-            
-            try {
-                const API_BASE = 'http://localhost:8313/api';
-                const response = await fetch(`${API_BASE}/projects/1/images`);
-                const result = await response.json();
-                
-                if (result.success && result.data && result.data.length > 0) {
-                    gallery.innerHTML = result.data.map(img => `
-                        <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-                            <div class="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
-                                <img src="${API_BASE}${img.image_url}" alt="${img.caption}" class="w-full h-full object-cover">
-                            </div>
-                            <div class="p-4 text-center">
-                                <p class="text-gray-700 font-medium text-sm">${img.caption}</p>
-                            </div>
-                        </div>
-                    `).join('');
-                } else {
-                    // 显示占位符
-                    gallery.innerHTML = `
-                        <div class="col-span-full text-center text-gray-500 py-8">
-                            <i class="fas fa-image text-4xl mb-4"></i>
-                            <p>原型图片待上传</p>
-                            <p class="text-sm mt-2">请将图片保存到: uploads/projects/project1/prototype/</p>
-                        </div>
-                    `;
-                }
-            } catch (error) {
-                console.error('加载原型图片失败:', error);
-                gallery.innerHTML = `
-                    <div class="col-span-full text-center text-gray-500 py-8">
-                        <i class="fas fa-image text-4xl mb-4"></i>
-                        <p>原型图片加载失败</p>
-                    </div>
-                `;
-            }
-        }
-        
-        // 页面加载完成后获取原型图片
-        document.addEventListener('DOMContentLoaded', loadPrototypeImages);
-        
-        // Demo链接点击处理 - 集成缺省页面检查
+        // Demo 链接点击处理 - 集成缺省页面检查
         document.querySelectorAll('a[href*="demo"]').forEach(link => {
             link.addEventListener('click', function(e) {
                 const href = this.getAttribute('href');
@@ -531,13 +327,114 @@
             return false;
         }
         
-        // 获取缺省页面URL
+        // 获取缺省页面 URL
         function getDemoPlaceholderUrl(demoUrl) {
             const params = new URLSearchParams();
             params.append('id', '1');
             if (demoUrl) params.append('demo', encodeURIComponent(demoUrl));
             return `demo-placeholder.html?${params.toString()}`;
         }
+        
+        // 初始化高级轮播组件
+        document.addEventListener('DOMContentLoaded', function() {
+            const carouselImages = [
+                {
+                    src: '../images/projects/project1/prototype/product-center.jpg',
+                    alt: '产品中心',
+                    title: '产品中心',
+                    description: '展示化工产品分类与搜索功能'
+                },
+                {
+                    src: '../images/projects/project1/prototype/trading-center.jpg',
+                    alt: '交易中心',
+                    title: '交易中心',
+                    description: '竞价交易与订单管理界面'
+                },
+                {
+                    src: '../images/projects/project1/prototype/flash-sale.jpg',
+                    alt: '闪购专区',
+                    title: '闪购专区',
+                    description: '限时抢购活动页面'
+                },
+                {
+                    src: '../images/projects/project1/prototype/shopping-cart.jpg',
+                    alt: '购物车',
+                    title: '购物车',
+                    description: '多供应商结算与价格计算'
+                },
+                {
+                    src: '../images/projects/project1/prototype/功能授权.png',
+                    alt: '功能授权',
+                    title: '功能授权',
+                    description: '系统功能权限配置管理'
+                },
+                {
+                    src: '../images/projects/project1/prototype/发货单管理.png',
+                    alt: '发货单管理',
+                    title: '发货单管理',
+                    description: '订单发货与物流追踪'
+                },
+                {
+                    src: '../images/projects/project1/prototype/待我审批.png',
+                    alt: '待我审批',
+                    title: '待我审批',
+                    description: '审批流程与待办事项'
+                },
+                {
+                    src: '../images/projects/project1/prototype/数据授权.png',
+                    alt: '数据授权',
+                    title: '数据授权',
+                    description: '数据访问权限配置'
+                },
+                {
+                    src: '../images/projects/project1/prototype/新增 spu.png',
+                    alt: '新增 SPU',
+                    title: '新增 SPU',
+                    description: '产品标准化单元管理'
+                },
+                {
+                    src: '../images/projects/project1/prototype/新增交易资源.png',
+                    alt: '新增交易资源',
+                    title: '新增交易资源',
+                    description: '交易资源配置管理'
+                },
+                {
+                    src: '../images/projects/project1/prototype/新增优惠.png',
+                    alt: '新增优惠',
+                    title: '新增优惠',
+                    description: '营销活动与优惠策略'
+                },
+                {
+                    src: '../images/projects/project1/prototype/订单列表.png',
+                    alt: '订单列表',
+                    title: '订单列表',
+                    description: '全渠道订单统一管理'
+                },
+                {
+                    src: '../images/projects/project1/prototype/部门管理.png',
+                    alt: '部门管理',
+                    title: '部门管理',
+                    description: '组织架构与部门配置'
+                },
+                {
+                    src: '../images/projects/project1/prototype/销售组织扩展.png',
+                    alt: '销售组织扩展',
+                    title: '销售组织扩展',
+                    description: '销售团队与区域管理'
+                }
+            ];
+            
+            // 初始化轮播组件
+            if (typeof AdvancedCarousel !== 'undefined') {
+                new AdvancedCarousel('#project-carousel', {
+                    images: carouselImages,
+                    autoPlay: true,
+                    autoPlayInterval: 5000,
+                    transitionDuration: 500,
+                    thumbnailsVisible: 4
+                });
+            }
+        });
     </script>
 </body>
 </html>
