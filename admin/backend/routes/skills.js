@@ -4,15 +4,15 @@
 
 const express = require('express');
 const router = express.Router();
-const { query, queryOne, run } = require('../utils/db');
+const { query, queryOne, insert, update, remove } = require('../utils/db');
 const { verifyToken } = require('../middleware/auth');
 
 // 获取所有技能
 router.get('/', async (req, res) => {
   try {
-    const skills = await query(
-      'SELECT * FROM skills WHERE is_active = 1 ORDER BY sort_order ASC, id ASC'
-    );
+    const skills = await query('skills', { is_active: 1 });
+    // 按排序顺序返回
+    skills.sort((a, b) => a.sort_order - b.sort_order);
     res.json({ success: true, data: skills });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
 // 获取单个技能
 router.get('/:id', async (req, res) => {
   try {
-    const skill = await queryOne('SELECT * FROM skills WHERE id = ?', [req.params.id]);
+    const skill = await queryOne('skills', { id: parseInt(req.params.id) });
     if (!skill) {
       return res.status(404).json({ success: false, message: '技能不存在' });
     }
@@ -35,11 +35,19 @@ router.get('/:id', async (req, res) => {
 // 创建技能
 router.post('/', verifyToken, async (req, res) => {
   try {
-    const { name, category, level, sort_order } = req.body;
-    const result = await run(
-      'INSERT INTO skills (name, category, level, sort_order) VALUES (?, ?, ?, ?)',
-      [name, category, level, sort_order || 0]
-    );
+    const { name, category, sort_order } = req.body;
+    
+    if (!name) {
+      return res.status(400).json({ success: false, message: '技能名称为必填项' });
+    }
+    
+    const result = await insert('skills', {
+      name,
+      category: category || '',
+      sort_order: sort_order || 0,
+      is_active: 1
+    });
+    
     res.json({ success: true, message: '创建成功', data: { id: result.id } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -49,14 +57,21 @@ router.post('/', verifyToken, async (req, res) => {
 // 更新技能
 router.put('/:id', verifyToken, async (req, res) => {
   try {
-    const { name, category, level, sort_order, is_active } = req.body;
-    await run(
-      `UPDATE skills SET 
-        name = ?, category = ?, level = ?, sort_order = ?, is_active = ?,
-        updated_at = CURRENT_TIMESTAMP
-      WHERE id = ?`,
-      [name, category, level, sort_order, is_active, req.params.id]
-    );
+    const { name, category, sort_order, is_active } = req.body;
+    const id = parseInt(req.params.id);
+    
+    const skill = await queryOne('skills', { id });
+    if (!skill) {
+      return res.status(404).json({ success: false, message: '技能不存在' });
+    }
+    
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+    if (category !== undefined) updateData.category = category;
+    if (sort_order !== undefined) updateData.sort_order = sort_order;
+    if (is_active !== undefined) updateData.is_active = is_active;
+    
+    await update('skills', id, updateData);
     res.json({ success: true, message: '更新成功' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -66,7 +81,14 @@ router.put('/:id', verifyToken, async (req, res) => {
 // 删除技能
 router.delete('/:id', verifyToken, async (req, res) => {
   try {
-    await run('DELETE FROM skills WHERE id = ?', [req.params.id]);
+    const id = parseInt(req.params.id);
+    
+    const skill = await queryOne('skills', { id });
+    if (!skill) {
+      return res.status(404).json({ success: false, message: '技能不存在' });
+    }
+    
+    await remove('skills', id);
     res.json({ success: true, message: '删除成功' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

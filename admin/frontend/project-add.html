@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新增项目 - 管理后台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .sidebar-item:hover { background: rgba(255,255,255,0.1); }
+        .nav-item.active { background: rgba(255,255,255,0.2); border-left: 3px solid #60a5fa; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-label { display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem; }
+        .form-input { width: 100%; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; transition: all 0.2s; }
+        .form-input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .form-textarea { min-height: 120px; resize: vertical; }
+        .detail-item { background: #f9fafb; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; position: relative; }
+        .detail-item .remove-btn { position: absolute; top: 0.5rem; right: 0.5rem; }
+        .doc-item, .demo-item { background: #f9fafb; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; }
+        .section-title { font-size: 1.125rem; font-weight: 600; color: #111827; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #e5e7eb; }
+        .upload-area { border: 2px dashed #d1d5db; border-radius: 0.5rem; padding: 2rem; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .upload-area:hover { border-color: #3b82f6; background: #f0f9ff; }
+        .upload-area.has-file { border-color: #10b981; background: #f0fdf4; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- 侧边栏 -->
+        <aside class="w-64 bg-gray-900 text-white flex flex-col">
+            <div class="p-6 border-b border-gray-800">
+                <h1 class="text-xl font-bold">管理后台</h1>
+                <p class="text-xs text-gray-400 mt-1">张伟健作品集</p>
+            </div>
+            <nav class="flex-1 py-4">
+                <a href="index.html" class="nav-item sidebar-item flex items-center px-6 py-3 transition" data-page="dashboard">
+                    <i class="fas fa-home w-6"></i>
+                    <span>控制台</span>
+                </a>
+                <a href="index.html" class="nav-item sidebar-item flex items-center px-6 py-3 transition" data-page="profile">
+                    <i class="fas fa-user w-6"></i>
+                    <span>个人资料</span>
+                </a>
+                <a href="index.html" class="nav-item sidebar-item flex items-center px-6 py-3 transition" data-page="skills">
+                    <i class="fas fa-tools w-6"></i>
+                    <span>技能管理</span>
+                </a>
+                <a href="index.html" class="nav-item sidebar-item flex items-center px-6 py-3 transition" data-page="experiences">
+                    <i class="fas fa-briefcase w-6"></i>
+                    <span>工作经历</span>
+                </a>
+                <a href="index.html" class="nav-item sidebar-item flex items-center px-6 py-3 transition" data-page="education">
+                    <i class="fas fa-graduation-cap w-6"></i>
+                    <span>教育经历</span>
+                </a>
+                <a href="index.html" class="nav-item sidebar-item flex items-center px-6 py-3 transition" data-page="projects">
+                    <i class="fas fa-project-diagram w-6"></i>
+                    <span>项目管理</span>
+                </a>
+                <a href="index.html" class="nav-item sidebar-item flex items-center px-6 py-3 transition" data-page="ai-demos">
+                    <i class="fas fa-robot w-6"></i>
+                    <span>AI Demo</span>
+                </a>
+                <a href="index.html" class="nav-item sidebar-item flex items-center px-6 py-3 transition" data-page="documents">
+                    <i class="fas fa-file-alt w-6"></i>
+                    <span>文档管理</span>
+                </a>
+                <a href="index.html" class="nav-item sidebar-item flex items-center px-6 py-3 transition" data-page="settings">
+                    <i class="fas fa-cog w-6"></i>
+                    <span>系统设置</span>
+                </a>
+            </nav>
+            <div class="p-4 border-t border-gray-800">
+                <button onclick="logout()" class="flex items-center px-6 py-2 text-gray-400 hover:text-white transition">
+                    <i class="fas fa-sign-out-alt w-6"></i>
+                    <span>退出登录</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- 顶部导航 -->
+            <header class="bg-white shadow-sm px-8 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-2 text-sm text-gray-600">
+                    <a href="index.html" class="hover:text-blue-600">首页</a>
+                    <span>/</span>
+                    <a href="index.html" class="hover:text-blue-600">项目管理</a>
+                    <span>/</span>
+                    <span class="text-gray-900">新增项目</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600">管理员</span>
+                    <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm">A</div>
+                </div>
+            </header>
+
+            <!-- 页面内容 -->
+            <div class="flex-1 overflow-auto p-8">
+                <div class="max-w-4xl mx-auto">
+                    <!-- 页面标题 -->
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">新增项目</h2>
+                        <div class="flex space-x-3">
+                            <button onclick="goBack()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                                <i class="fas fa-arrow-left mr-2"></i>返回
+                            </button>
+                            <button onclick="saveProject()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                                <i class="fas fa-save mr-2"></i>保存
+                            </button>
+                        </div>
+                    </div>
+
+                    <form id="projectForm" class="space-y-8">
+                        <!-- 基本信息 -->
+                        <div class="bg-white rounded-xl shadow p-6">
+                            <h3 class="section-title">基本信息</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="form-group">
+                                    <label class="form-label">项目名称 <span class="text-red-500">*</span></label>
+                                    <input type="text" name="title" class="form-input" placeholder="请输入项目名称" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">副标题</label>
+                                    <input type="text" name="subtitle" class="form-input" placeholder="请输入副标题">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">项目分类</label>
+                                <select name="category" class="form-input">
+                                    <option value="">请选择分类</option>
+                                    <option value="产品设计">产品设计</option>
+                                    <option value="数据分析">数据分析</option>
+                                    <option value="AI应用">AI应用</option>
+                                    <option value="其他">其他</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">项目概述 <span class="text-gray-400 text-xs">（支持富文本）</span></label>
+                                <textarea name="overview" class="form-input form-textarea" placeholder="请输入项目概述，支持富文本格式"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- 项目详情 -->
+                        <div class="bg-white rounded-xl shadow p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="section-title mb-0 border-none">项目详情</h3>
+                                <button type="button" onclick="addDetailItem()" class="px-3 py-1.5 text-sm bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition">
+                                    <i class="fas fa-plus mr-1"></i>新增详情
+                                </button>
+                            </div>
+                            <p class="text-sm text-gray-500 mb-4">点击"新增详情"可添加多组详情标题和内容</p>
+                            <div id="detailsContainer">
+                                <!-- 动态添加详情项 -->
+                            </div>
+                        </div>
+
+                        <!-- 文档展示 -->
+                        <div class="bg-white rounded-xl shadow p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="section-title mb-0 border-none">文档展示</h3>
+                                <button type="button" onclick="addDocItem()" class="px-3 py-1.5 text-sm bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition">
+                                    <i class="fas fa-plus mr-1"></i>新增文档
+                                </button>
+                            </div>
+                            <div id="docsContainer">
+                                <!-- 动态添加文档项 -->
+                            </div>
+                        </div>
+
+                        <!-- AI Demo -->
+                        <div class="bg-white rounded-xl shadow p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="section-title mb-0 border-none">AI Demo</h3>
+                                <button type="button" onclick="addDemoItem()" class="px-3 py-1.5 text-sm bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition">
+                                    <i class="fas fa-plus mr-1"></i>新增Demo
+                                </button>
+                            </div>
+                            <div id="demosContainer">
+                                <!-- 动态添加Demo项 -->
+                            </div>
+                        </div>
+
+                        <!-- 项目链接 -->
+                        <div class="bg-white rounded-xl shadow p-6">
+                            <h3 class="section-title">项目链接</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="form-group">
+                                    <label class="form-label">项目链接</label>
+                                    <input type="url" name="project_url" class="form-input" placeholder="https://...">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">GitHub链接</label>
+                                    <input type="url" name="github_url" class="form-input" placeholder="https://github.com/...">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 封面图片 -->
+                        <div class="bg-white rounded-xl shadow p-6">
+                            <h3 class="section-title">封面图片</h3>
+                            <div class="form-group">
+                                <label class="form-label">项目封面</label>
+                                <div id="coverUploadArea" class="upload-area" onclick="document.getElementById('coverFile').click()">
+                                    <input type="file" id="coverFile" class="hidden" accept="image/*" onchange="handleCoverSelect(this)">
+                                    <i class="fas fa-image text-4xl text-gray-400 mb-3"></i>
+                                    <p class="text-gray-600">点击上传封面图片</p>
+                                    <p class="text-sm text-gray-400 mt-1">支持 JPG、PNG 格式</p>
+                                </div>
+                                <div id="coverPreview" class="hidden mt-4">
+                                    <div class="flex items-center space-x-4">
+                                        <img id="coverImg" src="" alt="封面预览" class="w-32 h-24 object-cover rounded-lg">
+                                        <div>
+                                            <p id="coverFileName" class="text-sm text-gray-600 mb-2"></p>
+                                            <button type="button" onclick="removeCover()" class="text-red-600 hover:text-red-800 text-sm">
+                                                <i class="fas fa-trash mr-1"></i>删除
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="cover_image" id="coverImageInput">
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- 底部按钮 -->
+                    <div class="flex justify-end space-x-3 mt-8 pb-8">
+                        <button onclick="goBack()" class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                            取消
+                        </button>
+                        <button onclick="saveProject()" class="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                            保存项目
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast 提示 -->
+    <div id="toast" class="fixed top-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg hidden z-50">
+        <span id="toastMessage"></span>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8313/api';
+
+        // 页面加载时检查登录状态
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('admin_token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+        });
+
+        // 返回上一页
+        function goBack() {
+            if (confirm('确定要返回吗？未保存的内容将丢失。')) {
+                window.location.href = 'index.html?page=projects';
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('admin_token');
+            localStorage.removeItem('admin_user');
+            window.location.href = 'login.html';
+        }
+
+        // 显示提示
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${type === 'error' ? 'bg-red-600' : 'bg-gray-800'} text-white`;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+
+        // ==================== 项目详情动态添加 ====================
+        let detailCount = 0;
+
+        function addDetailItem() {
+            detailCount++;
+            const container = document.getElementById('detailsContainer');
+            const detailItem = document.createElement('div');
+            detailItem.className = 'detail-item fade-in';
+            detailItem.id = `detail-${detailCount}`;
+            detailItem.innerHTML = `
+                <button type="button" onclick="removeDetailItem(${detailCount})" class="remove-btn text-red-500 hover:text-red-700">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        <label class="form-label">详情标题</label>
+                        <input type="text" name="detail_title[]" class="form-input" placeholder="请输入详情标题">
+                    </div>
+                    <div>
+                        <label class="form-label">详情内容 <span class="text-gray-400 text-xs">（支持富文本）</span></label>
+                        <textarea name="detail_content[]" class="form-input form-textarea" rows="4" placeholder="请输入详情内容"></textarea>
+                    </div>
+                </div>
+            `;
+            container.appendChild(detailItem);
+        }
+
+        function removeDetailItem(id) {
+            const item = document.getElementById(`detail-${id}`);
+            if (item) {
+                item.remove();
+            }
+        }
+
+        // ==================== 文档展示动态添加 ====================
+        let docCount = 0;
+
+        function addDocItem() {
+            docCount++;
+            const container = document.getElementById('docsContainer');
+            const docItem = document.createElement('div');
+            docItem.className = 'doc-item fade-in';
+            docItem.id = `doc-${docCount}`;
+            docItem.innerHTML = `
+                <div class="flex justify-between items-start mb-3">
+                    <h4 class="font-medium text-gray-700">文档 #${docCount}</h4>
+                    <button type="button" onclick="removeDocItem(${docCount})" class="text-red-500 hover:text-red-700">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="form-label">文档名称</label>
+                        <input type="text" name="doc_name[]" class="form-input" placeholder="请输入文档名称">
+                    </div>
+                    <div>
+                        <label class="form-label">文档图片</label>
+                        <input type="file" name="doc_image[]" class="form-input" accept="image/*" onchange="handleDocImageSelect(this, ${docCount})">
+                        <input type="hidden" name="doc_image_url[]" id="docImageUrl-${docCount}">
+                    </div>
+                </div>
+                <div id="docImagePreview-${docCount}" class="mt-3 hidden">
+                    <img src="" alt="文档预览" class="w-24 h-16 object-cover rounded-lg">
+                </div>
+            `;
+            container.appendChild(docItem);
+        }
+
+        function removeDocItem(id) {
+            const item = document.getElementById(`doc-${id}`);
+            if (item) {
+                item.remove();
+            }
+        }
+
+        async function handleDocImageSelect(input, id) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('type', 'image');
+
+            try {
+                const response = await fetch(`${API_BASE}/upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('admin_token')}`
+                    },
+                    body: formData
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById(`docImageUrl-${id}`).value = result.filename;
+                    const preview = document.getElementById(`docImagePreview-${id}`);
+                    preview.classList.remove('hidden');
+                    preview.querySelector('img').src = `${API_BASE}/upload/${result.filename}`;
+                    showToast('图片上传成功');
+                } else {
+                    showToast(result.message || '上传失败', 'error');
+                }
+            } catch (error) {
+                showToast('上传失败: ' + error.message, 'error');
+            }
+        }
+
+        // ==================== AI Demo动态添加 ====================
+        let demoCount = 0;
+
+        function addDemoItem() {
+            demoCount++;
+            const container = document.getElementById('demosContainer');
+            const demoItem = document.createElement('div');
+            demoItem.className = 'demo-item fade-in';
+            demoItem.id = `demo-${demoCount}`;
+            demoItem.innerHTML = `
+                <div class="flex justify-between items-start mb-3">
+                    <h4 class="font-medium text-gray-700">AI Demo #${demoCount}</h4>
+                    <button type="button" onclick="removeDemoItem(${demoCount})" class="text-red-500 hover:text-red-700">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="form-label">Demo标题</label>
+                        <input type="text" name="demo_title[]" class="form-input" placeholder="请输入Demo标题">
+                    </div>
+                    <div>
+                        <label class="form-label">Demo图片</label>
+                        <input type="file" name="demo_image[]" class="form-input" accept="image/*" onchange="handleDemoImageSelect(this, ${demoCount})">
+                        <input type="hidden" name="demo_image_url[]" id="demoImageUrl-${demoCount}">
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <label class="form-label">Demo描述</label>
+                    <textarea name="demo_description[]" class="form-input form-textarea" rows="2" placeholder="请输入Demo描述"></textarea>
+                </div>
+                <div id="demoImagePreview-${demoCount}" class="mt-3 hidden">
+                    <img src="" alt="Demo预览" class="w-24 h-16 object-cover rounded-lg">
+                </div>
+            `;
+            container.appendChild(demoItem);
+        }
+
+        function removeDemoItem(id) {
+            const item = document.getElementById(`demo-${id}`);
+            if (item) {
+                item.remove();
+            }
+        }
+
+        async function handleDemoImageSelect(input, id) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('type', 'image');
+
+            try {
+                const response = await fetch(`${API_BASE}/upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: formData
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById(`demoImageUrl-${demoCount}`).value = result.filename;
+                    const preview = document.getElementById(`demoImagePreview-${id}`);
+                    preview.classList.remove('hidden');
+                    preview.querySelector('img').src = `${API_BASE}/upload/${result.filename}`;
+                    showToast('图片上传成功');
+                } else {
+                    showToast(result.message || '上传失败', 'error');
+                }
+            } catch (error) {
+                showToast('上传失败: ' + error.message, 'error');
+            }
+        }
+
+        // ==================== 封面图片处理 ====================
+        async function handleCoverSelect(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('type', 'image');
+
+            try {
+                const response = await fetch(`${API_BASE}/upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: formData
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('coverImageInput').value = result.filename;
+                    document.getElementById('coverUploadArea').classList.add('has-file');
+                    document.getElementById('coverPreview').classList.remove('hidden');
+                    document.getElementById('coverImg').src = `${API_BASE}/upload/${result.filename}`;
+                    document.getElementById('coverFileName').textContent = result.originalName || result.filename;
+                    showToast('封面上传成功');
+                } else {
+                    showToast(result.message || '上传失败', 'error');
+                }
+            } catch (error) {
+                showToast('上传失败: ' + error.message, 'error');
+            }
+        }
+
+        function removeCover() {
+            document.getElementById('coverImageInput').value = '';
+            document.getElementById('coverFile').value = '';
+            document.getElementById('coverUploadArea').classList.remove('has-file');
+            document.getElementById('coverPreview').classList.add('hidden');
+            showToast('封面已删除');
+        }
+
+        // ==================== 表单验证和保存 ====================
+        function validateForm() {
+            const title = document.querySelector('input[name="title"]').value.trim();
+            if (!title) {
+                showToast('请输入项目名称', 'error');
+                document.querySelector('input[name="title"]').focus();
+                return false;
+            }
+            return true;
+        }
+
+        async function saveProject() {
+            if (!validateForm()) return;
+
+            const form = document.getElementById('projectForm');
+            const formData = new FormData(form);
+
+            // 收集项目详情
+            const detailTitles = formData.getAll('detail_title[]');
+            const detailContents = formData.getAll('detail_content[]');
+            const details = [];
+            for (let i = 0; i < detailTitles.length; i++) {
+                if (detailTitles[i] || detailContents[i]) {
+                    details.push({
+                        title: detailTitles[i],
+                        content: detailContents[i]
+                    });
+                }
+            }
+
+            // 收集文档
+            const docNames = formData.getAll('doc_name[]');
+            const docImageUrls = formData.getAll('doc_image_url[]');
+            const documents = [];
+            for (let i = 0; i < docNames.length; i++) {
+                if (docNames[i]) {
+                    documents.push({
+                        name: docNames[i],
+                        image: docImageUrls[i] || ''
+                    });
+                }
+            }
+
+            // 收集AI Demo
+            const demoTitles = formData.getAll('demo_title[]');
+            const demoDescriptions = formData.getAll('demo_description[]');
+            const demoImageUrls = formData.getAll('demo_image_url[]');
+            const demos = [];
+            for (let i = 0; i < demoTitles.length; i++) {
+                if (demoTitles[i]) {
+                    demos.push({
+                        title: demoTitles[i],
+                        description: demoDescriptions[i] || '',
+                        image: demoImageUrls[i] || ''
+                    });
+                }
+            }
+
+            const projectData = {
+                title: formData.get('title'),
+                subtitle: formData.get('subtitle') || '',
+                category: formData.get('category') || '',
+                overview: formData.get('overview') || '',
+                cover_image: formData.get('cover_image') || '',
+                project_url: formData.get('project_url') || '',
+                github_url: formData.get('github_url') || '',
+                details: details,
+                documents: documents,
+                demos: demos
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/projects`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(projectData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast('项目创建成功');
+                    setTimeout(() => {
+                        window.location.href = 'index.html?page=projects';
+                    }, 1500);
+                } else {
+                    showToast(result.message || '创建失败', 'error');
+                }
+            } catch (error) {
+                showToast('创建失败: ' + error.message, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

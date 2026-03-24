@@ -113,8 +113,12 @@
         <div class="container mx-auto px-6">
             <div class="flex flex-wrap gap-2 mb-4">
                 <span class="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-sm">B2B</span>
+                <span class="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-sm">权限</span>
+                <span class="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-sm">支付</span>
+                <span class="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-sm">合规</span>
+                <span class="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-sm">化工</span>
                 <span class="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-sm">电商</span>
-                <span class="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-sm">产品化</span>
+                <span class="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-sm">集团</span>
             </div>
             <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">B2B 电商平台（产品化方案）</h1>
             <p class="text-xl text-white opacity-90 max-w-3xl mb-4">
@@ -223,7 +227,7 @@
                     <div>
                         <h3 class="text-xl font-semibold mb-4 text-[#6EA4D2]">解决方案</h3>
                         <p class="text-gray-600 leading-relaxed">
-                            设计并开发了一套模块化的B2B电商系统，包含产品目录管理、订单流程管理、客户分级管理、合规文档管理等核心功能，支持灵活的定制和扩展。
+                            设计并开发了一套模块化的B2B电商系统，包含产品目录管理、订单流程管理、客户分级管理等核心功能，支持灵活的定制和扩展。
                         </p>
                     </div>
                     
@@ -233,7 +237,6 @@
                             <li><i class="fas fa-check text-green-500 mr-2"></i>产品目录与SKU管理</li>
                             <li><i class="fas fa-check text-green-500 mr-2"></i>B2B订单流程管理</li>
                             <li><i class="fas fa-check text-green-500 mr-2"></i>客户分级与权限控制</li>
-                            <li><i class="fas fa-check text-green-500 mr-2"></i>合规文档管理</li>
                             <li><i class="fas fa-check text-green-500 mr-2"></i>营销工具集成</li>
                         </ul>
                     </div>
@@ -244,9 +247,21 @@
                             <li><i class="fas fa-chart-line text-blue-500 mr-2"></i>交易效率提升 40%</li>
                             <li><i class="fas fa-users text-blue-500 mr-2"></i>客户满意度提升 35%</li>
                             <li><i class="fas fa-clock text-blue-500 mr-2"></i>订单处理时间缩短 50%</li>
-                            <li><i class="fas fa-shield-alt text-blue-500 mr-2"></i>合规风险降低 90%</li>
+                            <li><i class="fas fa-shield-alt text-blue-500 mr-2"></i>合规风险降低</li>
                         </ul>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 原型设计展示 -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-3xl font-bold mb-12 text-center">原型设计</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="prototypeGallery">
+                    <!-- 原型图片将通过JS动态加载 -->
                 </div>
             </div>
         </div>
@@ -439,6 +454,51 @@
         setInterval(() => {
             changeSlide(1);
         }, 5000);
+        
+        // 加载原型图片
+        async function loadPrototypeImages() {
+            const gallery = document.getElementById('prototypeGallery');
+            if (!gallery) return;
+            
+            try {
+                const API_BASE = 'http://localhost:8313/api';
+                const response = await fetch(`${API_BASE}/projects/1/images`);
+                const result = await response.json();
+                
+                if (result.success && result.data && result.data.length > 0) {
+                    gallery.innerHTML = result.data.map(img => `
+                        <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+                            <div class="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
+                                <img src="${API_BASE}${img.image_url}" alt="${img.caption}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-4 text-center">
+                                <p class="text-gray-700 font-medium text-sm">${img.caption}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    // 显示占位符
+                    gallery.innerHTML = `
+                        <div class="col-span-full text-center text-gray-500 py-8">
+                            <i class="fas fa-image text-4xl mb-4"></i>
+                            <p>原型图片待上传</p>
+                            <p class="text-sm mt-2">请将图片保存到: uploads/projects/project1/prototype/</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('加载原型图片失败:', error);
+                gallery.innerHTML = `
+                    <div class="col-span-full text-center text-gray-500 py-8">
+                        <i class="fas fa-image text-4xl mb-4"></i>
+                        <p>原型图片加载失败</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // 页面加载完成后获取原型图片
+        document.addEventListener('DOMContentLoaded', loadPrototypeImages);
     </script>
 </body>
 </html>

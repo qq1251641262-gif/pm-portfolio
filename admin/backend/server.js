@@ -7,6 +7,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const fileUpload = require('express-fileupload');
 const path = require('path');
 
 const app = express();
@@ -32,6 +33,16 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+// 文件上传中间件
+app.use(fileUpload({
+  createParentPath: true,
+  limits: { 
+    fileSize: 10 * 1024 * 1024 // 10MB
+  },
+  abortOnLimit: true,
+  responseOnLimit: '文件大小不能超过 10MB'
+}));
+
 // 解析JSON和URL编码数据
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -44,7 +55,9 @@ app.use('/admin', express.static(path.join(__dirname, '../frontend')));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/profile', require('./routes/profile'));
 app.use('/api/skills', require('./routes/skills'));
+app.use('/api/skill-categories', require('./routes/skill-categories'));
 app.use('/api/experiences', require('./routes/experiences'));
+app.use('/api/education', require('./routes/education'));
 app.use('/api/projects', require('./routes/projects'));
 app.use('/api/ai-demos', require('./routes/ai-demos'));
 app.use('/api/documents', require('./routes/documents'));

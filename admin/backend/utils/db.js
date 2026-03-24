@@ -39,12 +39,27 @@ const memoryDB = {
     }
   ],
   skills: [
-    { id: 1, name: '产品规划', category: '核心能力', level: 90, sort_order: 1, is_active: 1 },
-    { id: 2, name: '需求分析', category: '核心能力', level: 85, sort_order: 2, is_active: 1 },
-    { id: 3, name: '数据分析', category: '核心能力', level: 80, sort_order: 3, is_active: 1 },
-    { id: 4, name: 'Axure RP', category: '工具', level: 90, sort_order: 4, is_active: 1 },
-    { id: 5, name: 'Figma', category: '工具', level: 85, sort_order: 5, is_active: 1 },
-    { id: 6, name: 'SQL', category: '技术', level: 75, sort_order: 6, is_active: 1 }
+    { id: 1, name: '市场调研', category: '能力', sort_order: 1, is_active: 1 },
+    { id: 2, name: '需求调研', category: '能力', sort_order: 2, is_active: 1 },
+    { id: 3, name: '产品设计', category: '能力', sort_order: 3, is_active: 1 },
+    { id: 4, name: '文档撰写', category: '能力', sort_order: 4, is_active: 1 },
+    { id: 5, name: '开发跟进', category: '能力', sort_order: 5, is_active: 1 },
+    { id: 6, name: '迭代规划', category: '能力', sort_order: 6, is_active: 1 },
+    { id: 7, name: '数据ETL', category: '能力', sort_order: 7, is_active: 1 },
+    { id: 8, name: 'Axure', category: '工具', sort_order: 8, is_active: 1 },
+    { id: 9, name: 'Office', category: '工具', sort_order: 9, is_active: 1 },
+    { id: 10, name: 'Photoshop', category: '工具', sort_order: 10, is_active: 1 },
+    { id: 11, name: 'AI Chat', category: '工具', sort_order: 11, is_active: 1 },
+    { id: 12, name: 'AIGC', category: '工具', sort_order: 12, is_active: 1 },
+    { id: 13, name: 'ComfyUI', category: '工具', sort_order: 13, is_active: 1 },
+    { id: 14, name: 'AI写代码', category: '工具', sort_order: 14, is_active: 1 },
+    { id: 15, name: '电商', category: '标签', sort_order: 15, is_active: 1 },
+    { id: 16, name: 'CRM', category: '标签', sort_order: 16, is_active: 1 },
+    { id: 17, name: 'BI', category: '标签', sort_order: 17, is_active: 1 },
+    { id: 18, name: '化工', category: '标签', sort_order: 18, is_active: 1 },
+    { id: 19, name: 'Web', category: '标签', sort_order: 19, is_active: 1 },
+    { id: 20, name: '前后台', category: '标签', sort_order: 20, is_active: 1 },
+    { id: 21, name: '0-1', category: '标签', sort_order: 21, is_active: 1 }
   ],
   experiences: [
     {
@@ -104,7 +119,48 @@ const memoryDB = {
       is_active: 1
     }
   ],
-  project_images: [],
+  project_images: [
+    {
+      id: 1,
+      project_id: 1,
+      image_url: '/uploads/projects/project1/prototype/product-center.jpg',
+      caption: '产品中心 - 展示化工产品分类与搜索功能',
+      sort_order: 1,
+      is_active: 1
+    },
+    {
+      id: 2,
+      project_id: 1,
+      image_url: '/uploads/projects/project1/prototype/trading-center.jpg',
+      caption: '交易中心 - 竞价交易与订单管理界面',
+      sort_order: 2,
+      is_active: 1
+    },
+    {
+      id: 3,
+      project_id: 1,
+      image_url: '/uploads/projects/project1/prototype/flash-sale.jpg',
+      caption: '闪购专区 - 限时抢购活动页面',
+      sort_order: 3,
+      is_active: 1
+    },
+    {
+      id: 4,
+      project_id: 1,
+      image_url: '/uploads/projects/project1/prototype/shopping-cart.jpg',
+      caption: '购物车 - 多供应商结算与价格计算',
+      sort_order: 4,
+      is_active: 1
+    },
+    {
+      id: 5,
+      project_id: 1,
+      image_url: '/uploads/projects/project1/prototype/seller-center.jpg',
+      caption: '卖家中心 - 商品发布与活动管理后台',
+      sort_order: 5,
+      is_active: 1
+    }
+  ],
   ai_demos: [
     {
       id: 1,
@@ -129,11 +185,34 @@ const memoryDB = {
       is_active: 1
     }
   ],
+  education: [
+    {
+      id: 1,
+      school: '某某大学',
+      degree: '本科',
+      major: '计算机科学与技术',
+      start_date: '2017-09',
+      end_date: '2021-06',
+      is_current: 0,
+      description: '主修计算机科学与技术，辅修产品设计',
+      achievements: '获得优秀毕业生称号',
+      sort_order: 1,
+      is_active: 1
+    }
+  ],
+  skill_categories: [
+    { id: 1, name: '能力', description: '产品核心能力', sort_order: 1, is_active: 1 },
+    { id: 2, name: '工具', description: '常用工具软件', sort_order: 2, is_active: 1 },
+    { id: 3, name: '标签', description: '项目标签分类', sort_order: 3, is_active: 1 }
+  ],
   settings: {
     site_title: '张伟健 - 产品经理作品集',
     site_description: '个人作品展示网站',
     contact_email: 'contact@pmzwj.tech',
-    analytics_enabled: 'false'
+    analytics_enabled: 'false',
+    maintenance_icon: '',
+    maintenance_image: '',
+    maintenance_text: '网站正在维护中，请稍后再试...'
   },
   visitor_stats: []
 };
@@ -142,12 +221,14 @@ const memoryDB = {
 let idCounters = {
   admins: 1,
   profile: 1,
-  skills: 6,
+  skills: 21,
+  skill_categories: 3,
   experiences: 2,
   projects: 2,
   project_images: 0,
   ai_demos: 1,
   documents: 1,
+  education: 1,
   visitor_stats: 0
 };
 

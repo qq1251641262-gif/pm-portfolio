@@ -45,6 +45,10 @@
                     <i class="fas fa-briefcase w-6"></i>
                     <span>工作经历</span>
                 </a>
+                <a href="#education" class="nav-item flex items-center px-6 py-3 transition" data-page="education">
+                    <i class="fas fa-graduation-cap w-6"></i>
+                    <span>教育经历</span>
+                </a>
                 <a href="#projects" class="nav-item flex items-center px-6 py-3 transition" data-page="projects">
                     <i class="fas fa-project-diagram w-6"></i>
                     <span>项目管理</span>
@@ -147,15 +151,28 @@
         
         // API请求封装
         async function apiRequest(url, options = {}) {
-            const response = await fetch(`${API_BASE_URL}${url}`, {
-                ...options,
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    ...options.headers
+            try {
+                const response = await fetch(`${API_BASE_URL}${url}`, {
+                    ...options,
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    }
+                });
+                
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    return await response.json();
+                } else {
+                    const text = await response.text();
+                    console.error('API返回非JSON数据:', text.substring(0, 200));
+                    return { success: false, message: '服务器返回数据格式错误' };
                 }
-            });
-            return response.json();
+            } catch (error) {
+                console.error('API请求失败:', error);
+                return { success: false, message: '网络请求失败: ' + error.message };
+            }
         }
         
         // 显示提示
@@ -165,6 +182,177 @@
             toastMessage.textContent = message;
             toast.classList.remove('hidden');
             setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+        
+        // 处理简历文件选择
+        window.handleResumeFileSelect = async (input) => {
+            const file = input.files[0];
+            if (!file) return;
+            
+            // 立即上传文件
+            const uploadResult = await uploadFile(file, 'resume');
+            if (uploadResult.success) {
+                // 更新显示
+                updateResumeDisplay(uploadResult.filename);
+                document.getElementById('resumeUrlInput').value = uploadResult.filename;
+                showToast('简历上传成功');
+            } else {
+                showToast(uploadResult.message || '上传失败', 'error');
+            }
+        };
+        
+        // 更新简历显示状态
+        function updateResumeDisplay(filename) {
+            const uploadArea = document.getElementById('resumeUploadArea');
+            const fileArea = document.getElementById('resumeFileArea');
+            const fileNameEl = document.getElementById('resumeFileName');
+            const downloadLink = document.getElementById('resumeDownloadLink');
+            
+            if (filename) {
+                uploadArea.classList.add('hidden');
+                fileArea.classList.remove('hidden');
+                fileNameEl.textContent = filename;
+                downloadLink.href = `${API_BASE}/upload/${filename}`;
+            } else {
+                uploadArea.classList.remove('hidden');
+                fileArea.classList.add('hidden');
+                fileNameEl.textContent = '';
+                downloadLink.href = '#';
+            }
+        }
+        
+        // 删除简历文件
+        window.deleteResumeFile = async () => {
+            if (!confirm('确定要删除简历文件吗？')) return;
+            
+            document.getElementById('resumeUrlInput').value = '';
+            document.getElementById('resumeFile').value = '';
+            updateResumeDisplay(null);
+            showToast('简历已删除，请保存修改');
+        };
+        
+        // ==================== 维护图标和图片上传 ====================
+        // 处理维护图标选择
+        window.handleMaintenanceIconSelect = async (input) => {
+            const file = input.files[0];
+            if (!file) return;
+            
+            // 验证文件类型
+            if (!file.type.startsWith('image/')) {
+                showToast('请选择图片文件', 'error');
+                return;
+            }
+            
+            const uploadResult = await uploadFile(file, 'image');
+            if (uploadResult.success) {
+                updateMaintenanceIconDisplay(uploadResult.filename);
+                document.getElementById('maintenanceIconInput').value = uploadResult.filename;
+                showToast('维护图标上传成功');
+            } else {
+                showToast(uploadResult.message || '上传失败', 'error');
+            }
+        };
+        
+        // 更新维护图标显示
+        function updateMaintenanceIconDisplay(filename) {
+            const uploadArea = document.getElementById('maintenanceIconUpload');
+            const previewArea = document.getElementById('maintenanceIconPreview');
+            const imgEl = document.getElementById('maintenanceIconImg');
+            const nameEl = document.getElementById('maintenanceIconName');
+            
+            if (filename) {
+                uploadArea.classList.add('hidden');
+                previewArea.classList.remove('hidden');
+                imgEl.src = `${API_BASE}/upload/${filename}`;
+                nameEl.textContent = filename;
+            } else {
+                uploadArea.classList.remove('hidden');
+                previewArea.classList.add('hidden');
+                imgEl.src = '';
+                nameEl.textContent = '';
+            }
+        }
+        
+        // 删除维护图标
+        window.deleteMaintenanceIcon = () => {
+            if (!confirm('确定要删除维护图标吗？')) return;
+            
+            document.getElementById('maintenanceIconInput').value = '';
+            document.getElementById('maintenanceIconFile').value = '';
+            updateMaintenanceIconDisplay(null);
+            showToast('维护图标已删除，请保存设置');
+        };
+        
+        // 处理维护图片选择
+        window.handleMaintenanceImageSelect = async (input) => {
+            const file = input.files[0];
+            if (!file) return;
+            
+            // 验证文件类型
+            if (!file.type.startsWith('image/')) {
+                showToast('请选择图片文件', 'error');
+                return;
+            }
+            
+            const uploadResult = await uploadFile(file, 'image');
+            if (uploadResult.success) {
+                updateMaintenanceImageDisplay(uploadResult.filename);
+                document.getElementById('maintenanceImageInput').value = uploadResult.filename;
+                showToast('维护图片上传成功');
+            } else {
+                showToast(uploadResult.message || '上传失败', 'error');
+            }
+        };
+        
+        // 更新维护图片显示
+        function updateMaintenanceImageDisplay(filename) {
+            const uploadArea = document.getElementById('maintenanceImageUpload');
+            const previewArea = document.getElementById('maintenanceImagePreview');
+            const imgEl = document.getElementById('maintenanceImageImg');
+            const nameEl = document.getElementById('maintenanceImageName');
+            
+            if (filename) {
+                uploadArea.classList.add('hidden');
+                previewArea.classList.remove('hidden');
+                imgEl.src = `${API_BASE}/upload/${filename}`;
+                nameEl.textContent = filename;
+            } else {
+                uploadArea.classList.remove('hidden');
+                previewArea.classList.add('hidden');
+                imgEl.src = '';
+                nameEl.textContent = '';
+            }
+        }
+        
+        // 删除维护图片
+        window.deleteMaintenanceImage = () => {
+            if (!confirm('确定要删除维护图片吗？')) return;
+            
+            document.getElementById('maintenanceImageInput').value = '';
+            document.getElementById('maintenanceImageFile').value = '';
+            updateMaintenanceImageDisplay(null);
+            showToast('维护图片已删除，请保存设置');
+        };
+        
+        // 文件上传函数
+        async function uploadFile(file, type) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('type', type);
+            
+            try {
+                const response = await fetch(`${API_BASE}/upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: formData
+                });
+                return await response.json();
+            } catch (error) {
+                console.error('上传失败:', error);
+                return { success: false, message: error.message };
+            }
         }
         
         // 模态框操作
@@ -277,8 +465,39 @@
                                     <input type="text" name="location" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">简历链接</label>
-                                    <input type="text" name="resume_url" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">简历文件</label>
+                                    <div id="resumeAttachmentArea" class="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                                        <!-- 无附件状态 -->
+                                        <div id="resumeUploadArea" class="text-center">
+                                            <input type="file" id="resumeFile" name="resume_file" accept=".pdf,.doc,.docx" class="hidden" onchange="handleResumeFileSelect(this)">
+                                            <label for="resumeFile" class="cursor-pointer">
+                                                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                                <p class="text-sm text-gray-600">点击上传简历文件</p>
+                                                <p class="text-xs text-gray-400 mt-1">支持 PDF、Word 格式，最大 10MB</p>
+                                            </label>
+                                        </div>
+                                        <!-- 有附件状态 -->
+                                        <div id="resumeFileArea" class="hidden">
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center space-x-3">
+                                                    <i class="fas fa-file-alt text-2xl text-blue-500"></i>
+                                                    <div>
+                                                        <p id="resumeFileName" class="text-sm font-medium text-gray-700">文件名</p>
+                                                        <a id="resumeDownloadLink" href="#" target="_blank" class="text-xs text-blue-500 hover:underline">查看文件</a>
+                                                    </div>
+                                                </div>
+                                                <div class="flex space-x-2">
+                                                    <label for="resumeFile" class="px-3 py-1.5 bg-blue-100 text-blue-600 rounded-lg cursor-pointer hover:bg-blue-200 text-sm">
+                                                        <i class="fas fa-edit mr-1"></i>修改
+                                                    </label>
+                                                    <button type="button" onclick="deleteResumeFile()" class="px-3 py-1.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 text-sm">
+                                                        <i class="fas fa-trash mr-1"></i>删除
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="resume_url" id="resumeUrlInput">
                                 </div>
                             </div>
                             <div>
@@ -297,9 +516,14 @@
                 <div class="fade-in">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-xl font-semibold">技能管理</h3>
-                        <button onclick="openSkillModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                            <i class="fas fa-plus mr-2"></i>添加技能
-                        </button>
+                        <div class="flex space-x-3">
+                            <button onclick="openSkillCategoryModal()" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+                                <i class="fas fa-folder mr-2"></i>分类管理
+                            </button>
+                            <button onclick="openSkillModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                <i class="fas fa-plus mr-2"></i>添加技能
+                            </button>
+                        </div>
                     </div>
                     <div class="bg-white rounded-xl shadow overflow-hidden">
                         <table class="w-full">
@@ -307,11 +531,41 @@
                                 <tr>
                                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">技能名称</th>
                                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">分类</th>
-                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">熟练度</th>
                                     <th class="px-4 py-3 text-right text-sm font-medium text-gray-600">操作</th>
                                 </tr>
                             </thead>
                             <tbody id="skillsTable">
+                                <tr><td colspan="3" class="px-4 py-4 text-center text-gray-500">加载中...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `,
+            
+            'skill-categories': () => `
+                <div class="fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-semibold">技能分类管理</h3>
+                        <div class="flex space-x-3">
+                            <button onclick="loadPage('skills')" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+                                <i class="fas fa-arrow-left mr-2"></i>返回技能管理
+                            </button>
+                            <button onclick="openSkillCategoryFormModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                <i class="fas fa-plus mr-2"></i>添加分类
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">分类名称</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">描述</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">排序</th>
+                                    <th class="px-4 py-3 text-right text-sm font-medium text-gray-600">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="skillCategoriesTable">
                                 <tr><td colspan="4" class="px-4 py-4 text-center text-gray-500">加载中...</td></tr>
                             </tbody>
                         </table>
@@ -333,13 +587,27 @@
                 </div>
             `,
             
+            education: () => `
+                <div class="fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-semibold">教育经历</h3>
+                        <button onclick="openEducationModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-plus mr-2"></i>添加教育经历
+                        </button>
+                    </div>
+                    <div id="educationList" class="space-y-4">
+                        <div class="text-center text-gray-500 py-8">加载中...</div>
+                    </div>
+                </div>
+            `,
+            
             projects: () => `
                 <div class="fade-in">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-xl font-semibold">项目管理</h3>
-                        <button onclick="openProjectModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        <a href="project-add.html" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 inline-flex items-center">
                             <i class="fas fa-plus mr-2"></i>添加项目
-                        </button>
+                        </a>
                     </div>
                     <div id="projectsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div class="text-center text-gray-500 py-8 col-span-full">加载中...</div>
@@ -403,6 +671,81 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-2">联系邮箱</label>
                                 <input type="email" name="contact_email" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
                             </div>
+                            
+                            <!-- 维护模式设置 -->
+                            <div class="border-t pt-6">
+                                <h4 class="text-lg font-medium mb-4">维护模式设置</h4>
+                                
+                                <!-- 维护图标上传 -->
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">维护页面图标</label>
+                                    <div id="maintenanceIconArea" class="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                                        <div id="maintenanceIconUpload" class="text-center">
+                                            <input type="file" id="maintenanceIconFile" accept="image/*" class="hidden" onchange="handleMaintenanceIconSelect(this)">
+                                            <label for="maintenanceIconFile" class="cursor-pointer">
+                                                <i class="fas fa-image text-3xl text-gray-400 mb-2"></i>
+                                                <p class="text-sm text-gray-600">点击上传维护图标</p>
+                                                <p class="text-xs text-gray-400 mt-1">支持 JPG、PNG、GIF 格式</p>
+                                            </label>
+                                        </div>
+                                        <div id="maintenanceIconPreview" class="hidden">
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center space-x-3">
+                                                    <img id="maintenanceIconImg" src="" alt="维护图标" class="w-16 h-16 object-cover rounded-lg">
+                                                    <span id="maintenanceIconName" class="text-sm text-gray-600">图标文件名</span>
+                                                </div>
+                                                <div class="flex space-x-2">
+                                                    <label for="maintenanceIconFile" class="px-3 py-1.5 bg-blue-100 text-blue-600 rounded-lg cursor-pointer hover:bg-blue-200 text-sm">
+                                                        <i class="fas fa-edit mr-1"></i>修改
+                                                    </label>
+                                                    <button type="button" onclick="deleteMaintenanceIcon()" class="px-3 py-1.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 text-sm">
+                                                        <i class="fas fa-trash mr-1"></i>删除
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="maintenance_icon" id="maintenanceIconInput">
+                                </div>
+                                
+                                <!-- 维护图片上传 -->
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">维护页面图片</label>
+                                    <div id="maintenanceImageArea" class="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                                        <div id="maintenanceImageUpload" class="text-center">
+                                            <input type="file" id="maintenanceImageFile" accept="image/*" class="hidden" onchange="handleMaintenanceImageSelect(this)">
+                                            <label for="maintenanceImageFile" class="cursor-pointer">
+                                                <i class="fas fa-image text-3xl text-gray-400 mb-2"></i>
+                                                <p class="text-sm text-gray-600">点击上传维护页面图片</p>
+                                                <p class="text-xs text-gray-400 mt-1">支持 JPG、PNG、GIF 格式，建议尺寸 800x600</p>
+                                            </label>
+                                        </div>
+                                        <div id="maintenanceImagePreview" class="hidden">
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center space-x-3">
+                                                    <img id="maintenanceImageImg" src="" alt="维护图片" class="w-24 h-16 object-cover rounded-lg">
+                                                    <span id="maintenanceImageName" class="text-sm text-gray-600">图片文件名</span>
+                                                </div>
+                                                <div class="flex space-x-2">
+                                                    <label for="maintenanceImageFile" class="px-3 py-1.5 bg-blue-100 text-blue-600 rounded-lg cursor-pointer hover:bg-blue-200 text-sm">
+                                                        <i class="fas fa-edit mr-1"></i>修改
+                                                    </label>
+                                                    <button type="button" onclick="deleteMaintenanceImage()" class="px-3 py-1.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 text-sm">
+                                                        <i class="fas fa-trash mr-1"></i>删除
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="maintenance_image" id="maintenanceImageInput">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">维护提示文字</label>
+                                    <textarea name="maintenance_text" rows="2" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="网站正在维护中，请稍后再试..."></textarea>
+                                </div>
+                            </div>
+                            
                             <div class="flex justify-end">
                                 <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">保存设置</button>
                             </div>
@@ -448,16 +791,23 @@
                             const input = form.querySelector(`[name="${key}"]`);
                             if (input) input.value = result.data[key] || '';
                         });
+                        // 更新简历显示状态
+                        if (result.data.resume_url) {
+                            updateResumeDisplay(result.data.resume_url);
+                            document.getElementById('resumeUrlInput').value = result.data.resume_url;
+                        } else {
+                            updateResumeDisplay(null);
+                        }
                     }
                     document.getElementById('profileForm').addEventListener('submit', async (e) => {
                         e.preventDefault();
                         const formData = new FormData(e.target);
                         const data = Object.fromEntries(formData);
-                        const result = await apiRequest('/profile', {
+                        const updateResult = await apiRequest('/profile', {
                             method: 'PUT',
                             body: JSON.stringify(data)
                         });
-                        if (result.success) showToast('保存成功');
+                        if (updateResult.success) showToast('保存成功');
                     });
                 } catch (error) {
                     console.error('加载个人资料失败:', error);
@@ -473,12 +823,6 @@
                             <tr class="border-b hover:bg-gray-50">
                                 <td class="px-4 py-3 text-sm">${skill.name}</td>
                                 <td class="px-4 py-3 text-sm">${skill.category || '-'}</td>
-                                <td class="px-4 py-3 text-sm">
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-blue-600 h-2 rounded-full" style="width: ${skill.level || 0}%"></div>
-                                    </div>
-                                    <span class="text-xs text-gray-500">${skill.level || 0}%</span>
-                                </td>
                                 <td class="px-4 py-3 text-sm text-right">
                                     <button onclick="editSkill(${skill.id})" class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
                                     <button onclick="deleteSkill(${skill.id})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
@@ -486,10 +830,45 @@
                             </tr>
                         `).join('');
                     } else {
-                        tbody.innerHTML = '<tr><td colspan="4" class="px-4 py-4 text-center text-gray-500">暂无数据</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="3" class="px-4 py-4 text-center text-gray-500">暂无数据</td></tr>';
                     }
                 } catch (error) {
                     console.error('加载技能失败:', error);
+                }
+            },
+            
+            'skill-categories': async () => {
+                const tbody = document.getElementById('skillCategoriesTable');
+                if (!tbody) {
+                    console.error('skillCategoriesTable 元素未找到');
+                    return;
+                }
+                
+                try {
+                    tbody.innerHTML = '<tr><td colspan="4" class="px-4 py-4 text-center text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>加载中...</td></tr>';
+                    
+                    const result = await apiRequest('/skill-categories');
+                    
+                    if (result.success && result.data && result.data.length > 0) {
+                        tbody.innerHTML = result.data.map(cat => `
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="px-4 py-3 text-sm font-medium">${cat.name}</td>
+                                <td class="px-4 py-3 text-sm text-gray-600">${cat.description || '-'}</td>
+                                <td class="px-4 py-3 text-sm">${cat.sort_order}</td>
+                                <td class="px-4 py-3 text-sm text-right">
+                                    <button onclick="editSkillCategory(${cat.id})" class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                                    <button onclick="deleteSkillCategory(${cat.id})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    } else if (result.success) {
+                        tbody.innerHTML = '<tr><td colspan="4" class="px-4 py-4 text-center text-gray-500">暂无分类，请点击"添加分类"创建</td></tr>';
+                    } else {
+                        tbody.innerHTML = `<tr><td colspan="4" class="px-4 py-4 text-center text-red-500">加载失败: ${result.message || '未知错误'}</td></tr>`;
+                    }
+                } catch (error) {
+                    console.error('加载技能分类失败:', error);
+                    tbody.innerHTML = `<tr><td colspan="4" class="px-4 py-4 text-center text-red-500">加载失败: ${error.message}</td></tr>`;
                 }
             },
             
@@ -519,6 +898,47 @@
                     }
                 } catch (error) {
                     console.error('加载工作经历失败:', error);
+                }
+            },
+            
+            education: async () => {
+                const container = document.getElementById('educationList');
+                if (!container) {
+                    console.error('educationList 元素未找到');
+                    return;
+                }
+                
+                try {
+                    container.innerHTML = '<div class="text-center text-gray-500 py-8"><i class="fas fa-spinner fa-spin mr-2"></i>教育经历加载中...</div>';
+                    
+                    const result = await apiRequest('/education');
+                    
+                    if (result.success && result.data && result.data.length > 0) {
+                        container.innerHTML = result.data.map(edu => `
+                            <div class="bg-white rounded-xl shadow p-6">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-semibold text-lg">${edu.school}</h4>
+                                        <p class="text-blue-600">${edu.degree} · ${edu.major}</p>
+                                        <p class="text-sm text-gray-500 mt-1">${edu.start_date} - ${edu.is_current ? '至今' : edu.end_date}</p>
+                                    </div>
+                                    <div>
+                                        <button onclick="editEducation(${edu.id})" class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                                        <button onclick="deleteEducation(${edu.id})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </div>
+                                ${edu.description ? `<p class="text-gray-600 mt-3">${edu.description}</p>` : ''}
+                                ${edu.achievements ? `<p class="text-sm text-green-600 mt-2"><i class="fas fa-trophy mr-1"></i>${edu.achievements}</p>` : ''}
+                            </div>
+                        `).join('');
+                    } else if (result.success) {
+                        container.innerHTML = '<div class="text-center text-gray-500 py-8">暂无教育经历，请点击"添加教育经历"创建</div>';
+                    } else {
+                        container.innerHTML = `<div class="text-center text-red-500 py-8">加载失败: ${result.message || '未知错误'}</div>`;
+                    }
+                } catch (error) {
+                    console.error('加载教育经历失败:', error);
+                    container.innerHTML = `<div class="text-center text-red-500 py-8">加载失败: ${error.message}</div>`;
                 }
             },
             
@@ -616,6 +1036,18 @@
                             const input = form.querySelector(`[name="${key}"]`);
                             if (input) input.value = result.data[key] || '';
                         });
+                        
+                        // 显示维护图标
+                        if (result.data.maintenance_icon) {
+                            updateMaintenanceIconDisplay(result.data.maintenance_icon);
+                            document.getElementById('maintenanceIconInput').value = result.data.maintenance_icon;
+                        }
+                        
+                        // 显示维护图片
+                        if (result.data.maintenance_image) {
+                            updateMaintenanceImageDisplay(result.data.maintenance_image);
+                            document.getElementById('maintenanceImageInput').value = result.data.maintenance_image;
+                        }
                     }
                     document.getElementById('settingsForm').addEventListener('submit', async (e) => {
                         e.preventDefault();
@@ -657,6 +1089,625 @@
         // 初始加载仪表盘
         document.getElementById('contentArea').innerHTML = pageContents.dashboard();
         pageLoaders.dashboard();
+        
+        // 检查URL参数，如果有page参数则自动加载对应页面
+        const urlParams = new URLSearchParams(window.location.search);
+        const pageParam = urlParams.get('page');
+        if (pageParam && pageContents[pageParam]) {
+            loadPage(pageParam);
+        }
+        
+        // 页面加载函数（用于内部跳转）
+        window.loadPage = (page) => {
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            const navItem = document.querySelector(`.nav-item[data-page="${page}"]`);
+            if (navItem) navItem.classList.add('active');
+            
+            const pageTitle = document.getElementById('pageTitle');
+            if (navItem) pageTitle.textContent = navItem.querySelector('span').textContent;
+            
+            const contentArea = document.getElementById('contentArea');
+            contentArea.innerHTML = pageContents[page] ? pageContents[page]() : '<div class="text-center py-8">页面开发中...</div>';
+            
+            if (pageLoaders[page]) {
+                pageLoaders[page]();
+            }
+        };
+        
+        // ==================== 技能管理增删改查 ====================
+        window.openSkillModal = async (id = null) => {
+            const isEdit = id !== null;
+            const title = isEdit ? '编辑技能' : '添加技能';
+            
+            // 获取技能分类列表
+            let categories = [];
+            try {
+                const catResult = await apiRequest('/skill-categories');
+                if (catResult.success) categories = catResult.data || [];
+            } catch (e) {
+                console.error('加载分类失败:', e);
+            }
+            
+            const categoryOptions = categories.map(cat => `<option value="${cat.name}">${cat.name}</option>`).join('');
+            
+            const content = `
+                <form id="skillForm" class="space-y-4">
+                    <input type="hidden" name="id" value="${isEdit ? id : ''}">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">技能名称 <span class="text-red-500">*</span></label>
+                        <input type="text" name="name" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">分类</label>
+                        <select name="category" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="">请选择分类</option>
+                            ${categoryOptions}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">排序</label>
+                        <input type="number" name="sort_order" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value="0">
+                    </div>
+                </form>
+            `;
+            
+            openModal(title, content, async () => {
+                const form = document.getElementById('skillForm');
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData);
+                data.sort_order = parseInt(data.sort_order) || 0;
+                
+                const url = isEdit ? `/skills/${id}` : '/skills';
+                const method = isEdit ? 'PUT' : 'POST';
+                
+                const result = await apiRequest(url, { method, body: JSON.stringify(data) });
+                if (result.success) {
+                    showToast(isEdit ? '技能更新成功' : '技能添加成功');
+                    pageLoaders.skills();
+                }
+            });
+            
+            // 如果是编辑，加载数据
+            if (isEdit) {
+                apiRequest(`/skills/${id}`).then(result => {
+                    if (result.success && result.data) {
+                        const form = document.getElementById('skillForm');
+                        Object.keys(result.data).forEach(key => {
+                            const input = form.querySelector(`[name="${key}"]`);
+                            if (input) input.value = result.data[key] || '';
+                        });
+                    }
+                });
+            }
+        };
+        
+        window.editSkill = (id) => openSkillModal(id);
+        
+        window.deleteSkill = async (id) => {
+            if (confirm('确定要删除这个技能吗？')) {
+                const result = await apiRequest(`/skills/${id}`, { method: 'DELETE' });
+                if (result.success) {
+                    showToast('技能删除成功');
+                    pageLoaders.skills();
+                }
+            }
+        };
+        
+        // ==================== 工作经历增删改查 ====================
+        window.openExperienceModal = (id = null) => {
+            const isEdit = id !== null;
+            const title = isEdit ? '编辑工作经历' : '添加工作经历';
+            const content = `
+                <form id="experienceForm" class="space-y-4">
+                    <input type="hidden" name="id" value="${isEdit ? id : ''}">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">公司名称</label>
+                        <input type="text" name="company" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">职位</label>
+                        <input type="text" name="position" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">开始时间</label>
+                            <input type="month" name="start_date" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">结束时间</label>
+                            <input type="month" name="end_date" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="is_current" value="1" class="mr-2">
+                            <span class="text-sm text-gray-700">当前在职</span>
+                        </label>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">工作描述</label>
+                        <textarea name="description" rows="3" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">主要成就</label>
+                        <textarea name="achievements" rows="2" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">关键词 (用逗号分隔)</label>
+                        <input type="text" name="keywords" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="如：电商,产品规划,团队管理">
+                    </div>
+                </form>
+            `;
+            
+            openModal(title, content, async () => {
+                const form = document.getElementById('experienceForm');
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData);
+                data.is_current = form.querySelector('[name="is_current"]').checked ? 1 : 0;
+                data.sort_order = 0;
+                
+                const url = isEdit ? `/experiences/${id}` : '/experiences';
+                const method = isEdit ? 'PUT' : 'POST';
+                
+                const result = await apiRequest(url, { method, body: JSON.stringify(data) });
+                if (result.success) {
+                    showToast(isEdit ? '工作经历更新成功' : '工作经历添加成功');
+                    pageLoaders.experiences();
+                }
+            });
+            
+            if (isEdit) {
+                apiRequest(`/experiences/${id}`).then(result => {
+                    if (result.success && result.data) {
+                        const form = document.getElementById('experienceForm');
+                        Object.keys(result.data).forEach(key => {
+                            const input = form.querySelector(`[name="${key}"]`);
+                            if (input) {
+                                if (input.type === 'checkbox') {
+                                    input.checked = result.data[key] == 1;
+                                } else {
+                                    input.value = result.data[key] || '';
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        };
+        
+        window.editExperience = (id) => openExperienceModal(id);
+        
+        window.deleteExperience = async (id) => {
+            if (confirm('确定要删除这条工作经历吗？')) {
+                const result = await apiRequest(`/experiences/${id}`, { method: 'DELETE' });
+                if (result.success) {
+                    showToast('工作经历删除成功');
+                    pageLoaders.experiences();
+                }
+            }
+        };
+        
+        // ==================== 项目管理增删改查 ====================
+        window.openProjectModal = (id = null) => {
+            const isEdit = id !== null;
+            const title = isEdit ? '编辑项目' : '添加项目';
+            const content = `
+                <form id="projectForm" class="space-y-4">
+                    <input type="hidden" name="id" value="${isEdit ? id : ''}">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">项目标题</label>
+                        <input type="text" name="title" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">副标题</label>
+                        <input type="text" name="subtitle" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">项目描述</label>
+                        <textarea name="description" rows="3" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">分类</label>
+                            <input type="text" name="category" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="如：电商、CRM">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">标签 (逗号分隔)</label>
+                            <input type="text" name="tags" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="B2B,SaaS">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">演示链接</label>
+                            <input type="url" name="demo_url" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">GitHub链接</label>
+                            <input type="url" name="github_url" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">缩略图URL</label>
+                        <input type="text" name="thumbnail" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="is_featured" value="1" class="mr-2">
+                            <span class="text-sm text-gray-700">推荐项目</span>
+                        </label>
+                    </div>
+                </form>
+            `;
+            
+            openModal(title, content, async () => {
+                const form = document.getElementById('projectForm');
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData);
+                data.is_featured = form.querySelector('[name="is_featured"]').checked ? 1 : 0;
+                data.sort_order = 0;
+                
+                const url = isEdit ? `/projects/${id}` : '/projects';
+                const method = isEdit ? 'PUT' : 'POST';
+                
+                const result = await apiRequest(url, { method, body: JSON.stringify(data) });
+                if (result.success) {
+                    showToast(isEdit ? '项目更新成功' : '项目添加成功');
+                    pageLoaders.projects();
+                }
+            });
+            
+            if (isEdit) {
+                apiRequest(`/projects/${id}`).then(result => {
+                    if (result.success && result.data) {
+                        const form = document.getElementById('projectForm');
+                        Object.keys(result.data).forEach(key => {
+                            const input = form.querySelector(`[name="${key}"]`);
+                            if (input) {
+                                if (input.type === 'checkbox') {
+                                    input.checked = result.data[key] == 1;
+                                } else {
+                                    input.value = result.data[key] || '';
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        };
+        
+        window.editProject = (id) => openProjectModal(id);
+        
+        window.deleteProject = async (id) => {
+            if (confirm('确定要删除这个项目吗？')) {
+                const result = await apiRequest(`/projects/${id}`, { method: 'DELETE' });
+                if (result.success) {
+                    showToast('项目删除成功');
+                    pageLoaders.projects();
+                }
+            }
+        };
+        
+        // ==================== AI Demo 增删改查 ====================
+        window.openAiDemoModal = (id = null) => {
+            const isEdit = id !== null;
+            const title = isEdit ? '编辑 AI Demo' : '添加 AI Demo';
+            const content = `
+                <form id="aiDemoForm" class="space-y-4">
+                    <input type="hidden" name="id" value="${isEdit ? id : ''}">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">标题</label>
+                        <input type="text" name="title" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">描述</label>
+                        <textarea name="description" rows="3" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">分类</label>
+                        <input type="text" name="category" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="如：AI应用、机器学习">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">演示链接</label>
+                        <input type="url" name="demo_url" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">图片URL</label>
+                        <input type="text" name="image_url" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </form>
+            `;
+            
+            openModal(title, content, async () => {
+                const form = document.getElementById('aiDemoForm');
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData);
+                data.sort_order = 0;
+                
+                const url = isEdit ? `/ai-demos/${id}` : '/ai-demos';
+                const method = isEdit ? 'PUT' : 'POST';
+                
+                const result = await apiRequest(url, { method, body: JSON.stringify(data) });
+                if (result.success) {
+                    showToast(isEdit ? 'AI Demo 更新成功' : 'AI Demo 添加成功');
+                    pageLoaders['ai-demos']();
+                }
+            });
+            
+            if (isEdit) {
+                apiRequest(`/ai-demos/${id}`).then(result => {
+                    if (result.success && result.data) {
+                        const form = document.getElementById('aiDemoForm');
+                        Object.keys(result.data).forEach(key => {
+                            const input = form.querySelector(`[name="${key}"]`);
+                            if (input) input.value = result.data[key] || '';
+                        });
+                    }
+                });
+            }
+        };
+        
+        window.editAiDemo = (id) => openAiDemoModal(id);
+        
+        window.deleteAiDemo = async (id) => {
+            if (confirm('确定要删除这个 AI Demo 吗？')) {
+                const result = await apiRequest(`/ai-demos/${id}`, { method: 'DELETE' });
+                if (result.success) {
+                    showToast('AI Demo 删除成功');
+                    pageLoaders['ai-demos']();
+                }
+            }
+        };
+        
+        // ==================== 文档管理增删改查 ====================
+        window.openDocumentModal = (id = null) => {
+            const isEdit = id !== null;
+            const title = isEdit ? '编辑文档' : '添加文档';
+            const content = `
+                <form id="documentForm" class="space-y-4">
+                    <input type="hidden" name="id" value="${isEdit ? id : ''}">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">文档名称</label>
+                        <input type="text" name="title" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">描述</label>
+                        <textarea name="description" rows="2" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">分类</label>
+                        <input type="text" name="category" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="如：PRD文档、需求文档">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">文件类型</label>
+                        <select name="file_type" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="pdf">PDF</option>
+                            <option value="doc">Word</option>
+                            <option value="ppt">PPT</option>
+                            <option value="other">其他</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">文件链接</label>
+                        <input type="text" name="file_url" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </form>
+            `;
+            
+            openModal(title, content, async () => {
+                const form = document.getElementById('documentForm');
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData);
+                data.sort_order = 0;
+                
+                const url = isEdit ? `/documents/${id}` : '/documents';
+                const method = isEdit ? 'PUT' : 'POST';
+                
+                const result = await apiRequest(url, { method, body: JSON.stringify(data) });
+                if (result.success) {
+                    showToast(isEdit ? '文档更新成功' : '文档添加成功');
+                    pageLoaders.documents();
+                }
+            });
+            
+            if (isEdit) {
+                apiRequest(`/documents/${id}`).then(result => {
+                    if (result.success && result.data) {
+                        const form = document.getElementById('documentForm');
+                        Object.keys(result.data).forEach(key => {
+                            const input = form.querySelector(`[name="${key}"]`);
+                            if (input) input.value = result.data[key] || '';
+                        });
+                    }
+                });
+            }
+        };
+        
+        window.editDocument = (id) => openDocumentModal(id);
+        
+        window.deleteDocument = async (id) => {
+            if (confirm('确定要删除这个文档吗？')) {
+                const result = await apiRequest(`/documents/${id}`, { method: 'DELETE' });
+                if (result.success) {
+                    showToast('文档删除成功');
+                    pageLoaders.documents();
+                }
+            }
+        };
+        
+        // ==================== 教育经历增删改查 ====================
+        window.openEducationModal = (id = null) => {
+            const isEdit = id !== null;
+            const title = isEdit ? '编辑教育经历' : '添加教育经历';
+            const content = `
+                <form id="educationForm" class="space-y-4">
+                    <input type="hidden" name="id" value="${isEdit ? id : ''}">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">学校名称 <span class="text-red-500">*</span></label>
+                        <input type="text" name="school" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">学历 <span class="text-red-500">*</span></label>
+                            <select name="degree" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                                <option value="">请选择</option>
+                                <option value="大专">大专</option>
+                                <option value="本科">本科</option>
+                                <option value="硕士">硕士</option>
+                                <option value="博士">博士</option>
+                                <option value="其他">其他</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">专业</label>
+                            <input type="text" name="major" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="如：计算机科学与技术">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">开始时间</label>
+                            <input type="month" name="start_date" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">结束时间</label>
+                            <input type="month" name="end_date" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="is_current" value="1" class="mr-2">
+                            <span class="text-sm text-gray-700">在读</span>
+                        </label>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">在校经历/描述</label>
+                        <textarea name="description" rows="3" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="描述在校期间的课程、活动等"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">主要成就</label>
+                        <textarea name="achievements" rows="2" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="如：获得优秀毕业生称号、奖学金等"></textarea>
+                    </div>
+                </form>
+            `;
+            
+            openModal(title, content, async () => {
+                const form = document.getElementById('educationForm');
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData);
+                data.is_current = form.querySelector('[name="is_current"]').checked ? 1 : 0;
+                data.sort_order = 0;
+                
+                const url = isEdit ? `/education/${id}` : '/education';
+                const method = isEdit ? 'PUT' : 'POST';
+                
+                const result = await apiRequest(url, { method, body: JSON.stringify(data) });
+                if (result.success) {
+                    showToast(isEdit ? '教育经历更新成功' : '教育经历添加成功');
+                    pageLoaders.education();
+                }
+            });
+            
+            if (isEdit) {
+                apiRequest(`/education/${id}`).then(result => {
+                    if (result.success && result.data) {
+                        const form = document.getElementById('educationForm');
+                        Object.keys(result.data).forEach(key => {
+                            const input = form.querySelector(`[name="${key}"]`);
+                            if (input) {
+                                if (input.type === 'checkbox') {
+                                    input.checked = result.data[key] == 1;
+                                } else {
+                                    input.value = result.data[key] || '';
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        };
+        
+        window.editEducation = (id) => openEducationModal(id);
+        
+        window.deleteEducation = async (id) => {
+            if (confirm('确定要删除这条教育经历吗？')) {
+                const result = await apiRequest(`/education/${id}`, { method: 'DELETE' });
+                if (result.success) {
+                    showToast('教育经历删除成功');
+                    pageLoaders.education();
+                }
+            }
+        };
+        
+        // ==================== 技能分类管理 ====================
+        window.openSkillCategoryModal = () => {
+            loadPage('skill-categories');
+        };
+        
+        window.openSkillCategoryFormModal = (id = null) => {
+            const isEdit = id !== null;
+            const title = isEdit ? '编辑分类' : '添加分类';
+            const content = `
+                <form id="skillCategoryForm" class="space-y-4">
+                    <input type="hidden" name="id" value="${isEdit ? id : ''}">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">分类名称 <span class="text-red-500">*</span></label>
+                        <input type="text" name="name" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">描述</label>
+                        <textarea name="description" rows="2" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="分类描述说明"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">排序</label>
+                        <input type="number" name="sort_order" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value="0">
+                    </div>
+                </form>
+            `;
+            
+            openModal(title, content, async () => {
+                const form = document.getElementById('skillCategoryForm');
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData);
+                data.sort_order = parseInt(data.sort_order) || 0;
+                
+                const url = isEdit ? `/skill-categories/${id}` : '/skill-categories';
+                const method = isEdit ? 'PUT' : 'POST';
+                
+                const result = await apiRequest(url, { method, body: JSON.stringify(data) });
+                if (result.success) {
+                    showToast(isEdit ? '分类更新成功' : '分类添加成功');
+                    closeModal();
+                    pageLoaders['skill-categories']();
+                } else {
+                    showToast(result.message || '操作失败', 'error');
+                }
+            });
+            
+            if (isEdit) {
+                apiRequest(`/skill-categories/${id}`).then(result => {
+                    if (result.success && result.data) {
+                        const form = document.getElementById('skillCategoryForm');
+                        Object.keys(result.data).forEach(key => {
+                            const input = form.querySelector(`[name="${key}"]`);
+                            if (input) input.value = result.data[key] || '';
+                        });
+                    }
+                });
+            }
+        };
+        
+        window.editSkillCategory = (id) => openSkillCategoryFormModal(id);
+        
+        window.deleteSkillCategory = async (id) => {
+            if (confirm('确定要删除这个分类吗？该分类下的技能需要重新分类。')) {
+                const result = await apiRequest(`/skill-categories/${id}`, { method: 'DELETE' });
+                if (result.success) {
+                    showToast('分类删除成功');
+                    pageLoaders['skill-categories']();
+                } else {
+                    showToast(result.message || '删除失败', 'error');
+                }
+            }
+        };
     </script>
 </body>
 </html>
