@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B2B 电商平台（产品化方案） - 项目详情 | 张伟健</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        
+        .hero-bg {
+            background: linear-gradient(135deg, #6EA4D2 0%, #8B9DC5 50%, #9BCCDD 100%);
+        }
+        
+        .slideshow-container {
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 200px);
+            min-height: 500px;
+            max-height: 900px;
+        }
+        
+        .slide {
+            display: none;
+            animation: fade 0.5s ease;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .slide.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .slide-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @keyframes fade {
+            from { opacity: 0.4; }
+            to { opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            .slideshow-container {
+                height: calc(100vh - 150px);
+                min-height: 350px;
+            }
+        }
+        
+        .nav-link {
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #6EA4D2;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-[#F9F9F1] text-gray-800">
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 left-0 w-full bg-white shadow-md z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <a href="../index.html" class="text-2xl font-bold text-gray-800">张伟健</a>
+                <div class="hidden md:flex space-x-8">
+                    <a href="../index.html" class="nav-link text-gray-600 hover:text-gray-900">首页</a>
+                    <a href="../index.html#projects" class="nav-link text-gray-600 hover:text-gray-900">项目</a>
+                    <a href="../index.html#about" class="nav-link text-gray-600 hover:text-gray-900">关于</a>
+                    <a href="../index.html#contact" class="nav-link text-gray-600 hover:text-gray-900">联系</a>
+                </div>
+                <button id="mobile-menu-btn" class="md:hidden text-gray-600">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="container mx-auto px-6 py-4">
+                <a href="../index.html" class="block py-2 text-gray-600">首页</a>
+                <a href="../index.html#projects" class="block py-2 text-gray-600">项目</a>
+                <a href="../index.html#about" class="block py-2 text-gray-600">关于</a>
+                <a href="../index.html#contact" class="block py-2 text-gray-600">联系</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 项目标题区域 -->
+    <section class="hero-bg pt-32 pb-16">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-wrap gap-2 mb-4">
+                <span class="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-sm">B2B</span>
+                <span class="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-sm">电商</span>
+                <span class="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-sm">产品化</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">B2B 电商平台（产品化方案）</h1>
+            <p class="text-xl text-white opacity-90 max-w-3xl mb-4">
+                模块化、可定制化的B2B电商系统，打通交易全链路，支持多行业快速部署
+            </p>
+            <a href="https://b2b-demo.pmzwj.tech" target="_blank" class="inline-flex items-center text-sm text-purple-300 hover:text-white transition-colors">
+                b2b-demo.pmzwj.tech <i class="fas fa-external-link-alt ml-1 text-xs"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- 项目图片轮播 -->
+    <section class="py-8 bg-white">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="slideshow-container rounded-2xl overflow-hidden shadow-xl">
+                <div class="slide active" style="background: linear-gradient(135deg, #6EA4D2 0%, #8B9DC5 50%, #9BCCDD 100%);">
+                    <div class="text-center text-white">
+                        <i class="fas fa-shopping-cart text-8xl mb-6 opacity-80"></i>
+                        <h3 class="text-4xl font-bold mb-4">B2B电商平台首页</h3>
+                        <p class="text-xl opacity-90">模块化电商系统核心界面</p>
+                    </div>
+                </div>
+                <div class="slide" style="background: linear-gradient(135deg, #8B9DC5 0%, #9BCCDD 50%, #6BBCCF 100%);">
+                    <div class="text-center text-white">
+                        <i class="fas fa-boxes text-8xl mb-6 opacity-80"></i>
+                        <h3 class="text-4xl font-bold mb-4">产品管理后台</h3>
+                        <p class="text-xl opacity-90">SKU与目录管理系统</p>
+                    </div>
+                </div>
+                <div class="slide" style="background: linear-gradient(135deg, #9BCCDD 0%, #6BBCCF 50%, #6EA4D2 100%);">
+                    <div class="text-center text-white">
+                        <i class="fas fa-chart-pie text-8xl mb-6 opacity-80"></i>
+                        <h3 class="text-4xl font-bold mb-4">数据分析看板</h3>
+                        <p class="text-xl opacity-90">实时业务数据可视化</p>
+                    </div>
+                </div>
+                <div class="slide" style="background: linear-gradient(135deg, #6BBCCF 0%, #6EA4D2 50%, #8B9DC5 100%);">
+                    <div class="text-center text-white">
+                        <i class="fas fa-file-invoice text-8xl mb-6 opacity-80"></i>
+                        <h3 class="text-4xl font-bold mb-4">订单管理界面</h3>
+                        <p class="text-xl opacity-90">全链路订单流程追踪</p>
+                    </div>
+                </div>
+                <div class="slide" style="background: linear-gradient(135deg, #6EA4D2 0%, #9BCCDD 50%, #8B9DC5 100%);">
+                    <div class="text-center text-white">
+                        <i class="fas fa-mobile-alt text-8xl mb-6 opacity-80"></i>
+                        <h3 class="text-4xl font-bold mb-4">移动端适配</h3>
+                        <p class="text-xl opacity-90">响应式多终端体验</p>
+                    </div>
+                </div>
+                
+                <!-- 轮播控制 -->
+                <div class="absolute bottom-6 left-0 right-0 flex justify-center items-center space-x-4 z-10">
+                    <button onclick="changeSlide(-1)" class="w-12 h-12 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center transition backdrop-blur-sm">
+                        <i class="fas fa-chevron-left text-gray-700"></i>
+                    </button>
+                    <span class="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-gray-700 font-medium shadow-lg">
+                        <span id="current-slide">1</span> / <span id="total-slides">5</span>
+                    </span>
+                    <button onclick="changeSlide(1)" class="w-12 h-12 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center transition backdrop-blur-sm">
+                        <i class="fas fa-chevron-right text-gray-700"></i>
+                    </button>
+                </div>
+                
+                <!-- 指示器 -->
+                <div class="absolute bottom-20 left-0 right-0 flex justify-center space-x-2 z-10">
+                    <span class="dot w-3 h-3 rounded-full bg-white/60 cursor-pointer hover:bg-white transition" onclick="goToSlide(0)"></span>
+                    <span class="dot w-3 h-3 rounded-full bg-white/60 cursor-pointer hover:bg-white transition" onclick="goToSlide(1)"></span>
+                    <span class="dot w-3 h-3 rounded-full bg-white/60 cursor-pointer hover:bg-white transition" onclick="goToSlide(2)"></span>
+                    <span class="dot w-3 h-3 rounded-full bg-white/60 cursor-pointer hover:bg-white transition" onclick="goToSlide(3)"></span>
+                    <span class="dot w-3 h-3 rounded-full bg-white/60 cursor-pointer hover:bg-white transition" onclick="goToSlide(4)"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 项目概述 -->
+    <section class="py-16 bg-[#F9F9F1]">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold mb-8">项目概述</h2>
+                <p class="text-gray-600 text-lg leading-relaxed mb-6">
+                    某化集团独立开发的电商产品化平台，主打模块化、可定制化的B2B电商系统，打通交易全链路，包括产品管理、订单管理、客户管理、营销工具等核心模块。
+                </p>
+                <p class="text-gray-600 text-lg leading-relaxed">
+                    该平台专为化工行业设计，满足行业特殊的合规要求和交易流程，同时提供灵活的定制化能力，适应不同客户的业务需求。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 项目详情 -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold mb-12">项目详情</h2>
+                
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-[#6EA4D2]">项目背景</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            化工行业B2B电商面临特殊的合规要求和复杂的交易流程，市场上缺乏专门针对化工行业的电商解决方案。客户需要一个既能满足行业合规要求，又能提供良好用户体验的电商平台。
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-[#6EA4D2]">解决方案</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            设计并开发了一套模块化的B2B电商系统，包含产品目录管理、订单流程管理、客户分级管理、合规文档管理等核心功能，支持灵活的定制和扩展。
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-[#6EA4D2]">核心功能</h3>
+                        <ul class="text-gray-600 space-y-2">
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>产品目录与SKU管理</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>B2B订单流程管理</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>客户分级与权限控制</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>合规文档管理</li>
+                            <li><i class="fas fa-check text-green-500 mr-2"></i>营销工具集成</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-[#6EA4D2]">项目成果</h3>
+                        <ul class="text-gray-600 space-y-2">
+                            <li><i class="fas fa-chart-line text-blue-500 mr-2"></i>交易效率提升 40%</li>
+                            <li><i class="fas fa-users text-blue-500 mr-2"></i>客户满意度提升 35%</li>
+                            <li><i class="fas fa-clock text-blue-500 mr-2"></i>订单处理时间缩短 50%</li>
+                            <li><i class="fas fa-shield-alt text-blue-500 mr-2"></i>合规风险降低 90%</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 文档展示 -->
+    <section class="py-16 bg-[#E9E7F5]">
+        <div class="container mx-auto px-6">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-3xl font-bold mb-12 text-center">文档展示</h2>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- PRD 文档 -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+                        <div class="h-40 bg-gradient-to-br from-[#E9E7F5] to-[#BCC6DF] flex items-center justify-center">
+                            <i class="fas fa-file-alt text-5xl text-[#6EA4D2]"></i>
+                        </div>
+                        <div class="p-4 text-center">
+                            <p class="text-gray-700 font-medium">PRD 需求文档</p>
+                        </div>
+                    </div>
+                    <!-- 用户故事 -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+                        <div class="h-40 bg-gradient-to-br from-[#D9E8E3] to-[#9BCCDD] flex items-center justify-center">
+                            <i class="fas fa-sticky-note text-5xl text-[#8B9DC5]"></i>
+                        </div>
+                        <div class="p-4 text-center">
+                            <p class="text-gray-700 font-medium">用户故事</p>
+                        </div>
+                    </div>
+                    <!-- 用户画像 -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+                        <div class="h-40 bg-gradient-to-br from-[#D9E8E3] to-[#D0DDE3] flex items-center justify-center">
+                            <i class="fas fa-user-circle text-5xl text-[#6BBCCF]"></i>
+                        </div>
+                        <div class="p-4 text-center">
+                            <p class="text-gray-700 font-medium">用户画像</p>
+                        </div>
+                    </div>
+                    <!-- 产品定位 -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+                        <div class="h-40 bg-gradient-to-br from-[#F5F0C6] to-[#D9E59B] flex items-center justify-center">
+                            <i class="fas fa-bullseye text-5xl text-[#9BCCDD]"></i>
+                        </div>
+                        <div class="p-4 text-center">
+                            <p class="text-gray-700 font-medium">产品定位</p>
+                        </div>
+                    </div>
+                    <!-- 问题陈述 -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+                        <div class="h-40 bg-gradient-to-br from-[#C2D4E0] to-[#A7BDD5] flex items-center justify-center">
+                            <i class="fas fa-question-circle text-5xl text-[#7388A3]"></i>
+                        </div>
+                        <div class="p-4 text-center">
+                            <p class="text-gray-700 font-medium">问题陈述</p>
+                        </div>
+                    </div>
+                    <!-- 用户旅程地图 -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+                        <div class="h-40 bg-gradient-to-br from-[#D0DDE3] to-[#9BCCDD] flex items-center justify-center">
+                            <i class="fas fa-map-marked-alt text-5xl text-[#6BBCCF]"></i>
+                        </div>
+                        <div class="p-4 text-center">
+                            <p class="text-gray-700 font-medium">用户旅程地图</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI 代码实现 Demo -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold mb-4">AI 代码实现 Demo</h2>
+                    <p class="text-gray-600">基于原型与文档，通过 AI 独立开发的可交互技术 Demo</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Demo 1 -->
+                    <a href="https://b2b-demo.pmzwj.tech" target="_blank" class="bg-[#F9F9F1] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow block">
+                        <div class="h-48 bg-gradient-to-br from-[#6EA4D2] to-[#8B9DC5] flex items-center justify-center">
+                            <i class="fas fa-desktop text-5xl text-white opacity-80"></i>
+                        </div>
+                    </a>
+                    <!-- Demo 2 -->
+                    <a href="https://b2b-demo.pmzwj.tech" target="_blank" class="bg-[#F9F9F1] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow block">
+                        <div class="h-48 bg-gradient-to-br from-[#8B9DC5] to-[#6EA4D2] flex items-center justify-center">
+                            <i class="fas fa-desktop text-5xl text-white opacity-80"></i>
+                        </div>
+                    </a>
+                    <!-- Demo 3 -->
+                    <a href="https://b2b-demo.pmzwj.tech" target="_blank" class="bg-[#F9F9F1] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow block">
+                        <div class="h-48 bg-gradient-to-br from-[#6BBCCF] to-[#9BCCDD] flex items-center justify-center">
+                            <i class="fas fa-desktop text-5xl text-white opacity-80"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 使用工具 -->
+    <section class="py-16 bg-[#F9F9F1]">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold mb-8">关键词</h2>
+                <div class="flex flex-wrap gap-4">
+                    <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Axure</span>
+                    <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Figma</span>
+                    <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Visio</span>
+                    <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Xmind</span>
+                    <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Jira</span>
+                    <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Confluence</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 返回按钮 -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-6 text-center">
+            <a href="../index.html#projects" class="inline-flex items-center bg-gray-900 text-white px-8 py-3 rounded-full font-semibold hover:bg-gray-800 transition">
+                <i class="fas fa-arrow-left mr-2"></i> 返回所有项目
+            </a>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-900 text-gray-400 py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2025 张伟健. 保留所有权利.</p>
+        </div>
+    </footer>
+
+    <script>
+        // 移动端菜单切换
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 轮播功能
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+        
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active');
+                if (i === index) {
+                    slide.classList.add('active');
+                }
+            });
+            dots.forEach((dot, i) => {
+                dot.classList.remove('bg-white');
+                dot.classList.add('bg-white/60');
+                if (i === index) {
+                    dot.classList.remove('bg-white/60');
+                    dot.classList.add('bg-white');
+                }
+            });
+            document.getElementById('current-slide').textContent = index + 1;
+        }
+        
+        function changeSlide(direction) {
+            currentSlide += direction;
+            if (currentSlide < 0) currentSlide = totalSlides - 1;
+            if (currentSlide >= totalSlides) currentSlide = 0;
+            showSlide(currentSlide);
+        }
+        
+        function goToSlide(index) {
+            currentSlide = index;
+            showSlide(currentSlide);
+        }
+        
+        // 初始化第一个指示器
+        if (dots.length > 0) {
+            dots[0].classList.remove('bg-white/60');
+            dots[0].classList.add('bg-white');
+        }
+        
+        // 自动轮播
+        setInterval(() => {
+            changeSlide(1);
+        }, 5000);
+    </script>
+</body>
+</html>
