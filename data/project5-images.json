@@ -1,0 +1,107 @@
+{
+  "project_id": 5,
+  "project_name": "新零售电商解决方案",
+  "last_updated": "2026-03-24",
+  "prototype_images": [
+    {
+      "id": "p5-001",
+      "filename": "登录页.png",
+      "path": "images/projects/project5/登录页.png",
+      "title": "登录页",
+      "subtitle": "新零售平台统一登录入口，支持多端适配",
+      "category": "prototype",
+      "sort_order": 1
+    },
+    {
+      "id": "p5-002",
+      "filename": "订单中心.png",
+      "path": "images/projects/project5/订单中心.png",
+      "title": "订单中心",
+      "subtitle": "全渠道订单统一管理，实时同步线上线下订单",
+      "category": "prototype",
+      "sort_order": 2
+    },
+    {
+      "id": "p5-003",
+      "filename": "商品类型.png",
+      "path": "images/projects/project5/商品类型.png",
+      "title": "商品类型",
+      "subtitle": "多维度商品分类管理，支持属性扩展",
+      "category": "prototype",
+      "sort_order": 3
+    },
+    {
+      "id": "p5-004",
+      "filename": "团购管理.png",
+      "path": "images/projects/project5/团购管理.png",
+      "title": "团购管理",
+      "subtitle": "拼团营销活动配置，提升用户裂变转化",
+      "category": "prototype",
+      "sort_order": 4
+    },
+    {
+      "id": "p5-005",
+      "filename": "会员等级营销.png",
+      "path": "images/projects/project5/会员等级营销.png",
+      "title": "会员等级营销",
+      "subtitle": "会员体系精细化运营，差异化权益配置",
+      "category": "prototype",
+      "sort_order": 5
+    },
+    {
+      "id": "p5-006",
+      "filename": "促销发放设置.png",
+      "path": "images/projects/project5/促销发放设置.png",
+      "title": "促销发放设置",
+      "subtitle": "优惠券和促销活动配置，灵活设置发放规则",
+      "category": "prototype",
+      "sort_order": 6
+    },
+    {
+      "id": "p5-007",
+      "filename": "支付方式设置.png",
+      "path": "images/projects/project5/支付方式设置.png",
+      "title": "支付方式设置",
+      "subtitle": "多渠道支付方式管理，支持线上线下支付",
+      "category": "prototype",
+      "sort_order": 7
+    },
+    {
+      "id": "p5-008",
+      "filename": "配货单据设置.png",
+      "path": "images/projects/project5/配货单据设置.png",
+      "title": "配货单据设置",
+      "subtitle": "仓储配货流程配置，优化订单履约效率",
+      "category": "prototype",
+      "sort_order": 8
+    },
+    {
+      "id": "p5-009",
+      "filename": "橱窗管理.png",
+      "path": "images/projects/project5/橱窗管理.png",
+      "title": "橱窗管理",
+      "subtitle": "店铺橱窗展示配置，提升商品曝光率",
+      "category": "prototype",
+      "sort_order": 9
+    },
+    {
+      "id": "p5-010",
+      "filename": "每周特价.png",
+      "path": "images/projects/project5/每周特价.png",
+      "title": "每周特价",
+      "subtitle": "限时特价活动管理，吸引用户定期访问",
+      "category": "prototype",
+      "sort_order": 10
+    },
+    {
+      "id": "p5-011",
+      "filename": "管理分类.png",
+      "path": "images/projects/project5/管理分类.png",
+      "title": "管理分类",
+      "subtitle": "后台商品分类管理，支持多级分类结构",
+      "category": "prototype",
+      "sort_order": 11
+    }
+  ],
+  "document_images": []
+}

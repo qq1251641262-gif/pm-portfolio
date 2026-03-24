@@ -172,6 +172,7 @@
         </div>
     </div>
     
+    <script src="../js/ai-demos-loader.js"></script>
     <script>
         // 获取URL参数
         function getUrlParam(param) {
@@ -179,20 +180,77 @@
             return urlParams.get(param);
         }
         
-        // 检查项目ID
-        function checkProjectId() {
+        // 加载并显示项目信息
+        async function loadProjectInfo() {
             const projectId = getUrlParam('id');
             const projectInfo = document.getElementById('projectInfo');
             const projectIdSpan = document.getElementById('projectId');
             
             if (projectId) {
-                projectInfo.classList.remove('hidden');
-                projectIdSpan.textContent = projectId;
+                // 加载 AI Demo 数据
+                await aiDemosLoader.loadData();
+                const demo = aiDemosLoader.getDemoByProjectId(projectId);
                 
-                // 项目1236强制显示此页面
-                if (projectId === '1236') {
-                    document.querySelector('h1').textContent = 'Demo暂不可用';
-                    document.querySelector('.text-lg').textContent = '该项目Demo正在重构优化中，敬请期待';
+                if (demo) {
+                    // 更新页面标题
+                    document.title = `${demo.title} - Demo预览`;
+                    
+                    // 更新页面内容
+                    document.querySelector('h1').textContent = demo.title;
+                    document.querySelector('.text-lg').textContent = demo.subtitle || '项目开发中';
+                    
+                    // 更新图标
+                    const iconContainer = document.querySelector('.construction-icon > div');
+                    if (demo.icons && demo.icons.main) {
+                        iconContainer.innerHTML = `<img src="../${demo.icons.main}" alt="${demo.title}" class="w-16 h-16 object-contain">`;
+                    } else {
+                        iconContainer.innerHTML = `<i class="fas ${demo.icon} text-5xl text-white"></i>`;
+                    }
+                    
+                    // 更新渐变背景
+                    iconContainer.className = `w-32 h-32 mx-auto bg-gradient-to-br ${demo.gradient} rounded-full flex items-center justify-center shadow-lg`;
+                    
+                    // 显示项目信息
+                    projectInfo.classList.remove('hidden');
+                    projectIdSpan.textContent = `项目 ${projectId} - ${demo.title}`;
+                    
+                    // 添加功能特性列表
+                    const detailContainer = document.querySelector('.bg-gray-50');
+                    if (demo.features && demo.features.length > 0) {
+                        const featuresHtml = `
+                            <div class="mt-4 pt-4 border-t border-gray-200">
+                                <h3 class="font-semibold mb-2" style="color: var(--text-primary);">
+                                    <i class="fas fa-list-check text-[#6EA4D2] mr-2"></i>功能特性
+                                </h3>
+                                <div class="flex flex-wrap gap-2">
+                                    ${demo.features.map(feature => 
+                                        `<span class="text-xs px-2 py-1 bg-white border border-gray-200 rounded text-gray-600">${feature}</span>`
+                                    ).join('')}
+                                </div>
+                            </div>
+                        `;
+                        detailContainer.insertAdjacentHTML('beforeend', featuresHtml);
+                    }
+                    
+                    // 添加技术栈
+                    if (demo.technologies && demo.technologies.length > 0) {
+                        const techHtml = `
+                            <div class="mt-4">
+                                <h3 class="font-semibold mb-2" style="color: var(--text-primary);">
+                                    <i class="fas fa-code text-[#6BBCCF] mr-2"></i>技术栈
+                                </h3>
+                                <div class="flex flex-wrap gap-2">
+                                    ${demo.technologies.map(tech => 
+                                        `<span class="text-xs px-2 py-1 bg-[#6EA4D2] text-white rounded">${tech}</span>`
+                                    ).join('')}
+                                </div>
+                            </div>
+                        `;
+                        detailContainer.insertAdjacentHTML('beforeend', techHtml);
+                    }
+                } else {
+                    projectInfo.classList.remove('hidden');
+                    projectIdSpan.textContent = projectId;
                 }
             }
         }
@@ -216,10 +274,10 @@
         }
         
         // 页面加载完成后执行
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             // 先检查是否应该显示此页面
             if (shouldShowPlaceholder()) {
-                checkProjectId();
+                await loadProjectInfo();
             }
         });
         

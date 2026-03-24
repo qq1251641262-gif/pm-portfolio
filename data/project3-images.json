@@ -1,0 +1,17 @@
+{
+  "project_id": 3,
+  "project_name": "BI 数据可视化平台",
+  "last_updated": "2026-03-24",
+  "prototype_images": [
+    {
+      "id": "p3-001",
+      "filename": "页面结构图.PNG",
+      "path": "images/projects/project3/页面结构图.PNG",
+      "title": "页面结构图",
+      "subtitle": "BI平台整体架构设计，展示数据流转和模块关系",
+      "category": "prototype",
+      "sort_order": 1
+    }
+  ],
+  "document_images": []
+}

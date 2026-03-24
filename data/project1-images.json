@@ -1,0 +1,80 @@
+{
+  "project_id": 1,
+  "project_name": "B2B 电商平台（产品化方案）",
+  "last_updated": "2026-03-24",
+  "prototype_images": [
+    {
+      "id": "p1-001",
+      "filename": "product-center.jpg",
+      "path": "images/projects/project1/prototype/product-center.jpg",
+      "title": "产品中心",
+      "subtitle": "展示化工产品分类与搜索功能，支持多维度筛选和快速定位",
+      "category": "prototype",
+      "sort_order": 1
+    },
+    {
+      "id": "p1-002",
+      "filename": "trading-center.jpg",
+      "path": "images/projects/project1/prototype/trading-center.jpg",
+      "title": "交易中心",
+      "subtitle": "竞价交易与订单管理界面，实现B2B交易全流程数字化",
+      "category": "prototype",
+      "sort_order": 2
+    },
+    {
+      "id": "p1-003",
+      "filename": "flash-sale.jpg",
+      "path": "images/projects/project1/prototype/flash-sale.jpg",
+      "title": "闪购专区",
+      "subtitle": "限时抢购活动页面，提升用户参与度和交易转化率",
+      "category": "prototype",
+      "sort_order": 3
+    },
+    {
+      "id": "p1-004",
+      "filename": "shopping-cart.jpg",
+      "path": "images/projects/project1/prototype/shopping-cart.jpg",
+      "title": "购物车",
+      "subtitle": "多供应商结算与价格计算，支持批量操作和智能比价",
+      "category": "prototype",
+      "sort_order": 4
+    },
+    {
+      "id": "p1-005",
+      "filename": "功能授权.png",
+      "path": "images/projects/project1/prototype/功能授权.png",
+      "title": "功能授权",
+      "subtitle": "细粒度权限控制模块，支持角色自定义和功能分配",
+      "category": "prototype",
+      "sort_order": 5
+    },
+    {
+      "id": "p1-006",
+      "filename": "发货单管理.png",
+      "path": "images/projects/project1/prototype/发货单管理.png",
+      "title": "发货单管理",
+      "subtitle": "物流发货全流程管理，实时跟踪订单配送状态",
+      "category": "prototype",
+      "sort_order": 6
+    },
+    {
+      "id": "p1-007",
+      "filename": "订单列表.png",
+      "path": "images/projects/project1/prototype/订单列表.png",
+      "title": "订单列表",
+      "subtitle": "订单全生命周期管理，支持批量处理和状态追踪",
+      "category": "prototype",
+      "sort_order": 7
+    },
+    {
+      "id": "p1-008",
+      "filename": "部门管理.png",
+      "path": "images/projects/project1/prototype/部门管理.png",
+      "title": "部门管理",
+      "subtitle": "组织架构管理模块，灵活配置企业部门和岗位",
+      "category": "prototype",
+      "sort_order": 8
+    }
+  ],
+  "document_images": []
+}

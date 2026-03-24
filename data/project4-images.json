@@ -1,0 +1,80 @@
+{
+  "project_id": 4,
+  "project_name": "企业级客户管理（CRM）系统",
+  "last_updated": "2026-03-24",
+  "prototype_images": [
+    {
+      "id": "p4-001",
+      "filename": "首页.png",
+      "path": "images/projects/project4/首页.png",
+      "title": "系统首页",
+      "subtitle": "CRM系统仪表盘，汇总客户数据和业务指标",
+      "category": "prototype",
+      "sort_order": 1
+    },
+    {
+      "id": "p4-002",
+      "filename": "客户池.png",
+      "path": "images/projects/project4/客户池.png",
+      "title": "客户池",
+      "subtitle": "客户资源统一管理，支持智能分配和跟进",
+      "category": "prototype",
+      "sort_order": 2
+    },
+    {
+      "id": "p4-003",
+      "filename": "合同列表.png",
+      "path": "images/projects/project4/合同列表.png",
+      "title": "合同列表",
+      "subtitle": "合同全生命周期管理，自动提醒和到期预警",
+      "category": "prototype",
+      "sort_order": 3
+    },
+    {
+      "id": "p4-004",
+      "filename": "流程管理.png",
+      "path": "images/projects/project4/流程管理.png",
+      "title": "流程管理",
+      "subtitle": "业务流程可视化配置，支持自定义审批流",
+      "category": "prototype",
+      "sort_order": 4
+    },
+    {
+      "id": "p4-005",
+      "filename": "人事管理.png",
+      "path": "images/projects/project4/人事管理.png",
+      "title": "人事管理",
+      "subtitle": "员工信息和组织架构管理，支持权限分级",
+      "category": "prototype",
+      "sort_order": 5
+    },
+    {
+      "id": "p4-006",
+      "filename": "系统管理.png",
+      "path": "images/projects/project4/系统管理.png",
+      "title": "系统管理",
+      "subtitle": "系统配置和参数管理，保障平台稳定运行",
+      "category": "prototype",
+      "sort_order": 6
+    },
+    {
+      "id": "p4-007",
+      "filename": "第三方管理.png",
+      "path": "images/projects/project4/第三方管理.png",
+      "title": "第三方管理",
+      "subtitle": "外部系统集成和接口管理，扩展业务生态",
+      "category": "prototype",
+      "sort_order": 7
+    },
+    {
+      "id": "p4-008",
+      "filename": "高级管理.png",
+      "path": "images/projects/project4/高级管理.png",
+      "title": "高级管理",
+      "subtitle": "高级功能和系统设置，满足复杂业务需求",
+      "category": "prototype",
+      "sort_order": 8
+    }
+  ],
+  "document_images": []
+}

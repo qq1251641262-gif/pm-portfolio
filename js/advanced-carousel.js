@@ -40,6 +40,9 @@ class AdvancedCarousel {
     render() {
         const { images } = this.config;
         
+        // 预加载前 3 张图片
+        this.preloadImages(images.slice(0, 3));
+        
         this.container.innerHTML = `
             <div class="carousel-wrapper">
                 <!-- 左侧主图区域 -->
@@ -48,10 +51,12 @@ class AdvancedCarousel {
                         ${images.map((img, index) => `
                             <div class="carousel-main-item ${index === 0 ? 'active' : ''}" data-index="${index}">
                                 <div class="image-wrapper">
-                                    <img src="${img.src}" alt="${img.alt || ''}" loading="${index === 0 ? 'eager' : 'lazy'}" 
+                                    <img src="${img.src}" alt="${img.alt || ''}" 
+                                         loading="${index === 0 ? 'eager'" : 'lazy'}" 
+                                         fetchpriority="${index === 0 ? 'high' : 'low'}"
                                          class="carousel-image ${index === 0 ? 'loaded' : ''}"
-                                         onload="this.classList.add('loaded')"
-                                         onerror="this.classList.add('error')">
+                                         onload="this.classList.add('loaded'); this.nextElementSibling?.remove()"
+                                         onerror="this.classList.add('error'); this.nextElementSibling?.remove()">
                                     ${img.title ? `
                                         <div class="image-overlay">
                                             <div class="image-info">
@@ -84,7 +89,7 @@ class AdvancedCarousel {
                                  tabindex="0"
                                  role="button"
                                  aria-label="View image ${index + 1}">
-                                <img src="${img.src}" alt="${img.alt || ''}" loading="lazy">
+                                <img src="${img.src}" alt="${img.alt || ''}" loading="lazy" class="thumbnail-image">
                                 <div class="thumbnail-overlay"></div>
                             </div>
                         `).join('')}
@@ -95,6 +100,31 @@ class AdvancedCarousel {
 
         // 添加样式
         this.addStyles();
+        
+        // 预加载下一张图片
+        setTimeout(() => this.preloadNextImage(), 1000);
+    }
+
+    preloadImages(imageList) {
+        imageList.forEach(img => {
+            const image = new Image();
+            image.src = img.src;
+        });
+    }
+
+    preloadNextImage() {
+        const nextIndex = (this.currentIndex + 1) % this.config.images.length;
+        const nextImage = this.config.images[nextIndex];
+        const image = new Image();
+        image.src = nextImage.src;
+        
+        // 预加载缩略图
+        const thumbnailImages = this.container.querySelectorAll('.thumbnail-image');
+        thumbnailImages.forEach((thumb, index) => {
+            if (index <= this.currentIndex + 2 && !thumb.src) {
+                thumb.src = this.config.images[index].src;
+            }
+        });
     }
 
     addStyles() {
@@ -172,7 +202,24 @@ class AdvancedCarousel {
                 left: 50%;
                 transform: translate(-50%, -50%);
                 color: #666;
-                font-size: 16px;
+                font-size: 14px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .image-loading::after {
+                content: '';
+                width: 20px;
+                height: 20px;
+                border: 2px solid #e0e0e0;
+                border-top-color: #6EA4D2;
+                border-radius: 50%;
+                animation: spin 0.8s linear infinite;
+            }
+
+            @keyframes spin {
+                to { transform: rotate(360deg); }
             }
 
             .image-overlay {
@@ -243,8 +290,8 @@ class AdvancedCarousel {
             }
 
             .thumbnails-track {
-                display: flex;
-                flex-direction: column;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
                 gap: 12px;
             }
 
@@ -265,6 +312,18 @@ class AdvancedCarousel {
                 height: 100%;
                 object-fit: cover;
                 transition: transform 0.3s ease;
+                background: #e0e0e0;
+            }
+
+            .thumbnail-item img:not([src]) {
+                background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+                background-size: 200% 100%;
+                animation: loading 1.5s infinite;
+            }
+
+            @keyframes loading {
+                0% { background-position: 200% 0; }
+                100% { background-position: -200% 0; }
             }
 
             .thumbnail-item:hover img {
@@ -312,8 +371,15 @@ class AdvancedCarousel {
                 }
 
                 .thumbnails-track {
+                    grid-template-columns: repeat(4, 1fr);
                     flex-direction: row;
                     padding-bottom: 10px;
+                    min-width: max-content;
+                }
+
+                .thumbnail-item {
+                    width: 100px;
+                    flex: 0 0 100px;
                 }
 
                 .thumbnail-item {

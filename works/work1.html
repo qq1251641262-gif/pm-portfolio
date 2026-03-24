@@ -36,7 +36,225 @@
             width: 100%;
         }
     </style>
-    <script src="../js/advanced-carousel.js"></script>
+    <script>
+        // 高级轮播图组件 - 内联版本
+        console.log('加载内联轮播图组件...');
+        
+        class AdvancedCarousel {
+                constructor(container, options = {}) {
+                    this.container = typeof container === 'string' ? document.querySelector(container) : container;
+                    if (!this.container) {
+                        console.error('Carousel container not found');
+                        return;
+                    }
+                    this.config = {
+                        images: options.images || [],
+                        autoPlay: options.autoPlay !== false,
+                        autoPlayInterval: options.autoPlayInterval || 5000,
+                        transitionDuration: options.transitionDuration || 500,
+                        thumbnailsVisible: options.thumbnailsVisible || 4,
+                        ...options
+                    };
+                    this.currentIndex = 0;
+                    this.isPlaying = true;
+                    this.touchStartX = 0;
+                    this.touchEndX = 0;
+                    this.init();
+                }
+
+                init() {
+                    this.render();
+                    this.bindEvents();
+                    this.startAutoPlay();
+                }
+
+                render() {
+                    const { images } = this.config;
+                    this.preloadImages(images.slice(0, 3));
+                    this.container.innerHTML = `
+                        <div class="carousel-wrapper">
+                            <div class="carousel-main">
+                                <div class="carousel-main-inner">
+                                    ${images.map((img, index) => `
+                                        <div class="carousel-main-item ${index === 0 ? 'active' : ''}" data-index="${index}">
+                                            <div class="image-wrapper">
+                                                <img src="${img.src}" alt="${img.alt || ''}" 
+                                                     loading="${index === 0 ? 'eager' : 'lazy'}" 
+                                                     fetchpriority="${index === 0 ? 'high' : 'low'}"
+                                                     class="carousel-image ${index === 0 ? 'loaded' : ''}"
+                                                     onload="this.classList.add('loaded'); this.nextElementSibling?.remove()"
+                                                     onerror="this.classList.add('error'); this.nextElementSibling?.remove()">
+                                                ${img.title ? `
+                                                    <div class="image-overlay">
+                                                        <div class="image-info">
+                                                            <h3 class="image-title">${img.title}</h3>
+                                                            <p class="image-desc">${img.description || ''}</p>
+                                                        </div>
+                                                    </div>
+                                                ` : ''}
+                                                ${index === 0 ? '<div class="image-loading">加载中...</div>' : ''}
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <button class="carousel-arrow carousel-arrow-prev" aria-label="Previous">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="carousel-arrow carousel-arrow-next" aria-label="Next">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                            <div class="carousel-thumbnails">
+                                <div class="thumbnails-track">
+                                    ${images.map((img, index) => `
+                                        <div class="thumbnail-item ${index === 0 ? 'active' : ''}" 
+                                             data-index="${index}" 
+                                             tabindex="0"
+                                             role="button"
+                                             aria-label="View image ${index + 1}">
+                                            <img src="${img.src}" alt="${img.alt || ''}" loading="lazy" class="thumbnail-image">
+                                            <div class="thumbnail-overlay"></div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    this.addStyles();
+                    setTimeout(() => this.preloadNextImage(), 1000);
+                }
+
+                preloadImages(imageList) {
+                    imageList.forEach(img => {
+                        const image = new Image();
+                        image.src = img.src;
+                    });
+                }
+
+                preloadNextImage() {
+                    const nextIndex = (this.currentIndex + 1) % this.config.images.length;
+                    const image = new Image();
+                    image.src = this.config.images[nextIndex].src;
+                }
+
+                addStyles() {
+                    const styleId = 'carousel-styles';
+                    if (document.getElementById(styleId)) return;
+                    const styles = document.createElement('style');
+                    styles.id = styleId;
+                    styles.textContent = `
+                        .carousel-wrapper { display: flex; gap: 20px; height: 600px; position: relative; }
+                        .carousel-main { flex: 0 0 70%; position: relative; overflow: hidden; border-radius: 12px; background: #f5f5f5; }
+                        .carousel-main-inner { position: relative; height: 100%; }
+                        .carousel-main-item { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; visibility: hidden; transition: opacity ${this.config.transitionDuration}ms ease, visibility ${this.config.transitionDuration}ms ease; }
+                        .carousel-main-item.active { opacity: 1; visibility: visible; z-index: 1; }
+                        .image-wrapper { position: relative; width: 100%; height: 100%; overflow: hidden; }
+                        .carousel-image { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.3s ease; }
+                        .carousel-image.loaded { opacity: 1; }
+                        .carousel-image.error { display: none; }
+                        .image-loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #666; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+                        .image-loading::after { content: ''; width: 20px; height: 20px; border: 2px solid #e0e0e0; border-top-color: #6EA4D2; border-radius: 50%; animation: spin 0.8s linear infinite; }
+                        @keyframes spin { to { transform: rotate(360deg); } }
+                        .image-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%); padding: 40px 30px 30px; color: white; }
+                        .image-title { font-size: 28px; font-weight: bold; margin-bottom: 8px; }
+                        .image-desc { font-size: 16px; opacity: 0.9; }
+                        .carousel-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; background: rgba(255, 255, 255, 0.9); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; z-index: 10; backdrop-filter: blur(10px); }
+                        .carousel-arrow:hover { background: white; transform: translateY(-50%) scale(1.1); }
+                        .carousel-arrow-prev { left: 20px; }
+                        .carousel-arrow-next { right: 20px; }
+                        .carousel-arrow i { color: #333; font-size: 18px; }
+                        .carousel-thumbnails { flex: 0 0 30%; overflow-y: auto; border-radius: 12px; background: #f9f9f9; padding: 15px; }
+                        .thumbnails-track { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+                        .thumbnail-item { position: relative; width: 100%; aspect-ratio: 16/9; border-radius: 8px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent; outline: none; }
+                        .thumbnail-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; background: #e0e0e0; }
+                        .thumbnail-item:hover img { transform: scale(1.05); }
+                        .thumbnail-item.active { border-color: #6EA4D2; box-shadow: 0 4px 12px rgba(110, 164, 210, 0.4); }
+                        .thumbnail-item.active img { transform: scale(1.02); }
+                        .thumbnail-overlay { position: absolute; inset: 0; background: rgba(110, 164, 210, 0); transition: background 0.3s ease; }
+                        .thumbnail-item.active .thumbnail-overlay { background: rgba(110, 164, 210, 0.1); }
+                        @media (max-width: 768px) { .carousel-wrapper { flex-direction: column; height: auto; } .carousel-main { flex: none; width: 100%; height: 400px; } .carousel-thumbnails { flex: none; width: 100%; overflow-x: auto; overflow-y: hidden; } .thumbnails-track { grid-template-columns: repeat(4, 1fr); } .thumbnail-item { width: 100px; flex: 0 0 100px; } }
+                        .carousel-thumbnails::-webkit-scrollbar { width: 6px; }
+                        .carousel-thumbnails::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
+                        .carousel-thumbnails::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+                        .carousel-thumbnails::-webkit-scrollbar-thumb:hover { background: #a1a1a1; }
+                        @media (max-width: 768px) { .carousel-thumbnails::-webkit-scrollbar { height: 6px; width: auto; } }
+                    `;
+                    document.head.appendChild(styles);
+                }
+
+                bindEvents() {
+                    this.container.querySelectorAll('.thumbnail-item').forEach(item => {
+                        item.addEventListener('click', () => {
+                            const index = parseInt(item.dataset.index);
+                            this.goToSlide(index);
+                        });
+                    });
+                    const prevBtn = this.container.querySelector('.carousel-arrow-prev');
+                    const nextBtn = this.container.querySelector('.carousel-arrow-next');
+                    prevBtn?.addEventListener('click', () => this.prev());
+                    nextBtn?.addEventListener('click', () => this.next());
+                    this.container.querySelector('.carousel-main').addEventListener('touchstart', (e) => {
+                        this.touchStartX = e.touches[0].clientX;
+                        this.stopAutoPlay();
+                    });
+                    this.container.querySelector('.carousel-main').addEventListener('touchend', () => {
+                        const diff = this.touchStartX - this.touchEndX;
+                        if (Math.abs(diff) > 50) {
+                            if (diff > 0) this.next();
+                            else this.prev();
+                        }
+                        this.startAutoPlay();
+                    });
+                    this.container.addEventListener('mouseenter', () => this.stopAutoPlay());
+                    this.container.addEventListener('mouseleave', () => this.startAutoPlay());
+                }
+
+                goToSlide(index) {
+                    if (index === this.currentIndex) return;
+                    const mainItems = this.container.querySelectorAll('.carousel-main-item');
+                    const thumbnailItems = this.container.querySelectorAll('.thumbnail-item');
+                    mainItems[this.currentIndex]?.classList.remove('active');
+                    mainItems[index]?.classList.add('active');
+                    thumbnailItems[this.currentIndex]?.classList.remove('active');
+                    thumbnailItems[index]?.classList.add('active');
+                    this.currentIndex = index;
+                    this.updateThumbnailsScroll();
+                }
+
+                prev() {
+                    const newIndex = (this.currentIndex - 1 + this.config.images.length) % this.config.images.length;
+                    this.goToSlide(newIndex);
+                }
+
+                next() {
+                    const newIndex = (this.currentIndex + 1) % this.config.images.length;
+                    this.goToSlide(newIndex);
+                }
+
+                updateThumbnailsScroll() {
+                    const thumbnailsContainer = this.container.querySelector('.carousel-thumbnails');
+                    const activeThumbnail = this.container.querySelector('.thumbnail-item.active');
+                    if (activeThumbnail && thumbnailsContainer) {
+                        const containerRect = thumbnailsContainer.getBoundingClientRect();
+                        const itemRect = activeThumbnail.getBoundingClientRect();
+                        if (itemRect.top < containerRect.top || itemRect.bottom > containerRect.bottom) {
+                            thumbnailsContainer.scrollTop = activeThumbnail.offsetTop - thumbnailsContainer.offsetHeight / 2 + activeThumbnail.offsetHeight / 2;
+                        }
+                    }
+                }
+
+                startAutoPlay() {
+                    if (!this.config.autoPlay || this.intervalId) return;
+                    this.intervalId = setInterval(() => this.next(), this.config.autoPlayInterval);
+                }
+
+                stopAutoPlay() {
+                    if (!this.intervalId) return;
+                    clearInterval(this.intervalId);
+                    this.intervalId = null;
+                }
+            }
+    </script>
 </head>
 <body class="bg-[#F9F9F1] text-gray-800">
     <!-- 导航栏 -->
@@ -93,7 +311,7 @@
     <!-- 项目图片轮播 -->
     <section class="py-8 bg-white">
         <div class="container mx-auto px-4 md:px-6">
-            <div id="project-carousel" class="carousel-container"></div>
+            <div id="project-carousel" class="carousel-container" style="min-height: 600px;"></div>
         </div>
     </section>
 
@@ -152,6 +370,17 @@
                             <li><i class="fas fa-shield-alt text-blue-500 mr-2"></i>合规风险降低</li>
                         </ul>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 原型展示 -->
+    <section class="py-16 bg-[#F9F9F1]">
+        <div class="container mx-auto px-6">
+            <div class="max-w-6xl mx-auto">
+                <div id="prototype-gallery-container">
+                    <!-- 原型展示内容将通过JS动态生成 -->
                 </div>
             </div>
         </div>
@@ -222,50 +451,23 @@
         </div>
     </section>
 
-    <!-- AI 代码实现 Demo -->
-    <section class="py-16 bg-white">
-        <div class="container mx-auto px-6">
-            <div class="max-w-6xl mx-auto">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl font-bold mb-4">AI 代码实现 Demo</h2>
-                    <p class="text-gray-600">基于原型与文档，通过 AI 独立开发的可交互技术 Demo</p>
-                </div>
-                <div class="grid md:grid-cols-3 gap-8">
-                    <!-- Demo 1 -->
-                    <a href="demo-placeholder.html?id=1" target="_blank" class="bg-[#F9F9F1] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow block">
-                        <div class="h-48 bg-gradient-to-br from-[#6EA4D2] to-[#8B9DC5] flex items-center justify-center">
-                            <i class="fas fa-desktop text-5xl text-white opacity-80"></i>
-                        </div>
-                    </a>
-                    <!-- Demo 2 -->
-                    <a href="demo-placeholder.html?id=1" target="_blank" class="bg-[#F9F9F1] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow block">
-                        <div class="h-48 bg-gradient-to-br from-[#8B9DC5] to-[#6EA4D2] flex items-center justify-center">
-                            <i class="fas fa-desktop text-5xl text-white opacity-80"></i>
-                        </div>
-                    </a>
-                    <!-- Demo 3 -->
-                    <a href="demo-placeholder.html?id=1" target="_blank" class="bg-[#F9F9F1] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow block">
-                        <div class="h-48 bg-gradient-to-br from-[#6BBCCF] to-[#9BCCDD] flex items-center justify-center">
-                            <i class="fas fa-desktop text-5xl text-white opacity-80"></i>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- AI Demo 模块已隐藏 -->
 
     <!-- 使用工具 -->
     <section class="py-16 bg-[#F9F9F1]">
         <div class="container mx-auto px-6">
             <div class="max-w-4xl mx-auto">
-                <h2 class="text-3xl font-bold mb-8">关键词</h2>
+                <h2 class="text-3xl font-bold mb-8">工具</h2>
                 <div class="flex flex-wrap gap-4">
                     <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Axure</span>
-                    <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Figma</span>
+                    <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Sketch</span>
                     <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Visio</span>
                     <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Xmind</span>
+                    <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">飞书</span>
                     <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Jira</span>
-                    <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Confluence</span>
+                    <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Office</span>
+                    <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Trae</span>
+                    <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">NotebookLM</span>
                 </div>
             </div>
         </div>
@@ -291,7 +493,7 @@
         // 移动端菜单切换
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
-        
+
         mobileMenuBtn.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
         });
@@ -337,103 +539,276 @@
         
         // 初始化高级轮播组件
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM 已加载，开始初始化轮播图...');
+            console.log('AdvancedCarousel 是否存在:', typeof AdvancedCarousel);
+            
+            const carouselContainer = document.getElementById('project-carousel');
+            console.log('轮播容器:', carouselContainer);
+            
+            // 轮播图片数据 - 从原型文件夹和文档图片文件夹聚合
             const carouselImages = [
-                {
-                    src: '../images/projects/project1/prototype/product-center.jpg',
-                    alt: '产品中心',
-                    title: '产品中心',
-                    description: '展示化工产品分类与搜索功能'
-                },
-                {
-                    src: '../images/projects/project1/prototype/trading-center.jpg',
-                    alt: '交易中心',
-                    title: '交易中心',
-                    description: '竞价交易与订单管理界面'
-                },
-                {
-                    src: '../images/projects/project1/prototype/flash-sale.jpg',
-                    alt: '闪购专区',
-                    title: '闪购专区',
-                    description: '限时抢购活动页面'
-                },
-                {
-                    src: '../images/projects/project1/prototype/shopping-cart.jpg',
-                    alt: '购物车',
-                    title: '购物车',
-                    description: '多供应商结算与价格计算'
-                },
-                {
-                    src: '../images/projects/project1/prototype/功能授权.png',
-                    alt: '功能授权',
-                    title: '功能授权',
-                    description: '系统功能权限配置管理'
-                },
-                {
-                    src: '../images/projects/project1/prototype/发货单管理.png',
-                    alt: '发货单管理',
-                    title: '发货单管理',
-                    description: '订单发货与物流追踪'
-                },
-                {
-                    src: '../images/projects/project1/prototype/待我审批.png',
-                    alt: '待我审批',
-                    title: '待我审批',
-                    description: '审批流程与待办事项'
-                },
-                {
-                    src: '../images/projects/project1/prototype/数据授权.png',
-                    alt: '数据授权',
-                    title: '数据授权',
-                    description: '数据访问权限配置'
-                },
-                {
-                    src: '../images/projects/project1/prototype/新增 spu.png',
-                    alt: '新增 SPU',
-                    title: '新增 SPU',
-                    description: '产品标准化单元管理'
-                },
-                {
-                    src: '../images/projects/project1/prototype/新增交易资源.png',
-                    alt: '新增交易资源',
-                    title: '新增交易资源',
-                    description: '交易资源配置管理'
-                },
-                {
-                    src: '../images/projects/project1/prototype/新增优惠.png',
-                    alt: '新增优惠',
-                    title: '新增优惠',
-                    description: '营销活动与优惠策略'
-                },
-                {
-                    src: '../images/projects/project1/prototype/订单列表.png',
-                    alt: '订单列表',
-                    title: '订单列表',
-                    description: '全渠道订单统一管理'
-                },
-                {
-                    src: '../images/projects/project1/prototype/部门管理.png',
-                    alt: '部门管理',
-                    title: '部门管理',
-                    description: '组织架构与部门配置'
-                },
-                {
-                    src: '../images/projects/project1/prototype/销售组织扩展.png',
-                    alt: '销售组织扩展',
-                    title: '销售组织扩展',
-                    description: '销售团队与区域管理'
-                }
-            ];
+                    {
+                        src: '../images/projects/project1/prototype/product-center.jpg',
+                        alt: '产品中心',
+                        title: '产品中心',
+                        description: '展示化工产品分类与搜索功能，支持多维度筛选和快速定位'
+                    },
+                    {
+                        src: '../images/projects/project1/prototype/trading-center.jpg',
+                        alt: '交易中心',
+                        title: '交易中心',
+                        description: '竞价交易与订单管理界面，实现B2B交易全流程数字化'
+                    },
+                    {
+                        src: '../images/projects/project1/prototype/flash-sale.jpg',
+                        alt: '闪购专区',
+                        title: '闪购专区',
+                        description: '限时抢购活动页面，提升用户参与度和交易转化率'
+                    },
+                    {
+                        src: '../images/projects/project1/prototype/shopping-cart.jpg',
+                        alt: '购物车',
+                        title: '购物车',
+                        description: '多供应商结算与价格计算，支持批量操作和智能比价'
+                    },
+                    {
+                        src: '../images/projects/project1/prototype/功能授权.png',
+                        alt: '功能授权',
+                        title: '功能授权',
+                        description: '细粒度权限控制模块，支持角色自定义和功能分配'
+                    },
+                    {
+                        src: '../images/projects/project1/prototype/发货单管理.png',
+                        alt: '发货单管理',
+                        title: '发货单管理',
+                        description: '物流发货全流程管理，实时跟踪订单配送状态'
+                    },
+                    {
+                        src: '../images/projects/project1/prototype/订单列表.png',
+                        alt: '订单列表',
+                        title: '订单列表',
+                        description: '订单全生命周期管理，支持批量处理和状态追踪'
+                    },
+                    {
+                        src: '../images/projects/project1/prototype/部门管理.png',
+                        alt: '部门管理',
+                        title: '部门管理',
+                        description: '组织架构管理模块，灵活配置企业部门和岗位'
+                    }
+                ];
+            
+            console.log('轮播图图片数量:', carouselImages.length);
+            if (carouselImages.length > 0) {
+                console.log('第一张图片路径:', carouselImages[0].src);
+            }
             
             // 初始化轮播组件
-            if (typeof AdvancedCarousel !== 'undefined') {
-                new AdvancedCarousel('#project-carousel', {
+            if (typeof AdvancedCarousel !== 'undefined' && carouselImages.length > 0) {
+                console.log('开始初始化 AdvancedCarousel...');
+                const carousel = new AdvancedCarousel('#project-carousel', {
                     images: carouselImages,
                     autoPlay: true,
                     autoPlayInterval: 5000,
                     transitionDuration: 500,
                     thumbnailsVisible: 4
                 });
+                console.log('轮播图初始化完成:', carousel);
+            } else {
+                console.error('AdvancedCarousel 组件未加载或没有图片数据！');
+                // 显示占位符
+                carouselContainer.innerHTML = '<div class="flex items-center justify-center h-96 bg-gray-100 rounded-lg"><p class="text-gray-500">暂无轮播图片</p></div>';
             }
+        });
+    </script>
+    
+    <!-- 原型展示模块 - 内联实现 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('开始初始化原型展示模块...');
+            
+            // 项目1的原型图片数据（硬编码，避免异步加载问题）
+            const prototypeImages = [
+                {
+                    id: 'p1-001',
+                    filename: 'product-center.jpg',
+                    path: '../images/projects/project1/prototype/product-center.jpg',
+                    title: '产品中心',
+                    subtitle: '展示化工产品分类与搜索功能，支持多维度筛选和快速定位'
+                },
+                {
+                    id: 'p1-002',
+                    filename: 'trading-center.jpg',
+                    path: '../images/projects/project1/prototype/trading-center.jpg',
+                    title: '交易中心',
+                    subtitle: '竞价交易与订单管理界面，实现B2B交易全流程数字化'
+                },
+                {
+                    id: 'p1-003',
+                    filename: 'flash-sale.jpg',
+                    path: '../images/projects/project1/prototype/flash-sale.jpg',
+                    title: '闪购专区',
+                    subtitle: '限时抢购活动页面，提升用户参与度和交易转化率'
+                },
+                {
+                    id: 'p1-004',
+                    filename: 'shopping-cart.jpg',
+                    path: '../images/projects/project1/prototype/shopping-cart.jpg',
+                    title: '购物车',
+                    subtitle: '多供应商结算与价格计算，支持批量操作和智能比价'
+                },
+                {
+                    id: 'p1-005',
+                    filename: '功能授权.png',
+                    path: '../images/projects/project1/prototype/功能授权.png',
+                    title: '功能授权',
+                    subtitle: '细粒度权限控制模块，支持角色自定义和功能分配'
+                },
+                {
+                    id: 'p1-006',
+                    filename: '发货单管理.png',
+                    path: '../images/projects/project1/prototype/发货单管理.png',
+                    title: '发货单管理',
+                    subtitle: '物流发货全流程管理，实时跟踪订单配送状态'
+                },
+                {
+                    id: 'p1-007',
+                    filename: '订单列表.png',
+                    path: '../images/projects/project1/prototype/订单列表.png',
+                    title: '订单列表',
+                    subtitle: '订单全生命周期管理，支持批量处理和状态追踪'
+                },
+                {
+                    id: 'p1-008',
+                    filename: '部门管理.png',
+                    path: '../images/projects/project1/prototype/部门管理.png',
+                    title: '部门管理',
+                    subtitle: '组织架构管理模块，灵活配置企业部门和岗位'
+                }
+            ];
+            
+            console.log('原型图片数据:', prototypeImages);
+            
+            // 如果没有图片，隐藏模块
+            if (prototypeImages.length === 0) {
+                document.getElementById('prototype-gallery-container').style.display = 'none';
+                console.log('没有原型图片，隐藏模块');
+                return;
+            }
+            
+            // 配置
+            const imagesPerPage = 4;
+            const imageHeight = 200;
+            const gap = 16;
+            let currentPage = 0;
+            const totalPages = Math.ceil(prototypeImages.length / imagesPerPage);
+            
+            // 渲染原型展示模块
+            function renderPrototypeGallery() {
+                const container = document.getElementById('prototype-gallery-container');
+                
+                const galleryHtml = `
+                    <div class="prototype-gallery bg-white rounded-2xl p-6 shadow-sm">
+                        <!-- 标题和控制区 -->
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-800">原型展示</h2>
+                                <p class="text-sm text-gray-500 mt-1">项目界面原型与功能模块展示</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-sm text-gray-500">${prototypeImages.length} 个原型</span>
+                                <div class="flex gap-2">
+                                    <button id="proto-prev-btn" class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors" aria-label="上一页">
+                                        <i class="fas fa-chevron-left text-gray-600"></i>
+                                    </button>
+                                    <button id="proto-next-btn" class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors" aria-label="下一页">
+                                        <i class="fas fa-chevron-right text-gray-600"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 图片网格 -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4" style="min-height: ${imageHeight}px;">
+                            ${prototypeImages.map((img, index) => `
+                                <div class="gallery-item group relative rounded-xl overflow-hidden cursor-pointer bg-gray-100" 
+                                     data-index="${index}" 
+                                     style="height: ${imageHeight}px; display: ${index < imagesPerPage ? 'block' : 'none'};">
+                                    <img src="${img.path}" 
+                                         alt="${img.title}" 
+                                         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                         loading="lazy">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <div class="absolute bottom-0 left-0 right-0 p-4">
+                                            <h3 class="text-white font-semibold text-sm truncate">${img.title}</h3>
+                                            <p class="text-white/80 text-xs mt-1 line-clamp-2">${img.subtitle}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <!-- 分页指示器 -->
+                        ${totalPages > 1 ? `
+                            <div class="flex justify-center mt-6 gap-2">
+                                ${Array(totalPages).fill(0).map((_, i) => `
+                                    <button class="gallery-dot w-2 h-2 rounded-full transition-colors ${i === 0 ? 'bg-blue-500' : 'bg-gray-300'}" data-page="${i}" aria-label="第${i + 1}页"></button>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                container.innerHTML = galleryHtml;
+                
+                // 绑定事件
+                document.getElementById('proto-prev-btn').addEventListener('click', () => {
+                    if (currentPage > 0) {
+                        currentPage--;
+                        updateDisplay();
+                    }
+                });
+                
+                document.getElementById('proto-next-btn').addEventListener('click', () => {
+                    if (currentPage < totalPages - 1) {
+                        currentPage++;
+                        updateDisplay();
+                    }
+                });
+                
+                // 分页点事件
+                document.querySelectorAll('.gallery-dot').forEach(dot => {
+                    dot.addEventListener('click', (e) => {
+                        currentPage = parseInt(e.target.dataset.page);
+                        updateDisplay();
+                    });
+                });
+            }
+            
+            // 更新显示
+            function updateDisplay() {
+                const items = document.querySelectorAll('.gallery-item');
+                const startIndex = currentPage * imagesPerPage;
+                const endIndex = startIndex + imagesPerPage;
+                
+                items.forEach((item, index) => {
+                    item.style.display = (index >= startIndex && index < endIndex) ? 'block' : 'none';
+                });
+                
+                // 更新按钮状态
+                document.getElementById('proto-prev-btn').disabled = currentPage === 0;
+                document.getElementById('proto-next-btn').disabled = currentPage >= totalPages - 1;
+                
+                // 更新分页点
+                document.querySelectorAll('.gallery-dot').forEach((dot, index) => {
+                    dot.classList.toggle('bg-blue-500', index === currentPage);
+                    dot.classList.toggle('bg-gray-300', index !== currentPage);
+                });
+            }
+            
+            // 初始化
+            renderPrototypeGallery();
+            updateDisplay();
+            console.log('原型展示模块初始化完成');
         });
     </script>
 </body>

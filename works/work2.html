@@ -256,6 +256,15 @@
         </div>
     </section>
 
+    <!-- 原型展示 -->
+    <section class="py-16 bg-[#F9F9F1]">
+        <div class="container mx-auto px-6">
+            <div class="max-w-6xl mx-auto">
+                <div id="prototype-gallery-container"></div>
+            </div>
+        </div>
+    </section>
+
     <!-- 文档展示 -->
     <section class="py-16 bg-[#E9E7F5]">
         <div class="container mx-auto px-6">
@@ -315,49 +324,23 @@
         </div>
     </section>
 
-    <!-- AI 代码实现 Demo -->
-    <section class="py-16 bg-white">
-        <div class="container mx-auto px-6">
-            <div class="max-w-6xl mx-auto">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl font-bold mb-4">AI 代码实现 Demo</h2>
-                    <p class="text-gray-600">基于原型与文档，通过 AI 独立开发的可交互技术 Demo</p>
-                </div>
-                <div class="grid md:grid-cols-3 gap-8">
-                    <a href="demo-placeholder.html?id=2" target="_blank" class="bg-[#F9F9F1] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow block">
-                        <div class="h-48 bg-gradient-to-br from-[#6EA4D2] to-[#8B9DC5] flex items-center justify-center">
-                            <i class="fas fa-desktop text-5xl text-white opacity-80"></i>
-                        </div>
-                    </a>
-                    <!-- Demo 2 -->
-                    <a href="demo-placeholder.html?id=2" target="_blank" class="bg-[#F9F9F1] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow block">
-                        <div class="h-48 bg-gradient-to-br from-[#8B9DC5] to-[#6EA4D2] flex items-center justify-center">
-                            <i class="fas fa-desktop text-5xl text-white opacity-80"></i>
-                        </div>
-                    </a>
-                    <!-- Demo 3 -->
-                    <a href="demo-placeholder.html?id=2" target="_blank" class="bg-[#F9F9F1] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow block">
-                        <div class="h-48 bg-gradient-to-br from-[#6BBCCF] to-[#9BCCDD] flex items-center justify-center">
-                            <i class="fas fa-desktop text-5xl text-white opacity-80"></i>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- AI Demo 模块已隐藏 -->
 
     <!-- 关键词 -->
     <section class="py-16 bg-[#F9F9F1]">
         <div class="container mx-auto px-6">
             <div class="max-w-4xl mx-auto">
-                <h2 class="text-3xl font-bold mb-8">关键词</h2>
+                <h2 class="text-3xl font-bold mb-8">工具</h2>
                 <div class="flex flex-wrap gap-4">
                     <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Axure</span>
-                    <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Figma</span>
+                    <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Sketch</span>
                     <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Visio</span>
                     <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Xmind</span>
+                    <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">飞书</span>
                     <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Jira</span>
-                    <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Confluence</span>
+                    <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Office</span>
+                    <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">Trae</span>
+                    <span class="bg-white px-6 py-3 rounded-full shadow-sm text-gray-700 font-medium">NotebookLM</span>
                 </div>
             </div>
         </div>
@@ -462,6 +445,21 @@
             if (demoUrl) params.append('demo', encodeURIComponent(demoUrl));
             return `demo-placeholder.html?${params.toString()}`;
         }
+    </script>
+    
+    <!-- 原型展示模块 -->
+    <script src="../js/prototype-gallery.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化原型展示模块
+            const prototypeGallery = new PrototypeGallery('prototype-gallery-container', {
+                projectId: 2,
+                imagesPerPage: 4,
+                imageHeight: 200,
+                gap: 16
+            });
+            console.log('原型展示模块初始化完成');
+        });
     </script>
 </body>
 </html>

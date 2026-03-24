@@ -1,0 +1,35 @@
+{
+  "project_id": 2,
+  "project_name": "电商 CRM 融合系统",
+  "last_updated": "2026-03-24",
+  "prototype_images": [
+    {
+      "id": "p2-001",
+      "filename": "买家-我的询价.png",
+      "path": "images/projects/project2/买家-我的询价.png",
+      "title": "我的询价",
+      "subtitle": "买家询价管理界面，支持多供应商比价和报价跟踪",
+      "category": "prototype",
+      "sort_order": 1
+    },
+    {
+      "id": "p2-002",
+      "filename": "门户首页.png",
+      "path": "images/projects/project2/门户首页.png",
+      "title": "门户首页",
+      "subtitle": "电商平台门户首页，集成产品展示和快捷入口",
+      "category": "prototype",
+      "sort_order": 2
+    },
+    {
+      "id": "p2-003",
+      "filename": "1774355751463.png",
+      "path": "images/projects/project2/1774355751463.png",
+      "title": "系统界面",
+      "subtitle": "CRM系统核心功能界面展示",
+      "category": "prototype",
+      "sort_order": 3
+    }
+  ],
+  "document_images": []
+}
