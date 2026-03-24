@@ -70,8 +70,8 @@
             width: 120px;
             height: 120px;
             background: linear-gradient(135deg, #6EA4D2 0%, #8B9DC5 100%);
-            top: 20%;
-            right: 32%;
+            top: calc(50% - 140px);
+            right: calc(50% - 280px);
             animation-delay: 0s;
         }
         
@@ -79,8 +79,8 @@
             width: 80px;
             height: 80px;
             background: linear-gradient(135deg, #6BBCCF 0%, #9BCCDD 100%);
-            top: 38%;
-            right: 22%;
+            top: calc(50% - 60px);
+            right: calc(50% - 380px);
             animation-delay: 1s;
         }
         
@@ -88,8 +88,8 @@
             width: 60px;
             height: 60px;
             background: linear-gradient(135deg, #9BCCDD 0%, #6EA4D2 100%);
-            top: 52%;
-            right: 35%;
+            top: calc(50% + 40px);
+            right: calc(50% - 260px);
             animation-delay: 2s;
         }
         
@@ -97,8 +97,8 @@
             width: 100px;
             height: 100px;
             background: linear-gradient(135deg, #8B9DC5 0%, #6BBCCF 100%);
-            top: 62%;
-            right: 25%;
+            top: calc(50% + 80px);
+            right: calc(50% - 360px);
             animation-delay: 3s;
         }
         
@@ -110,31 +110,11 @@
         
         .fixed-bg .bg-dot {
             position: absolute;
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.8);
             border-radius: 50%;
             animation: twinkle 3s ease-in-out infinite;
-            box-shadow: 0 0 4px currentColor;
-        }
-        
-        .fixed-bg .bg-dot-yellow {
-            background: #FFE4B5;
-            color: #FFE4B5;
-        }
-        
-        .fixed-bg .bg-dot-blue {
-            background: #B0E0E6;
-            color: #B0E0E6;
-        }
-        
-        .fixed-bg .bg-dot-pink {
-            background: #FFB6C1;
-            color: #FFB6C1;
-        }
-        
-        .fixed-bg .bg-dot-cyan {
-            background: #AFEEEE;
-            color: #AFEEEE;
         }
         
         /* 页面内容区域使用透明背景，让固定背景显示 */
@@ -283,12 +263,12 @@
         <div class="bg-shape bg-shape-4"></div>
         <!-- 装饰点 -->
         <div class="bg-dots">
-            <div class="bg-dot bg-dot-yellow" style="top: 12%; right: 18%; animation-delay: 0.5s;"></div>
-            <div class="bg-dot bg-dot-blue" style="top: 28%; right: 12%; animation-delay: 1.2s;"></div>
-            <div class="bg-dot bg-dot-pink" style="top: 48%; right: 22%; animation-delay: 1.8s;"></div>
-            <div class="bg-dot bg-dot-cyan" style="top: 68%; right: 15%; animation-delay: 2.5s;"></div>
-            <div class="bg-dot bg-dot-yellow" style="top: 22%; right: 8%; animation-delay: 0.8s;"></div>
-            <div class="bg-dot bg-dot-blue" style="top: 58%; right: 28%; animation-delay: 1.5s;"></div>
+            <div class="bg-dot" style="top: calc(50% - 180px); right: calc(50% - 320px); animation-delay: 0.5s;"></div>
+            <div class="bg-dot" style="top: calc(50% - 100px); right: calc(50% - 420px); animation-delay: 1.2s;"></div>
+            <div class="bg-dot" style="top: calc(50% + 20px); right: calc(50% - 220px); animation-delay: 1.8s;"></div>
+            <div class="bg-dot" style="top: calc(50% + 120px); right: calc(50% - 400px); animation-delay: 2.5s;"></div>
+            <div class="bg-dot" style="top: calc(50% - 40px); right: calc(50% - 180px); animation-delay: 0.8s;"></div>
+            <div class="bg-dot" style="top: calc(50% + 160px); right: calc(50% - 300px); animation-delay: 1.5s;"></div>
         </div>
     </div>
     <!-- 导航栏 -->
