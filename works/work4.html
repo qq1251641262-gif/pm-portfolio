@@ -46,7 +46,7 @@
             </div>
             <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">企业级客户管理（CRM）系统</h1>
             <p class="text-xl text-white opacity-90 max-w-3xl mb-4">全方位客户生命周期管理，提升销售转化与客户满意度</p>
-            <a href="https://enterprise-crm-demo.pmzwj.tech" target="_blank" class="inline-flex items-center text-sm text-green-300 hover:text-white transition-colors">enterprise-crm-demo.pmzwj.tech <i class="fas fa-external-link-alt ml-1 text-xs"></i></a>
+            <a href="https://crm.pmzwj.tech" target="_blank" class="inline-flex items-center text-sm text-green-300 hover:text-white transition-colors">AI Demo <i class="fas fa-external-link-alt ml-1 text-xs"></i></a>
         </div>
     </section>
 
@@ -253,6 +253,32 @@
         function goToSlide(n) { slideIndex = n; showSlides(slideIndex); }
         setInterval(() => { slideIndex++; showSlides(slideIndex); }, 5000);
         showSlides(slideIndex);
+        
+        // Demo链接点击处理 - 集成缺省页面检查
+        document.querySelectorAll('a[href*="demo"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (shouldShowDemoPlaceholder(href)) {
+                    e.preventDefault();
+                    window.location.href = getDemoPlaceholderUrl(href);
+                }
+            });
+        });
+        
+        function shouldShowDemoPlaceholder(demoUrl) {
+            const forcePlaceholderIds = ['1236'];
+            const projectId = '4';
+            if (!demoUrl || demoUrl === '#' || demoUrl === '') return true;
+            if (forcePlaceholderIds.includes(projectId)) return true;
+            return false;
+        }
+        
+        function getDemoPlaceholderUrl(demoUrl) {
+            const params = new URLSearchParams();
+            params.append('id', '4');
+            if (demoUrl) params.append('demo', encodeURIComponent(demoUrl));
+            return `demo-placeholder.html?${params.toString()}`;
+        }
     </script>
 </body>
 </html>

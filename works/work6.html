@@ -120,8 +120,8 @@
             <p class="text-xl text-white opacity-90 max-w-3xl mb-4">
                 营销导向的企业品牌官网，打造专业形象，提升品牌影响力和获客能力
             </p>
-            <a href="https://website-demo.pmzwj.tech" target="_blank" class="inline-flex items-center text-sm text-[#E9E7F5] hover:text-white transition-colors">
-                website-demo.pmzwj.tech <i class="fas fa-external-link-alt ml-1 text-xs"></i>
+            <a href="demo-placeholder.html?id=6" target="_blank" class="inline-flex items-center text-sm text-[#E9E7F5] hover:text-white transition-colors">
+                AI Demo <i class="fas fa-external-link-alt ml-1 text-xs"></i>
             </a>
         </div>
     </section>
@@ -320,17 +320,19 @@
                     <p class="text-gray-600">基于原型与文档，通过 AI 独立开发的可交互技术 Demo</p>
                 </div>
                 <div class="grid md:grid-cols-3 gap-8">
-                    <a href="https://website-demo.pmzwj.tech" target="_blank" class="bg-[#F9F9F1] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow block">
+                    <a href="demo-placeholder.html?id=6" target="_blank" class="bg-[#F9F9F1] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow block">
                         <div class="h-48 bg-gradient-to-br from-[#6EA4D2] to-[#8B9DC5] flex items-center justify-center">
                             <i class="fas fa-desktop text-5xl text-white opacity-80"></i>
                         </div>
                     </a>
-                    <a href="https://website-demo.pmzwj.tech" target="_blank" class="bg-[#F9F9F1] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow block">
+                    <!-- Demo 2 -->
+                    <a href="demo-placeholder.html?id=6" target="_blank" class="bg-[#F9F9F1] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow block">
                         <div class="h-48 bg-gradient-to-br from-[#8B9DC5] to-[#6EA4D2] flex items-center justify-center">
                             <i class="fas fa-desktop text-5xl text-white opacity-80"></i>
                         </div>
                     </a>
-                    <a href="https://website-demo.pmzwj.tech" target="_blank" class="bg-[#F9F9F1] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow block">
+                    <!-- Demo 3 -->
+                    <a href="demo-placeholder.html?id=6" target="_blank" class="bg-[#F9F9F1] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow block">
                         <div class="h-48 bg-gradient-to-br from-[#6BBCCF] to-[#9BCCDD] flex items-center justify-center">
                             <i class="fas fa-desktop text-5xl text-white opacity-80"></i>
                         </div>
@@ -430,6 +432,32 @@
         setInterval(() => {
             changeSlide(1);
         }, 5000);
+
+        // Demo链接点击处理 - 集成缺省页面检查
+        document.querySelectorAll('a[href*="demo"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (shouldShowDemoPlaceholder(href)) {
+                    e.preventDefault();
+                    window.location.href = getDemoPlaceholderUrl(href);
+                }
+            });
+        });
+
+        function shouldShowDemoPlaceholder(demoUrl) {
+            const forcePlaceholderIds = ['1236'];
+            const projectId = '6';
+            if (!demoUrl || demoUrl === '#' || demoUrl === '') return true;
+            if (forcePlaceholderIds.includes(projectId)) return true;
+            return false;
+        }
+
+        function getDemoPlaceholderUrl(demoUrl) {
+            const params = new URLSearchParams();
+            params.append('id', '6');
+            if (demoUrl) params.append('demo', encodeURIComponent(demoUrl));
+            return `demo-placeholder.html?${params.toString()}`;
+        }
     </script>
 </body>
 </html>

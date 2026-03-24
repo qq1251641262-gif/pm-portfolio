@@ -124,8 +124,8 @@
             <p class="text-xl text-white opacity-90 max-w-3xl mb-4">
                 模块化、可定制化的B2B电商系统，打通交易全链路，支持多行业快速部署
             </p>
-            <a href="https://b2b-demo.pmzwj.tech" target="_blank" class="inline-flex items-center text-sm text-purple-300 hover:text-white transition-colors">
-                b2b-demo.pmzwj.tech <i class="fas fa-external-link-alt ml-1 text-xs"></i>
+            <a href="demo-placeholder.html?id=1" target="_blank" class="inline-flex items-center text-sm text-purple-300 hover:text-white transition-colors">
+                AI Demo <i class="fas fa-external-link-alt ml-1 text-xs"></i>
             </a>
         </div>
     </section>
@@ -342,19 +342,19 @@
                 </div>
                 <div class="grid md:grid-cols-3 gap-8">
                     <!-- Demo 1 -->
-                    <a href="https://b2b-demo.pmzwj.tech" target="_blank" class="bg-[#F9F9F1] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow block">
+                    <a href="demo-placeholder.html?id=1" target="_blank" class="bg-[#F9F9F1] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow block">
                         <div class="h-48 bg-gradient-to-br from-[#6EA4D2] to-[#8B9DC5] flex items-center justify-center">
                             <i class="fas fa-desktop text-5xl text-white opacity-80"></i>
                         </div>
                     </a>
                     <!-- Demo 2 -->
-                    <a href="https://b2b-demo.pmzwj.tech" target="_blank" class="bg-[#F9F9F1] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow block">
+                    <a href="demo-placeholder.html?id=1" target="_blank" class="bg-[#F9F9F1] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow block">
                         <div class="h-48 bg-gradient-to-br from-[#8B9DC5] to-[#6EA4D2] flex items-center justify-center">
                             <i class="fas fa-desktop text-5xl text-white opacity-80"></i>
                         </div>
                     </a>
                     <!-- Demo 3 -->
-                    <a href="https://b2b-demo.pmzwj.tech" target="_blank" class="bg-[#F9F9F1] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow block">
+                    <a href="demo-placeholder.html?id=1" target="_blank" class="bg-[#F9F9F1] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow block">
                         <div class="h-48 bg-gradient-to-br from-[#6BBCCF] to-[#9BCCDD] flex items-center justify-center">
                             <i class="fas fa-desktop text-5xl text-white opacity-80"></i>
                         </div>
@@ -499,6 +499,45 @@
         
         // 页面加载完成后获取原型图片
         document.addEventListener('DOMContentLoaded', loadPrototypeImages);
+        
+        // Demo链接点击处理 - 集成缺省页面检查
+        document.querySelectorAll('a[href*="demo"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                // 检查是否需要显示缺省页面
+                if (shouldShowDemoPlaceholder(href)) {
+                    e.preventDefault();
+                    window.location.href = getDemoPlaceholderUrl(href);
+                }
+            });
+        });
+        
+        // 检查是否应该显示缺省页面
+        function shouldShowDemoPlaceholder(demoUrl) {
+            // 强制显示缺省页面的项目ID列表
+            const forcePlaceholderIds = ['1236'];
+            const projectId = '1'; // 当前项目ID
+            
+            // 如果没有demo链接或者是强制显示的项目
+            if (!demoUrl || demoUrl === '#' || demoUrl === '') {
+                return true;
+            }
+            
+            // 检查是否在强制显示列表中
+            if (forcePlaceholderIds.includes(projectId)) {
+                return true;
+            }
+            
+            return false;
+        }
+        
+        // 获取缺省页面URL
+        function getDemoPlaceholderUrl(demoUrl) {
+            const params = new URLSearchParams();
+            params.append('id', '1');
+            if (demoUrl) params.append('demo', encodeURIComponent(demoUrl));
+            return `demo-placeholder.html?${params.toString()}`;
+        }
     </script>
 </body>
 </html>

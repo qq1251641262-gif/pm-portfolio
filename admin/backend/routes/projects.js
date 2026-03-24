@@ -101,4 +101,82 @@ router.delete('/:id', verifyToken, async (req, res) => {
   }
 });
 
+// 获取项目图片（公开）
+router.get('/:id/images', async (req, res) => {
+  try {
+    const projectId = parseInt(req.params.id);
+    const images = await query('project_images', { project_id: projectId, is_active: 1 });
+    // 按排序顺序返回
+    images.sort((a, b) => a.sort_order - b.sort_order);
+    res.json({ success: true, data: images });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// 添加项目图片（需要认证）
+router.post('/:id/images', verifyToken, async (req, res) => {
+  try {
+    const projectId = parseInt(req.params.id);
+    const { image_url, caption, sort_order } = req.body;
+    
+    if (!image_url) {
+      return res.status(400).json({ success: false, message: '图片URL为必填项' });
+    }
+    
+    const result = await insert('project_images', {
+      project_id: projectId,
+      image_url,
+      caption: caption || '',
+      sort_order: sort_order || 0,
+      is_active: 1
+    });
+    
+    res.json({ success: true, data: { id: result.id }, message: '图片添加成功' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// 更新项目图片（需要认证）
+router.put('/:id/images/:imageId', verifyToken, async (req, res) => {
+  try {
+    const imageId = parseInt(req.params.imageId);
+    const { image_url, caption, sort_order, is_active } = req.body;
+    
+    const image = await queryOne('project_images', { id: imageId });
+    if (!image) {
+      return res.status(404).json({ success: false, message: '图片不存在' });
+    }
+    
+    const updateData = {};
+    if (image_url !== undefined) updateData.image_url = image_url;
+    if (caption !== undefined) updateData.caption = caption;
+    if (sort_order !== undefined) updateData.sort_order = sort_order;
+    if (is_active !== undefined) updateData.is_active = is_active;
+    
+    await update('project_images', imageId, updateData);
+    res.json({ success: true, message: '图片更新成功' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// 删除项目图片（需要认证）
+router.delete('/:id/images/:imageId', verifyToken, async (req, res) => {
+  try {
+    const imageId = parseInt(req.params.imageId);
+    
+    const image = await queryOne('project_images', { id: imageId });
+    if (!image) {
+      return res.status(404).json({ success: false, message: '图片不存在' });
+    }
+    
+    await remove('project_images', imageId);
+    res.json({ success: true, message: '图片删除成功' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 module.exports = router;
