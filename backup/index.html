@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>张伟健 - 产品经理作品集</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        :root {
+            /* 地中海色彩系统 - 严格色彩管理 */
+            --color-primary: #6EA4D2;
+            --color-secondary: #8B9DC5;
+            --color-accent: #6BBCCF;
+            --color-light: #9BCCDD;
+            --color-dark: #7388A3;
+            --color-bg-cream: #F9F9F1;
+            --color-bg-lavender: #E9E7F5;
+            --color-bg-mint: #D9E8E3;
+            --color-bg-sky: #D0DDE3;
+            --color-bg-sand: #F5F0C6;
+            --color-bg-blue: #C2D4E0;
+            --color-border-lavender: #BCC6DF;
+            --color-border-mint: #9BCCDD;
+            --color-border-sky: #A7BDD5;
+            --color-border-sand: #D9E59B;
+            --color-border-blue: #8B9DC5;
+            
+            /* 文本颜色 - 使用最深色调 */
+            --text-primary: #4A5568;
+            --text-secondary: #5A6A7A;
+            --text-muted: #7388A3;
+        }
+        
+        html, body {
+            font-family: 'Noto Sans SC', sans-serif;
+            color: var(--text-primary);
+            background: transparent !important;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* 固定背景效果 - 背景固定在视口顶部 */
+        .fixed-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            background: linear-gradient(135deg, #6EA4D2 0%, #8B9DC5 30%, #9BCCDD 60%, #D9E8E3 100%);
+            background-attachment: fixed;
+            background-position: top center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            overflow: hidden;
+        }
+        
+        /* 固定背景中的几何图形 */
+        .fixed-bg .bg-shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .fixed-bg .bg-shape-1 {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #6EA4D2 0%, #8B9DC5 100%);
+            top: calc(50% - 160px);
+            right: 28%;
+            animation-delay: 0s;
+        }
+        
+        .fixed-bg .bg-shape-2 {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #6BBCCF 0%, #9BCCDD 100%);
+            top: calc(50% - 80px);
+            right: 20%;
+            animation-delay: 1s;
+        }
+        
+        .fixed-bg .bg-shape-3 {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #9BCCDD 0%, #6EA4D2 100%);
+            top: calc(50% + 20px);
+            right: 32%;
+            animation-delay: 2s;
+        }
+        
+        .fixed-bg .bg-shape-4 {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #8B9DC5 0%, #6BBCCF 100%);
+            top: calc(50% + 60px);
+            right: 22%;
+            animation-delay: 3s;
+        }
+        
+        .fixed-bg .bg-dots {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .fixed-bg .bg-dot {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: twinkle 3s ease-in-out infinite;
+        }
+        
+        /* 页面内容区域使用透明背景，让固定背景显示 */
+        body > section {
+            background: transparent !important;
+        }
+        
+        /* 内容卡片使用半透明背景，确保文字可读性 */
+        .card-hover,
+        .project-card,
+        .demo-card {
+            background: rgba(249, 249, 241, 0.92) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        /* 导航栏半透明效果 */
+        nav {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .tag {
+            transition: all 0.2s ease;
+        }
+        
+        .tag:hover {
+            transform: scale(1.05);
+        }
+        
+        .project-card {
+            transition: all 0.3s ease;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+        
+        .demo-card {
+            transition: all 0.3s ease;
+        }
+        
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .nav-link {
+            position: relative;
+            color: var(--text-secondary);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #6EA4D2;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .nav-link:hover {
+            color: var(--text-primary);
+        }
+        
+        .section-title {
+            position: relative;
+            display: inline-block;
+            color: var(--text-primary);
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(135deg, #6EA4D2 0%, #8B9DC5 50%, #6BBCCF 100%);
+            border-radius: 2px;
+        }
+        
+        /* 严格色彩管理 - 能力标签统一颜色 */
+        .ability-tag {
+            background-color: var(--color-bg-lavender);
+            color: var(--color-primary);
+            border: 1px solid var(--color-border-lavender);
+        }
+        
+        /* 严格色彩管理 - 工具标签统一颜色 */
+        .tool-tag {
+            background-color: var(--color-bg-mint);
+            color: var(--color-secondary);
+            border: 1px solid var(--color-border-mint);
+        }
+        
+        /* 严格色彩管理 - 关键词标签统一颜色 */
+        .keyword-tag {
+            background-color: var(--color-bg-sky);
+            color: var(--color-accent);
+            border: 1px solid var(--color-border-sky);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-15px) scale(1.05); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.4; }
+            50% { transform: scale(1.1); opacity: 0.2; }
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+    <!-- 固定背景 -->
+    <div class="fixed-bg">
+        <!-- 浮动形状 - 4个圆形 -->
+        <div class="bg-shape bg-shape-1"></div>
+        <div class="bg-shape bg-shape-2"></div>
+        <div class="bg-shape bg-shape-3"></div>
+        <div class="bg-shape bg-shape-4"></div>
+        <!-- 装饰点 -->
+        <div class="bg-dots">
+            <div class="bg-dot" style="top: 25%; right: 20%; animation-delay: 0.5s;"></div>
+            <div class="bg-dot" style="top: 45%; right: 15%; animation-delay: 1.2s;"></div>
+            <div class="bg-dot" style="top: 65%; right: 25%; animation-delay: 1.8s;"></div>
+            <div class="bg-dot" style="top: 85%; right: 10%; animation-delay: 2.5s;"></div>
+            <div class="bg-dot" style="top: 35%; right: 5%; animation-delay: 0.8s;"></div>
+            <div class="bg-dot" style="top: 75%; right: 30%; animation-delay: 1.5s;"></div>
+        </div>
+    </div>
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 left-0 w-full bg-white shadow-md z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <a href="#" class="text-2xl font-bold text-gray-800">张伟健</a>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#about" class="nav-link text-gray-600 hover:text-gray-900">关于</a>
+                    <a href="#skills" class="nav-link text-gray-600 hover:text-gray-900">技能</a>
+                    <a href="#experience" class="nav-link text-gray-600 hover:text-gray-900">经历</a>
+                    <a href="#projects" class="nav-link text-gray-600 hover:text-gray-900">项目</a>
+                    <a href="#demo" class="nav-link text-gray-600 hover:text-gray-900">Demo</a>
+                </div>
+                <button id="mobile-menu-btn" class="md:hidden text-gray-600">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <div class="container mx-auto px-6 py-4">
+                <a href="#about" class="block py-2 text-gray-600">关于</a>
+                <a href="#skills" class="block py-2 text-gray-600">技能</a>
+                <a href="#experience" class="block py-2 text-gray-600">经历</a>
+                <a href="#projects" class="block py-2 text-gray-600">项目</a>
+                <a href="#demo" class="block py-2 text-gray-600">Demo</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero 区域 -->
+    <section class="min-h-screen flex items-center pt-20">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 text-white mb-10 md:mb-0">
+                    <h1 class="text-5xl md:text-6xl font-bold mb-6">张伟健</h1>
+                    <p class="text-xl md:text-2xl mb-8 opacity-90">产品经理</p>
+                    <p class="text-lg opacity-80 leading-relaxed mb-8">
+                        3 年产品经验，B2B/C电商 + 数字化转型产品经理，独立负责门户迭代，主导从 0 到 1 搭建电商平台、CRM 融合系统、BI 数据可视化平台等核心产品，兼具乙方交付与甲方业务视角，精通全流程产品设计与跨团队协同落地
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#projects" class="group relative px-8 py-3 rounded-full font-semibold overflow-hidden transition-all duration-300">
+                            <span class="absolute inset-0 bg-white transition-transform duration-300 group-hover:scale-105"></span>
+                            <span class="relative text-[#6EA4D2] flex items-center gap-2">
+                                <i class="fas fa-folder-open text-sm"></i> 查看作品
+                            </span>
+                        </a>
+                        <a href="#demo" class="group relative px-8 py-3 rounded-full font-semibold overflow-hidden transition-all duration-300">
+                            <span class="absolute inset-0 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full transition-all duration-300 group-hover:bg-white/30"></span>
+                            <span class="relative text-white flex items-center gap-2">
+                                <i class="fas fa-robot text-sm"></i> AI应用
+                            </span>
+                        </a>
+                        <a href="张伟健-个人简历.pdf" download class="group relative px-8 py-3 rounded-full font-semibold overflow-hidden transition-all duration-300">
+                            <span class="absolute inset-0 bg-gradient-to-r from-[#6BBCCF] to-[#9BCCDD] rounded-full transition-transform duration-300 group-hover:scale-105 shadow-lg shadow-[#6BBCCF]/30"></span>
+                            <span class="relative text-white flex items-center gap-2">
+                                <i class="fas fa-download text-sm group-hover:animate-bounce"></i> 下载简历
+                            </span>
+                        </a>
+                    </div>
+                </div>
+                <div class="md:w-1/2 flex justify-center">
+                    <!-- 头像区域已移至固定背景 -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 个人优势 -->
+    <section id="about" class="py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title text-3xl font-bold mb-12">个人优势</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card-hover bg-[#F9F9F1] p-8 rounded-2xl">
+                    <div class="w-14 h-14 bg-[#6EA4D2]/20 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-briefcase text-2xl text-[#6EA4D2]"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4" style="color: var(--text-primary);">丰富经验</h3>
+                    <p class="leading-relaxed" style="color: var(--text-secondary);">
+                        三年产品经验，从事过数字化转型服务、2B化工电商、2C新零售电商；有电商、CRM、BI领域经验；有乙方和甲方经验
+                    </p>
+                </div>
+                <div class="card-hover bg-[#F9F9F1] p-8 rounded-2xl">
+                    <div class="w-14 h-14 bg-[#8B9DC5]/20 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-rocket text-2xl text-[#8B9DC5]"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4" style="color: var(--text-primary);">项目经验</h3>
+                    <p class="leading-relaxed" style="color: var(--text-secondary);">
+                        拥有多个0-1项目经验：B\C电商前后台、BI数据报表、CRM、企业官网及后台；有多个电商项目经验
+                    </p>
+                </div>
+                <div class="card-hover bg-[#F9F9F1] p-8 rounded-2xl">
+                    <div class="w-14 h-14 bg-[#6BBCCF]/20 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-database text-2xl text-[#6BBCCF]"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4" style="color: var(--text-primary);">数据能力</h3>
+                    <p class="leading-relaxed" style="color: var(--text-secondary);">
+                        了解并负责过数据ETL全流程，能够独立完成数据分析和可视化展示
+                    </p>
+                </div>
+                <div class="card-hover bg-[#F9F9F1] p-8 rounded-2xl">
+                    <div class="w-14 h-14 bg-[#9BCCDD]/20 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-tools text-2xl text-[#9BCCDD]"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4" style="color: var(--text-primary);">工具技能</h3>
+                    <p class="leading-relaxed" style="color: var(--text-secondary);">
+                        熟练掌握Axure、Visio、墨刀、Xmind、Office等PM工具，灵活结合AI软件提升工作效率
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 技能标签 -->
+    <section id="skills" class="py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title text-3xl font-bold mb-12">技能</h2>
+            
+            <!-- 能力 - 严格色彩管理：统一使用薰衣草色系 -->
+            <div class="mb-10">
+                <h3 class="text-xl font-semibold mb-6" style="color: var(--color-primary);">能力</h3>
+                <div class="flex flex-wrap gap-3">
+                    <span class="ability-tag px-5 py-2.5 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium cursor-default">市场调研</span>
+                    <span class="ability-tag px-5 py-2.5 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium cursor-default">需求调研</span>
+                    <span class="ability-tag px-5 py-2.5 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium cursor-default">产品设计</span>
+                    <span class="ability-tag px-5 py-2.5 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium cursor-default">文档撰写</span>
+                    <span class="ability-tag px-5 py-2.5 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium cursor-default">开发跟进</span>
+                    <span class="ability-tag px-5 py-2.5 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium cursor-default">迭代规划</span>
+                    <span class="ability-tag px-5 py-2.5 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium cursor-default">数据ETL</span>
+                </div>
+            </div>
+
+            <!-- 工具技能 - 严格色彩管理：统一使用薄荷色系 -->
+            <div class="mb-10">
+                <h3 class="text-xl font-semibold mb-6" style="color: var(--color-secondary);">工具</h3>
+                <div class="flex flex-wrap gap-3">
+                    <span class="tool-tag px-5 py-2.5 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium cursor-default">Axure</span>
+                    <span class="tool-tag px-5 py-2.5 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium cursor-default">Office</span>
+                    <span class="tool-tag px-5 py-2.5 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium cursor-default">Photoshop</span>
+                    <span class="tool-tag px-5 py-2.5 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium cursor-default">AI Chat</span>
+                    <span class="tool-tag px-5 py-2.5 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium cursor-default">AIGC</span>
+                    <span class="tool-tag px-5 py-2.5 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium cursor-default">ComfyUI</span>
+                    <span class="tool-tag px-5 py-2.5 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium cursor-default">AI写代码</span>
+                </div>
+            </div>
+
+            <!-- 关键词 - 严格色彩管理：统一使用天空色系 -->
+            <div>
+                <h3 class="text-xl font-semibold mb-6" style="color: var(--color-accent);">关键词</h3>
+                <div class="flex flex-wrap gap-3">
+                    <span class="keyword-tag px-5 py-2.5 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium cursor-default">电商</span>
+                    <span class="keyword-tag px-5 py-2.5 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium cursor-default">CRM</span>
+                    <span class="keyword-tag px-5 py-2.5 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium cursor-default">BI</span>
+                    <span class="keyword-tag px-5 py-2.5 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium cursor-default">化工</span>
+                    <span class="keyword-tag px-5 py-2.5 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium cursor-default">Web</span>
+                    <span class="keyword-tag px-5 py-2.5 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium cursor-default">前后台</span>
+                    <span class="keyword-tag px-5 py-2.5 rounded-xl hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 text-sm font-medium cursor-default">0-1</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 工作经验 -->
+    <section id="experience" class="py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title text-3xl font-bold mb-12">工作经历</h2>
+            <div class="space-y-8">
+                <div class="card-hover bg-[#F9F9F1] p-8 rounded-2xl flex flex-col md:flex-row md:items-center justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold mb-2" style="color: var(--text-primary);">产品经理</h3>
+                        <p class="mb-1" style="color: var(--text-secondary);">软通动力技术服务有限公司</p>
+                        <p class="text-sm" style="color: var(--text-muted);">2023-2024</p>
+                    </div>
+                    <div class="mt-4 md:mt-0 flex gap-2">
+                        <span class="ability-tag px-5 py-2 rounded-full text-sm font-medium shadow-sm hover:shadow-md transition-shadow">电商/CRM/BI</span>
+                    </div>
+                </div>
+                <div class="card-hover bg-[#F9F9F1] p-8 rounded-2xl flex flex-col md:flex-row md:items-center justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold mb-2" style="color: var(--text-primary);">产品经理</h3>
+                        <p class="mb-1" style="color: var(--text-secondary);">北京锐智互动网络科技有限公司</p>
+                        <p class="text-sm" style="color: var(--text-muted);">2024-2026</p>
+                    </div>
+                    <div class="mt-4 md:mt-0 flex gap-2 items-center">
+                        <span class="tool-tag px-5 py-2 rounded-full text-sm font-medium shadow-sm hover:shadow-md transition-shadow">数字化转型</span>
+                        <span class="keyword-tag px-5 py-2 rounded-full text-sm font-medium shadow-sm hover:shadow-md transition-shadow">新零售/CRM</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 教育经历 -->
+            <h2 class="section-title text-3xl font-bold mb-12 mt-20">教育经历</h2>
+            <div class="card-hover bg-[#F9F9F1] p-8 rounded-2xl flex flex-col md:flex-row md:items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-bold mb-2" style="color: var(--text-primary);">沈阳化工大学</h3>
+                    <p class="text-sm" style="color: var(--text-muted);">2017-2021</p>
+                </div>
+                <div class="mt-4 md:mt-0">
+                    <span class="ability-tag px-4 py-2 rounded-full text-sm font-medium">本科</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 项目展示 -->
+    <section id="projects" class="py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="section-title text-3xl font-bold mb-12">项目展示</h2>
+            
+            <div class="space-y-6">
+                <!-- 项目1：B2B 电商平台（产品化方案） -->
+                <div class="project-card bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow flex flex-col md:flex-row">
+                    <div class="w-full md:w-72 h-48 md:h-auto bg-gradient-to-br from-[#6EA4D2] to-[#8B9DC5] flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-shopping-cart text-6xl text-white opacity-80"></i>
+                    </div>
+                    <div class="p-6 flex flex-col justify-center flex-grow">
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span class="ability-tag px-3 py-1 rounded-full text-sm">B2B</span>
+                            <span class="tool-tag px-3 py-1 rounded-full text-sm">电商</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3" style="color: var(--text-primary);">B2B 电商平台（产品化方案）</h3>
+                        <p class="mb-4" style="color: var(--text-secondary);">模块化、可定制化的B2B电商系统，打通交易全链路，包括产品管理、订单管理、客户管理等核心模块</p>
+                        <a href="works/work1.html" class="inline-flex items-center font-semibold hover:opacity-80" style="color: var(--color-primary);">
+                            查看详情 <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 项目2：电商 CRM 融合系统 -->
+                <div class="project-card bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow flex flex-col md:flex-row">
+                    <div class="w-full md:w-72 h-48 md:h-auto bg-gradient-to-br from-[#8B9DC5] to-[#6EA4D2] flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-sync-alt text-6xl text-white opacity-80"></i>
+                    </div>
+                    <div class="p-6 flex flex-col justify-center flex-grow">
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span class="tool-tag px-3 py-1 rounded-full text-sm">CRM</span>
+                            <span class="ability-tag px-3 py-1 rounded-full text-sm">电商</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3" style="color: var(--text-primary);">电商 CRM 融合系统</h3>
+                        <p class="mb-4" style="color: var(--text-secondary);">电商与CRM深度融合，实现客户全生命周期管理，提升客户转化率和复购率</p>
+                        <a href="works/work2.html" class="inline-flex items-center font-semibold hover:opacity-80" style="color: var(--color-secondary);">
+                            查看详情 <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 项目3：BI 数据可视化平台 -->
+                <div class="project-card bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow flex flex-col md:flex-row">
+                    <div class="w-full md:w-72 h-48 md:h-auto bg-gradient-to-br from-[#6BBCCF] to-[#9BCCDD] flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-chart-pie text-6xl text-white opacity-80"></i>
+                    </div>
+                    <div class="p-6 flex flex-col justify-center flex-grow">
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span class="keyword-tag px-3 py-1 rounded-full text-sm">BI</span>
+                            <span class="tool-tag px-3 py-1 rounded-full text-sm">数据</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3" style="color: var(--text-primary);">BI 数据可视化平台</h3>
+                        <p class="mb-4" style="color: var(--text-secondary);">企业级数据可视化分析平台，支持多数据源接入，提供丰富的图表和报表功能</p>
+                        <a href="works/work3.html" class="inline-flex items-center font-semibold hover:opacity-80" style="color: var(--color-accent);">
+                            查看详情 <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 项目4：企业级客户管理（CRM）系统 -->
+                <div class="project-card bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow flex flex-col md:flex-row">
+                    <div class="w-full md:w-72 h-48 md:h-auto bg-gradient-to-br from-[#9BCCDD] to-[#6BBCCF] flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-users-cog text-6xl text-white opacity-80"></i>
+                    </div>
+                    <div class="p-6 flex flex-col justify-center flex-grow">
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span class="tool-tag px-3 py-1 rounded-full text-sm">CRM</span>
+                            <span class="keyword-tag px-3 py-1 rounded-full text-sm">企业级</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3" style="color: var(--text-primary);">企业级客户管理（CRM）系统</h3>
+                        <p class="mb-4" style="color: var(--text-secondary);">全方位客户管理解决方案，涵盖销售管理、客户服务、营销自动化等功能模块</p>
+                        <a href="works/work4.html" class="inline-flex items-center font-semibold hover:opacity-80" style="color: var(--color-light);">
+                            查看详情 <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 项目5：新零售电商解决方案 -->
+                <div class="project-card bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow flex flex-col md:flex-row">
+                    <div class="w-full md:w-72 h-48 md:h-auto bg-gradient-to-br from-[#7388A3] to-[#8B9DC5] flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-store text-6xl text-white opacity-80"></i>
+                    </div>
+                    <div class="p-6 flex flex-col justify-center flex-grow">
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span class="keyword-tag px-3 py-1 rounded-full text-sm">新零售</span>
+                            <span class="ability-tag px-3 py-1 rounded-full text-sm">电商</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3" style="color: var(--text-primary);">新零售电商解决方案</h3>
+                        <p class="mb-4" style="color: var(--text-secondary);">线上线下一体化的新零售解决方案，支持全渠道销售、智能库存管理、会员体系打通</p>
+                        <a href="works/work5.html" class="inline-flex items-center font-semibold hover:opacity-80" style="color: var(--color-dark);">
+                            查看详情 <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 项目6：企业品牌官网（营销型） -->
+                <div class="project-card bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow flex flex-col md:flex-row">
+                    <div class="w-full md:w-72 h-48 md:h-auto bg-gradient-to-br from-[#6EA4D2] to-[#6BBCCF] flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-globe text-6xl text-white opacity-80"></i>
+                    </div>
+                    <div class="p-6 flex flex-col justify-center flex-grow">
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span class="ability-tag px-3 py-1 rounded-full text-sm">官网</span>
+                            <span class="tool-tag px-3 py-1 rounded-full text-sm">营销</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3" style="color: var(--text-primary);">企业品牌官网（营销型）</h3>
+                        <p class="mb-4" style="color: var(--text-secondary);">营销型企业官网建设，支持SEO优化、内容管理、线索收集、数据分析等功能</p>
+                        <a href="works/work6.html" class="inline-flex items-center font-semibold hover:opacity-80" style="color: var(--color-primary);">
+                            查看详情 <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Demo 展示 -->
+    <section id="demo" class="py-20">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="section-title text-3xl font-bold mb-4">AI 代码实现 Demo</h2>
+                <p style="color: var(--text-secondary);">基于原型与文档，通过 AI 独立开发的可交互技术 Demo</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Demo 1：B2B 电商平台（产品化方案） -->
+                <div class="demo-card bg-[#F9F9F1] rounded-2xl overflow-hidden hover:shadow-xl transition-shadow">
+                    <div class="h-48 bg-gradient-to-br from-[#6EA4D2] to-[#8B9DC5] flex items-center justify-center">
+                        <i class="fas fa-shopping-cart text-6xl text-white opacity-80"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold mb-2" style="color: var(--text-primary);">B2B 电商平台（产品化方案）</h3>
+                        <a href="https://b2b-demo.pmzwj.tech" target="_blank" class="text-sm hover:opacity-80" style="color: var(--color-primary);">
+                            查看 Demo <i class="fas fa-external-link-alt ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Demo 2：电商 CRM 融合系统 -->
+                <div class="demo-card bg-[#F9F9F1] rounded-2xl overflow-hidden hover:shadow-xl transition-shadow">
+                    <div class="h-48 bg-gradient-to-br from-[#8B9DC5] to-[#6EA4D2] flex items-center justify-center">
+                        <i class="fas fa-sync-alt text-6xl text-white opacity-80"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold mb-2" style="color: var(--text-primary);">电商 CRM 融合系统</h3>
+                        <a href="https://crm.pmzwj.tech" target="_blank" class="text-sm hover:opacity-80" style="color: var(--color-secondary);">
+                            查看 Demo <i class="fas fa-external-link-alt ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Demo 3：BI 数据可视化平台 -->
+                <div class="demo-card bg-[#F9F9F1] rounded-2xl overflow-hidden hover:shadow-xl transition-shadow">
+                    <div class="h-48 bg-gradient-to-br from-[#6BBCCF] to-[#9BCCDD] flex items-center justify-center">
+                        <i class="fas fa-chart-pie text-6xl text-white opacity-80"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold mb-2" style="color: var(--text-primary);">BI 数据可视化平台</h3>
+                        <a href="https://bi-demo.pmzwj.tech" target="_blank" class="text-sm hover:opacity-80" style="color: var(--color-accent);">
+                            查看 Demo <i class="fas fa-external-link-alt ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Demo 4：企业级客户管理（CRM）系统 -->
+                <div class="demo-card bg-[#F9F9F1] rounded-2xl overflow-hidden hover:shadow-xl transition-shadow">
+                    <div class="h-48 bg-gradient-to-br from-[#9BCCDD] to-[#6BBCCF] flex items-center justify-center">
+                        <i class="fas fa-users-cog text-6xl text-white opacity-80"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold mb-2" style="color: var(--text-primary);">企业级客户管理（CRM）系统</h3>
+                        <a href="https://enterprise-crm-demo.pmzwj.tech" target="_blank" class="text-sm hover:opacity-80" style="color: var(--color-light);">
+                            查看 Demo <i class="fas fa-external-link-alt ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Demo 5：新零售电商解决方案 -->
+                <div class="demo-card bg-[#F9F9F1] rounded-2xl overflow-hidden hover:shadow-xl transition-shadow">
+                    <div class="h-48 bg-gradient-to-br from-[#7388A3] to-[#8B9DC5] flex items-center justify-center">
+                        <i class="fas fa-store text-6xl text-white opacity-80"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold mb-2" style="color: var(--text-primary);">新零售电商解决方案</h3>
+                        <a href="https://retail.pmzwj.tech" target="_blank" class="text-sm hover:opacity-80" style="color: var(--color-dark);">
+                            查看 Demo <i class="fas fa-external-link-alt ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Demo 6：企业品牌官网（营销型） -->
+                <div class="demo-card bg-[#F9F9F1] rounded-2xl overflow-hidden hover:shadow-xl transition-shadow">
+                    <div class="h-48 bg-gradient-to-br from-[#6EA4D2] to-[#6BBCCF] flex items-center justify-center">
+                        <i class="fas fa-globe text-6xl text-white opacity-80"></i>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold mb-2" style="color: var(--text-primary);">企业品牌官网（营销型）</h3>
+                        <a href="https://website-demo.pmzwj.tech" target="_blank" class="text-sm hover:opacity-80" style="color: var(--color-primary);">
+                            查看 Demo <i class="fas fa-external-link-alt ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 联系方式 -->
+    <section id="contact" class="py-20 text-white">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl font-bold mb-8">联系我</h2>
+            <p class="text-xl opacity-90 mb-12">有项目合作意向或想了解更多？欢迎随时联系</p>
+            <div class="flex justify-center space-x-6">
+                <a href="mailto:contact@pmzwj.tech" class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition">
+                    <i class="fas fa-envelope text-2xl"></i>
+                </a>
+                <a href="#" class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition">
+                    <i class="fab fa-weixin text-2xl"></i>
+                </a>
+                <a href="#" class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition">
+                    <i class="fab fa-linkedin text-2xl"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-[#7388A3] text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2025 张伟健. 保留所有权利.</p>
+        </div>
+    </footer>
+
+    <script>
+        // 移动端菜单切换
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    // 关闭移动端菜单
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        });
+        
+        // 导航栏滚动效果
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('shadow-lg');
+            } else {
+                nav.classList.remove('shadow-lg');
+            }
+        });
+    </script>
+</body>
+</html>

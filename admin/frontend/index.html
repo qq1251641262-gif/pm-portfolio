@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>后台管理 - 个人网站管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans SC', sans-serif; }
+        .sidebar { transition: all 0.3s ease; }
+        .nav-item:hover { background: rgba(255,255,255,0.1); }
+        .nav-item.active { background: rgba(255,255,255,0.2); border-left: 4px solid #6EA4D2; }
+        .content-area { min-height: calc(100vh - 64px); }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- 侧边栏 -->
+        <aside class="sidebar w-64 bg-gray-800 text-white flex flex-col">
+            <div class="p-6 border-b border-gray-700">
+                <h1 class="text-xl font-bold">网站管理后台</h1>
+                <p class="text-sm text-gray-400 mt-1">张伟健个人网站</p>
+            </div>
+            
+            <nav class="flex-1 py-4">
+                <a href="#dashboard" class="nav-item active flex items-center px-6 py-3 transition" data-page="dashboard">
+                    <i class="fas fa-tachometer-alt w-6"></i>
+                    <span>仪表盘</span>
+                </a>
+                <a href="#profile" class="nav-item flex items-center px-6 py-3 transition" data-page="profile">
+                    <i class="fas fa-user w-6"></i>
+                    <span>个人资料</span>
+                </a>
+                <a href="#skills" class="nav-item flex items-center px-6 py-3 transition" data-page="skills">
+                    <i class="fas fa-tools w-6"></i>
+                    <span>技能管理</span>
+                </a>
+                <a href="#experiences" class="nav-item flex items-center px-6 py-3 transition" data-page="experiences">
+                    <i class="fas fa-briefcase w-6"></i>
+                    <span>工作经历</span>
+                </a>
+                <a href="#projects" class="nav-item flex items-center px-6 py-3 transition" data-page="projects">
+                    <i class="fas fa-project-diagram w-6"></i>
+                    <span>项目管理</span>
+                </a>
+                <a href="#ai-demos" class="nav-item flex items-center px-6 py-3 transition" data-page="ai-demos">
+                    <i class="fas fa-robot w-6"></i>
+                    <span>AI Demo</span>
+                </a>
+                <a href="#documents" class="nav-item flex items-center px-6 py-3 transition" data-page="documents">
+                    <i class="fas fa-file-alt w-6"></i>
+                    <span>文档管理</span>
+                </a>
+                <a href="#settings" class="nav-item flex items-center px-6 py-3 transition" data-page="settings">
+                    <i class="fas fa-cog w-6"></i>
+                    <span>系统设置</span>
+                </a>
+            </nav>
+            
+            <div class="p-4 border-t border-gray-700">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium" id="userName">管理员</p>
+                        <button onclick="logout()" class="text-xs text-gray-400 hover:text-white">退出登录</button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- 顶部栏 -->
+            <header class="bg-white shadow-sm h-16 flex items-center justify-between px-6">
+                <h2 class="text-xl font-semibold text-gray-800" id="pageTitle">仪表盘</h2>
+                <div class="flex items-center space-x-4">
+                    <a href="../index.html" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm">
+                        <i class="fas fa-external-link-alt mr-1"></i>查看网站
+                    </a>
+                </div>
+            </header>
+            
+            <!-- 内容区域 -->
+            <div class="content-area overflow-y-auto p-6" id="contentArea">
+                <!-- 仪表盘 -->
+                <div id="dashboard-page" class="page-content">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white rounded-xl shadow p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-500 text-sm">总访问量</p>
+                                    <p class="text-2xl font-bold" id="totalVisits">-</p>
+                                </div>
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-eye text-blue-600"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl shadow p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-500 text-sm">今日访问</p>
+                                    <p class="text-2xl font-bold" id="todayVisits">-</p>
+                                </div>
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-chart-line text-green-600"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl shadow p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-500 text-sm">项目数量</p>
+                                    <p class="text-2xl font-bold" id="projectCount">-</p>
+                                </div>
+                                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-project-diagram text-purple-600"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl shadow p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-500 text-sm">技能数量</p>
+                                    <p class="text-2xl font-bold" id="skillCount">-</p>
+                                </div>
+                                <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-tools text-orange-600"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow p-6">
+                        <h3 class="text-lg font-semibold mb-4">热门页面</h3>
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">页面</th>
+                                    <th class="px-4 py-3 text-right text-sm font-medium text-gray-600">访问量</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pageStatsTable">
+                                <tr><td colspan="2" class="px-4 py-4 text-center text-gray-500">加载中...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- 其他页面内容将通过JS动态加载 -->
+                <div id="other-pages" class="page-content hidden">
+                    <div class="bg-white rounded-xl shadow p-8 text-center">
+                        <i class="fas fa-construction text-6xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-500">功能开发中...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8313/api';
+        
+        // 检查登录状态
+        function checkAuth() {
+            const token = localStorage.getItem('admin_token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return false;
+            }
+            return token;
+        }
+        
+        // 获取token
+        const token = checkAuth();
+        
+        // 显示用户名
+        const user = JSON.parse(localStorage.getItem('admin_user') || '{}');
+        document.getElementById('userName').textContent = user.username || '管理员';
+        
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('admin_token');
+            localStorage.removeItem('admin_user');
+            window.location.href = 'login.html';
+        }
+        
+        // API请求封装
+        async function apiRequest(url, options = {}) {
+            const response = await fetch(`${API_BASE_URL}${url}`, {
+                ...options,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                }
+            });
+            return response.json();
+        }
+        
+        // 加载统计数据
+        async function loadStats() {
+            try {
+                const stats = await apiRequest('/stats');
+                if (stats.success) {
+                    document.getElementById('totalVisits').textContent = stats.data.total || 0;
+                    document.getElementById('todayVisits').textContent = stats.data.today || 0;
+                    
+                    const tableBody = document.getElementById('pageStatsTable');
+                    if (stats.data.pages && stats.data.pages.length > 0) {
+                        tableBody.innerHTML = stats.data.pages.map(page => `
+                            <tr class="border-b">
+                                <td class="px-4 py-3 text-sm">${page.page_path || '/'}</td>
+                                <td class="px-4 py-3 text-sm text-right">${page.count}</td>
+                            </tr>
+                        `).join('');
+                    } else {
+                        tableBody.innerHTML = '<tr><td colspan="2" class="px-4 py-4 text-center text-gray-500">暂无数据</td></tr>';
+                    }
+                }
+                
+                // 加载项目数量
+                const projects = await apiRequest('/projects');
+                document.getElementById('projectCount').textContent = projects.data?.length || 0;
+                
+                // 加载技能数量
+                const skills = await apiRequest('/skills');
+                document.getElementById('skillCount').textContent = skills.data?.length || 0;
+            } catch (error) {
+                console.error('加载统计数据失败:', error);
+            }
+        }
+        
+        // 导航切换
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = item.dataset.page;
+                
+                // 更新导航状态
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                
+                // 更新页面标题
+                document.getElementById('pageTitle').textContent = item.querySelector('span').textContent;
+                
+                // 显示对应页面内容
+                if (page === 'dashboard') {
+                    document.getElementById('dashboard-page').classList.remove('hidden');
+                    document.getElementById('other-pages').classList.add('hidden');
+                    loadStats();
+                } else {
+                    document.getElementById('dashboard-page').classList.add('hidden');
+                    document.getElementById('other-pages').classList.remove('hidden');
+                }
+            });
+        });
+        
+        // 初始加载
+        loadStats();
+    </script>
+</body>
+</html>
