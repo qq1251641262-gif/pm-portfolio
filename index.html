@@ -34,9 +34,12 @@
             --text-muted: #7388A3;
         }
         
-        body {
+        html, body {
             font-family: 'Noto Sans SC', sans-serif;
             color: var(--text-primary);
+            background: transparent !important;
+            margin: 0;
+            padding: 0;
         }
         
         /* 固定背景效果 - 背景固定在视口顶部 */
@@ -55,7 +58,7 @@
         }
         
         /* 页面内容区域使用透明背景，让固定背景显示 */
-        section {
+        body > section {
             background: transparent !important;
         }
         
@@ -65,12 +68,14 @@
         .demo-card {
             background: rgba(249, 249, 241, 0.92) !important;
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
         
         /* 导航栏半透明效果 */
         nav {
             background: rgba(255, 255, 255, 0.95) !important;
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
         
         .hero-bg {
