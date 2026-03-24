@@ -54,37 +54,254 @@
     </section>
     
     <script>
+        // 高级轮播图组件 - 内联版本
+        class AdvancedCarousel {
+            constructor(container, options = {}) {
+                this.container = typeof container === 'string' ? document.querySelector(container) : container;
+                if (!this.container) {
+                    console.error('Carousel container not found');
+                    return;
+                }
+                this.config = {
+                    images: options.images || [],
+                    autoPlay: options.autoPlay !== false,
+                    autoPlayInterval: options.autoPlayInterval || 5000,
+                    transitionDuration: options.transitionDuration || 500,
+                    thumbnailsVisible: options.thumbnailsVisible || 4,
+                    ...options
+                };
+                this.currentIndex = 0;
+                this.isPlaying = true;
+                this.touchStartX = 0;
+                this.touchEndX = 0;
+                this.init();
+            }
+
+            init() {
+                this.render();
+                this.bindEvents();
+                this.startAutoPlay();
+            }
+
+            render() {
+                const { images } = this.config;
+                this.preloadImages(images.slice(0, 3));
+                this.container.innerHTML = `
+                    <div class="carousel-wrapper">
+                        <div class="carousel-main">
+                            <div class="carousel-main-inner">
+                                ${images.map((img, index) => `
+                                    <div class="carousel-main-item ${index === 0 ? 'active' : ''}" data-index="${index}">
+                                        <div class="image-wrapper">
+                                            <img src="${img.src}" alt="${img.alt || ''}" 
+                                                 loading="${index === 0 ? 'eager' : 'lazy'}" 
+                                                 fetchpriority="${index === 0 ? 'high' : 'low'}"
+                                                 class="carousel-image ${index === 0 ? 'loaded' : ''}"
+                                                 onload="this.classList.add('loaded'); this.nextElementSibling?.remove()"
+                                                 onerror="this.classList.add('error'); this.nextElementSibling?.remove()">
+                                            ${img.title ? `
+                                                <div class="image-overlay">
+                                                    <div class="image-info">
+                                                        <h3 class="image-title">${img.title}</h3>
+                                                        <p class="image-desc">${img.description || ''}</p>
+                                                    </div>
+                                                </div>
+                                            ` : ''}
+                                            ${index === 0 ? '<div class="image-loading">加载中...</div>' : ''}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <button class="carousel-arrow carousel-arrow-prev" aria-label="Previous">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="carousel-arrow carousel-arrow-next" aria-label="Next">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div class="carousel-thumbnails">
+                            <div class="thumbnails-track">
+                                ${images.map((img, index) => `
+                                    <div class="thumbnail-item ${index === 0 ? 'active' : ''}" 
+                                         data-index="${index}" 
+                                         tabindex="0"
+                                         role="button"
+                                         aria-label="View image ${index + 1}">
+                                        <img src="${img.src}" alt="${img.alt || ''}" loading="lazy" class="thumbnail-image">
+                                        <div class="thumbnail-overlay"></div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                this.addStyles();
+                setTimeout(() => this.preloadNextImage(), 1000);
+            }
+
+            preloadImages(imageList) {
+                imageList.forEach(img => {
+                    const image = new Image();
+                    image.src = img.src;
+                });
+            }
+
+            preloadNextImage() {
+                const nextIndex = (this.currentIndex + 1) % this.config.images.length;
+                const image = new Image();
+                image.src = this.config.images[nextIndex].src;
+            }
+
+            addStyles() {
+                const styleId = 'carousel-styles';
+                if (document.getElementById(styleId)) return;
+                const styles = document.createElement('style');
+                styles.id = styleId;
+                styles.textContent = `
+                    .carousel-wrapper { display: flex; gap: 20px; height: 600px; position: relative; }
+                    .carousel-main { flex: 0 0 70%; position: relative; overflow: hidden; border-radius: 12px; background: #f5f5f5; }
+                    .carousel-main-inner { position: relative; height: 100%; }
+                    .carousel-main-item { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; visibility: hidden; transition: opacity ${this.config.transitionDuration}ms ease, visibility ${this.config.transitionDuration}ms ease; }
+                    .carousel-main-item.active { opacity: 1; visibility: visible; z-index: 1; }
+                    .image-wrapper { position: relative; width: 100%; height: 100%; overflow: hidden; }
+                    .carousel-image { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.3s ease; }
+                    .carousel-image.loaded { opacity: 1; }
+                    .carousel-image.error { display: none; }
+                    .image-loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #666; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+                    .image-loading::after { content: ''; width: 20px; height: 20px; border: 2px solid #e0e0e0; border-top-color: #6EA4D2; border-radius: 50%; animation: spin 0.8s linear infinite; }
+                    @keyframes spin { to { transform: rotate(360deg); } }
+                    .image-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%); padding: 40px 30px 30px; color: white; }
+                    .image-title { font-size: 28px; font-weight: bold; margin-bottom: 8px; }
+                    .image-desc { font-size: 16px; opacity: 0.9; }
+                    .carousel-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; background: rgba(255, 255, 255, 0.9); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; z-index: 10; backdrop-filter: blur(10px); }
+                    .carousel-arrow:hover { background: white; transform: translateY(-50%) scale(1.1); }
+                    .carousel-arrow-prev { left: 20px; }
+                    .carousel-arrow-next { right: 20px; }
+                    .carousel-arrow i { color: #333; font-size: 18px; }
+                    .carousel-thumbnails { flex: 0 0 30%; overflow-y: auto; border-radius: 12px; background: #f9f9f9; padding: 15px; }
+                    .thumbnails-track { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+                    .thumbnail-item { position: relative; width: 100%; aspect-ratio: 16/9; border-radius: 8px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent; outline: none; }
+                    .thumbnail-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; background: #e0e0e0; }
+                    .thumbnail-item:hover img { transform: scale(1.05); }
+                    .thumbnail-item.active { border-color: #6EA4D2; box-shadow: 0 4px 12px rgba(110, 164, 210, 0.4); }
+                    .thumbnail-item.active img { transform: scale(1.02); }
+                    .thumbnail-overlay { position: absolute; inset: 0; background: rgba(110, 164, 210, 0); transition: background 0.3s ease; }
+                    .thumbnail-item.active .thumbnail-overlay { background: rgba(110, 164, 210, 0.1); }
+                    @media (max-width: 768px) { .carousel-wrapper { flex-direction: column; height: auto; } .carousel-main { flex: none; width: 100%; height: 400px; } .carousel-thumbnails { flex: none; width: 100%; overflow-x: auto; overflow-y: hidden; } .thumbnails-track { grid-template-columns: repeat(4, 1fr); } .thumbnail-item { width: 100px; flex: 0 0 100px; } }
+                    .carousel-thumbnails::-webkit-scrollbar { width: 6px; }
+                    .carousel-thumbnails::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
+                    .carousel-thumbnails::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+                    .carousel-thumbnails::-webkit-scrollbar-thumb:hover { background: #a1a1a1; }
+                    @media (max-width: 768px) { .carousel-thumbnails::-webkit-scrollbar { height: 6px; width: auto; } }
+                `;
+                document.head.appendChild(styles);
+            }
+
+            bindEvents() {
+                this.container.querySelectorAll('.thumbnail-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const index = parseInt(item.dataset.index);
+                        this.goToSlide(index);
+                    });
+                });
+                const prevBtn = this.container.querySelector('.carousel-arrow-prev');
+                const nextBtn = this.container.querySelector('.carousel-arrow-next');
+                prevBtn?.addEventListener('click', () => this.prev());
+                nextBtn?.addEventListener('click', () => this.next());
+                this.container.querySelector('.carousel-main').addEventListener('touchstart', (e) => {
+                    this.touchStartX = e.touches[0].clientX;
+                    this.stopAutoPlay();
+                });
+                this.container.querySelector('.carousel-main').addEventListener('touchend', (e) => {
+                    this.touchEndX = e.changedTouches[0].clientX;
+                    const diff = this.touchStartX - this.touchEndX;
+                    if (Math.abs(diff) > 50) {
+                        if (diff > 0) this.next();
+                        else this.prev();
+                    }
+                    this.startAutoPlay();
+                });
+                this.container.addEventListener('mouseenter', () => this.stopAutoPlay());
+                this.container.addEventListener('mouseleave', () => this.startAutoPlay());
+            }
+
+            goToSlide(index) {
+                if (index === this.currentIndex) return;
+                const mainItems = this.container.querySelectorAll('.carousel-main-item');
+                const thumbnailItems = this.container.querySelectorAll('.thumbnail-item');
+                mainItems[this.currentIndex]?.classList.remove('active');
+                mainItems[index]?.classList.add('active');
+                thumbnailItems[this.currentIndex]?.classList.remove('active');
+                thumbnailItems[index]?.classList.add('active');
+                this.currentIndex = index;
+                this.updateThumbnailsScroll();
+            }
+
+            prev() {
+                const newIndex = (this.currentIndex - 1 + this.config.images.length) % this.config.images.length;
+                this.goToSlide(newIndex);
+            }
+
+            next() {
+                const newIndex = (this.currentIndex + 1) % this.config.images.length;
+                this.goToSlide(newIndex);
+            }
+
+            updateThumbnailsScroll() {
+                const thumbnailsContainer = this.container.querySelector('.carousel-thumbnails');
+                const activeThumbnail = this.container.querySelector('.thumbnail-item.active');
+                if (activeThumbnail && thumbnailsContainer) {
+                    const containerRect = thumbnailsContainer.getBoundingClientRect();
+                    const itemRect = activeThumbnail.getBoundingClientRect();
+                    if (itemRect.top < containerRect.top || itemRect.bottom > containerRect.bottom) {
+                        thumbnailsContainer.scrollTop = activeThumbnail.offsetTop - thumbnailsContainer.offsetHeight / 2 + activeThumbnail.offsetHeight / 2;
+                    }
+                }
+            }
+
+            startAutoPlay() {
+                if (!this.config.autoPlay || this.intervalId) return;
+                this.intervalId = setInterval(() => this.next(), this.config.autoPlayInterval);
+            }
+
+            stopAutoPlay() {
+                if (!this.intervalId) return;
+                clearInterval(this.intervalId);
+                this.intervalId = null;
+            }
+        }
+
         // 项目5轮播图片数据
         const carouselImages = [
             {
-                src: '../images/projects/project5/首页.png',
-                alt: '系统首页',
-                title: '系统首页',
-                description: '新零售平台首页，展示商品推荐和营销活动'
+                src: '../images/projects/project5/prototype/登录页.png',
+                alt: '登录页',
+                title: '登录页',
+                description: '新零售平台统一登录入口，支持多端适配'
             },
             {
-                src: '../images/projects/project5/商品详情.png',
-                alt: '商品详情',
-                title: '商品详情',
-                description: '商品详情页，支持规格选择和一键购买'
-            },
-            {
-                src: '../images/projects/project5/购物车.png',
-                alt: '购物车',
-                title: '购物车',
-                description: '购物车管理，支持批量操作和优惠计算'
-            },
-            {
-                src: '../images/projects/project5/订单管理.png',
-                alt: '订单管理',
-                title: '订单管理',
+                src: '../images/projects/project5/prototype/订单中心.png',
+                alt: '订单中心',
+                title: '订单中心',
                 description: '订单全流程管理，实时跟踪物流状态'
             },
             {
-                src: '../images/projects/project5/门店管理.png',
-                alt: '门店管理',
-                title: '门店管理',
-                description: '线下门店信息展示，支持门店预约和导航'
+                src: '../images/projects/project5/prototype/会员等级营销.png',
+                alt: '会员等级营销',
+                title: '会员等级营销',
+                description: '会员等级体系与营销策略配置'
+            },
+            {
+                src: '../images/projects/project5/prototype/团购管理.png',
+                alt: '团购管理',
+                title: '团购管理',
+                description: '团购活动配置与管理，支持多种营销玩法'
+            },
+            {
+                src: '../images/projects/project5/prototype/每周特价.png',
+                alt: '每周特价',
+                title: '每周特价',
+                description: '限时特价活动配置，提升用户转化率'
             }
         ];
         
@@ -92,44 +309,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             const carouselContainer = document.getElementById('project-carousel');
             if (carouselContainer && carouselImages.length > 0) {
-                let currentIndex = 0;
-                
-                function renderCarousel() {
-                    const currentImg = carouselImages[currentIndex];
-                    carouselContainer.innerHTML = `
-                        <div class="relative w-full" style="height: 500px;">
-                            <img src="${currentImg.src}" alt="${currentImg.alt}" 
-                                 class="w-full h-full object-cover">
-                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
-                                <h3 class="text-white text-2xl font-bold">${currentImg.title}</h3>
-                                <p class="text-white/80 mt-2">${currentImg.description}</p>
-                            </div>
-                            <div class="absolute bottom-6 right-6 flex gap-2">
-                                <button onclick="prevSlide()" class="w-10 h-10 rounded-full bg-white/80 hover:bg-white flex items-center justify-center">
-                                    <i class="fas fa-chevron-left"></i>
-                                </button>
-                                <button onclick="nextSlide()" class="w-10 h-10 rounded-full bg-white/80 hover:bg-white flex items-center justify-center">
-                                    <i class="fas fa-chevron-right"></i>
-                                </button>
-                            </div>
-                            <div class="absolute top-6 right-6 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
-                                ${currentIndex + 1} / ${carouselImages.length}
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                window.prevSlide = function() {
-                    currentIndex = (currentIndex - 1 + carouselImages.length) % carouselImages.length;
-                    renderCarousel();
-                };
-                
-                window.nextSlide = function() {
-                    currentIndex = (currentIndex + 1) % carouselImages.length;
-                    renderCarousel();
-                };
-                
-                renderCarousel();
+                const carousel = new AdvancedCarousel('#project-carousel', {
+                    images: carouselImages,
+                    autoPlay: true,
+                    autoPlayInterval: 5000,
+                    transitionDuration: 500,
+                    thumbnailsVisible: 4
+                });
             }
         });
     </script>
@@ -310,33 +496,51 @@
             const prototypeImages = [
                 {
                     id: 'p5-001',
-                    path: '../images/projects/project5/首页.png',
-                    title: '系统首页',
-                    subtitle: '新零售平台首页，展示商品推荐和营销活动'
+                    path: '../images/projects/project5/prototype/登录页.png',
+                    title: '登录页',
+                    subtitle: '新零售平台统一登录入口，支持多端适配'
                 },
                 {
                     id: 'p5-002',
-                    path: '../images/projects/project5/商品详情.png',
-                    title: '商品详情',
-                    subtitle: '商品详情页，支持规格选择和一键购买'
-                },
-                {
-                    id: 'p5-003',
-                    path: '../images/projects/project5/购物车.png',
-                    title: '购物车',
-                    subtitle: '购物车管理，支持批量操作和优惠计算'
-                },
-                {
-                    id: 'p5-004',
-                    path: '../images/projects/project5/订单管理.png',
-                    title: '订单管理',
+                    path: '../images/projects/project5/prototype/订单中心.png',
+                    title: '订单中心',
                     subtitle: '订单全流程管理，实时跟踪物流状态'
                 },
                 {
+                    id: 'p5-003',
+                    path: '../images/projects/project5/prototype/会员等级营销.png',
+                    title: '会员等级营销',
+                    subtitle: '会员等级体系与营销策略配置'
+                },
+                {
+                    id: 'p5-004',
+                    path: '../images/projects/project5/prototype/团购管理.png',
+                    title: '团购管理',
+                    subtitle: '团购活动配置与管理，支持多种营销玩法'
+                },
+                {
                     id: 'p5-005',
-                    path: '../images/projects/project5/门店管理.png',
-                    title: '门店管理',
-                    subtitle: '线下门店信息展示，支持门店预约和导航'
+                    path: '../images/projects/project5/prototype/每周特价.png',
+                    title: '每周特价',
+                    subtitle: '限时特价活动配置，提升用户转化率'
+                },
+                {
+                    id: 'p5-006',
+                    path: '../images/projects/project5/prototype/促销发放设置.png',
+                    title: '促销发放设置',
+                    subtitle: '促销活动规则配置与发放管理'
+                },
+                {
+                    id: 'p5-007',
+                    path: '../images/projects/project5/prototype/橱窗管理.png',
+                    title: '橱窗管理',
+                    subtitle: '首页橱窗位内容配置与展示管理'
+                },
+                {
+                    id: 'p5-008',
+                    path: '../images/projects/project5/prototype/商品类型.png',
+                    title: '商品类型',
+                    subtitle: '商品分类与类型管理体系'
                 }
             ];
             
