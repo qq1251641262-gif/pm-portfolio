@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据埋点统计 - 后台查看</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: #f5f5f5;
+        }
+        .stat-card {
+            transition: all 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .sidebar {
+            width: 260px;
+            min-height: calc(100vh - 73px);
+            position: fixed;
+            top: 73px;
+            left: 0;
+            background: white;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.05);
+            overflow-y: auto;
+        }
+        .main-content {
+            margin-left: 260px;
+            padding: 32px 24px;
+        }
+        .nav-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #6B7280;
+            text-decoration: none;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+            margin: 4px 0;
+        }
+        .nav-item:hover {
+            background: #F3F4F6;
+            color: #3B82F6;
+        }
+        .nav-item.active {
+            background: #EFF6FF;
+            color: #3B82F6;
+            border-left-color: #3B82F6;
+            font-weight: 500;
+        }
+        .nav-section {
+            padding: 12px 20px 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #9CA3AF;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .project-selector {
+            margin: 8px 20px;
+            padding: 8px 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            width: calc(100% - 40px);
+            font-size: 14px;
+            color: #374151;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .project-selector:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- 顶部导航 -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-gray-800">
+                    <i class="fas fa-chart-line text-blue-500 mr-2"></i>
+                    数据埋点统计后台
+                </h1>
+                <div class="flex gap-4">
+                    <button onclick="loadData()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                        <i class="fas fa-sync-alt mr-2"></i>刷新数据
+                    </button>
+                    <button onclick="clearData()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+                        <i class="fas fa-trash mr-2"></i>清除数据
+                    </button>
+                    <div class="relative inline-block">
+                        <button onclick="toggleExportMenu()" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
+                            <i class="fas fa-download mr-2"></i>导出数据 <i class="fas fa-chevron-down ml-1"></i>
+                        </button>
+                        <div id="exportMenu" class="hidden absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg z-50">
+                            <button onclick="exportAsCSV(); toggleExportMenu();" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-t-lg">
+                                <i class="fas fa-file-csv mr-2"></i>导出 CSV
+                            </button>
+                            <button onclick="exportAsExcel(); toggleExportMenu();" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-b-lg">
+                                <i class="fas fa-file-excel mr-2"></i>导出 Excel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 左侧导航栏 -->
+    <div class="sidebar">
+        <div class="py-4">
+            <div class="nav-section">统计分析</div>
+            <a href="analytics-dashboard.html" class="nav-item active">
+                <i class="fas fa-home w-5"></i>
+                <span>首页统计</span>
+            </a>
+            <a href="project-analytics.html" class="nav-item">
+                <i class="fas fa-folder-open w-5"></i>
+                <span>项目详情页统计</span>
+            </a>
+            
+            <div class="nav-section mt-6">项目详情页</div>
+            <select onchange="location.href=this.value" class="project-selector">
+                <option value="project-analytics.html?project=project1" selected>项目 1 - B2B 电商平台</option>
+                <option value="project-analytics.html?project=project2">项目 2 - 电商 CRM 融合系统</option>
+                <option value="project-analytics.html?project=project3">项目 3 - BI 数据可视化平台</option>
+                <option value="project-analytics.html?project=project4">项目 4 - 企业级客户管理（CRM）系统</option>
+                <option value="project-analytics.html?project=project5">项目 5 - 新零售电商解决方案</option>
+                <option value="project-analytics.html?project=project6">项目 6 - 企业品牌官网（营销型）</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- 数据埋点统计库 -->
+    <script src="../js/analytics.js"></script>
+    
+    <!-- 主要内容 -->
+    <div class="main-content">
+        <!-- 概览统计 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
+            <div class="stat-card bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-gray-600 text-sm font-medium">总会话数</h3>
+                    <i class="fas fa-users text-blue-500 text-2xl"></i>
+                </div>
+                <p class="text-3xl font-bold text-gray-800" id="totalSessions">-</p>
+                <p class="text-xs text-gray-500 mt-2">独立访客数量</p>
+            </div>
+
+            <div class="stat-card bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-gray-600 text-sm font-medium">总页面浏览</h3>
+                    <i class="fas fa-eye text-green-500 text-2xl"></i>
+                </div>
+                <p class="text-3xl font-bold text-gray-800" id="totalPageViews">-</p>
+                <p class="text-xs text-gray-500 mt-2">PV 总数</p>
+            </div>
+
+            <div class="stat-card bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-gray-600 text-sm font-medium">平均停留时长</h3>
+                    <i class="fas fa-clock text-purple-500 text-2xl"></i>
+                </div>
+                <p class="text-3xl font-bold text-gray-800" id="avgTimeSpent">-</p>
+                <p class="text-xs text-gray-500 mt-2">秒/会话</p>
+            </div>
+
+            <div class="stat-card bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-gray-600 text-sm font-medium">总点击事件</h3>
+                    <i class="fas fa-mouse-pointer text-orange-500 text-2xl"></i>
+                </div>
+                <p class="text-3xl font-bold text-gray-800" id="totalClicks">-</p>
+                <p class="text-xs text-gray-500 mt-2">交互次数</p>
+            </div>
+
+            <div class="stat-card bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-gray-600 text-sm font-medium">文档交互</h3>
+                    <i class="fas fa-file-image text-purple-500 text-2xl"></i>
+                </div>
+                <p class="text-3xl font-bold text-gray-800" id="documentInteractions">-</p>
+                <p class="text-xs text-gray-500 mt-2">文档查看次数</p>
+            </div>
+
+            <div class="stat-card bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-gray-600 text-sm font-medium">演示链接点击</h3>
+                    <i class="fas fa-external-link-alt text-teal-500 text-2xl"></i>
+                </div>
+                <p class="text-3xl font-bold text-gray-800" id="demoLinkClicks">-</p>
+                <p class="text-xs text-gray-500 mt-2">演示访问次数</p>
+            </div>
+        </div>
+
+        <!-- 模块热度 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <h2 class="text-xl font-bold mb-6 flex items-center">
+                <i class="fas fa-fire text-red-500 mr-2"></i>
+                模块热度排行
+            </h2>
+            <div id="sectionHeatmap" class="space-y-4">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+
+        <!-- 项目兴趣度 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <h2 class="text-xl font-bold mb-6 flex items-center">
+                <i class="fas fa-star text-yellow-500 mr-2"></i>
+                项目兴趣度排行
+            </h2>
+            <div id="projectRanking" class="space-y-4">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+
+        <!-- AI Demo 热度 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <h2 class="text-xl font-bold mb-6 flex items-center">
+                <i class="fas fa-robot text-purple-500 mr-2"></i>
+                AI Demo 热度排行
+            </h2>
+            <div id="aiDemoHeatmap" class="space-y-4">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+
+        <!-- 交互分析图表 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- 柱状图 - 元素点击排行 -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-chart-bar text-blue-500 mr-2"></i>
+                    元素点击排行
+                </h2>
+                <div id="clickBarChart">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+
+            <!-- 饼图 - 事件类型分布 -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-chart-pie text-green-500 mr-2"></i>
+                    事件类型分布
+                </h2>
+                <div id="eventTypePieChart">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 折线图 - 交互趋势 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <h2 class="text-xl font-bold mb-6 flex items-center">
+                <i class="fas fa-chart-line text-purple-500 mr-2"></i>
+                交互趋势
+            </h2>
+            <div id="interactionTrendChart">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+
+        <!-- 滚动深度分析 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <h2 class="text-xl font-bold mb-6 flex items-center">
+                <i class="fas fa-chart-area text-indigo-500 mr-2"></i>
+                滚动深度分析
+            </h2>
+            <div id="scrollDepthChart" class="space-y-4">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+
+        <!-- 详细数据表 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <h2 class="text-xl font-bold mb-6 flex items-center">
+                <i class="fas fa-table text-blue-500 mr-2"></i>
+                详细事件记录
+            </h2>
+            <!-- 筛选和排序 -->
+            <div class="flex flex-wrap gap-4 mb-4">
+                <select id="eventTypeFilter" onchange="filterEvents()" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                    <option value="">所有事件类型</option>
+                    <option value="page_view">页面浏览</option>
+                    <option value="section_view">模块曝光</option>
+                    <option value="click">点击交互</option>
+                    <option value="project_interaction">项目交互</option>
+                    <option value="document_interaction">文档交互</option>
+                    <option value="demo_link_click">演示链接点击</option>
+                    <option value="scroll_depth">滚动深度</option>
+                    <option value="time_spent">停留时长</option>
+                </select>
+                <select id="sortOrder" onchange="filterEvents()" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                    <option value="desc">最新在前</option>
+                    <option value="asc">最旧在前</option>
+                </select>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer" onclick="sortEvents('time')">时间 <i class="fas fa-sort ml-1"></i></th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer" onclick="sortEvents('session')">会话 ID <i class="fas fa-sort ml-1"></i></th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer" onclick="sortEvents('type')">事件类型 <i class="fas fa-sort ml-1"></i></th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">详情</th>
+                        </tr>
+                    </thead>
+                    <tbody id="eventsTable" class="divide-y divide-gray-200">
+                        <!-- 动态生成 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 数据存储键名
+        const STORAGE_KEY = 'portfolio_analytics';
+
+        // 加载数据
+        function loadData() {
+            const data = getStoredData();
+            renderDashboard(data);
+        }
+
+        // 获取存储的数据
+        function getStoredData() {
+            try {
+                const data = localStorage.getItem(STORAGE_KEY);
+                return data ? JSON.parse(data) : [];
+            } catch (e) {
+                console.error('Failed to load data:', e);
+                return [];
+            }
+        }
+
+        // 渲染仪表板
+        function renderDashboard(data) {
+            // 计算统计数据
+            const stats = calculateStats(data);
+            
+            // 更新概览卡片
+            document.getElementById('totalSessions').textContent = stats.uniqueSessions;
+            document.getElementById('totalPageViews').textContent = stats.totalPageViews;
+            document.getElementById('avgTimeSpent').textContent = stats.avgTimeSpent + 's';
+            document.getElementById('totalClicks').textContent = stats.totalClicks;
+            document.getElementById('documentInteractions').textContent = stats.documentInteractions || 0;
+            document.getElementById('demoLinkClicks').textContent = stats.demoLinkClicks || 0;
+
+            // 渲染模块热度（只统计首页）
+            renderSectionHeatmap(stats.homepageSectionViews);
+            
+            // 渲染项目排行
+            renderProjectRanking(stats.projectInteractions);
+            
+            // 渲染 AI Demo 热度
+            renderAiDemoHeatmap(stats.aiDemoClicks);
+            
+            // 渲染交互分析
+            renderInteractionAnalytics(stats);
+            
+            // 渲染事件表格
+            renderEventsTable(data);
+            
+            // 渲染滚动深度
+            renderScrollDepth(stats.scrollDepths);
+        }
+
+        // 计算统计数据
+        function calculateStats(data) {
+            const sessions = new Set();
+            let totalPageViews = 0;
+            let totalTimeSpent = 0;
+            let timeSpentCount = 0;
+            let totalClicks = 0;
+            let documentInteractions = 0;
+            let demoLinkClicks = 0;
+            const sectionViews = {};
+            const homepageSectionViews = {};
+            const projectInteractions = {};
+            const aiDemoClicks = {};
+            const scrollDepths = [];
+            const clickElements = {};
+            const eventTypeCounts = {};
+
+            data.forEach(event => {
+                sessions.add(event.sessionId);
+
+                eventTypeCounts[event.eventType] = (eventTypeCounts[event.eventType] || 0) + 1;
+
+                if (event.eventType === 'page_view') {
+                    // 只统计首页的浏览次数
+                    const pageType = event.eventData?.pageType || 'home';
+                    if (pageType === 'home' || pageType === undefined || pageType === '') {
+                        totalPageViews++;
+                    }
+                }
+
+                if (event.eventType === 'section_view') {
+                    const sectionName = event.eventData?.sectionName || 'Unknown';
+                    sectionViews[sectionName] = (sectionViews[sectionName] || 0) + 1;
+                    // 只统计首页的模块热度（pageType 为 'home' 或空/未定义表示首页）
+                    const pageType = event.eventData?.pageType || 'home';
+                    if (pageType === 'home' || pageType === undefined || pageType === '') {
+                        homepageSectionViews[sectionName] = (homepageSectionViews[sectionName] || 0) + 1;
+                    }
+                }
+
+                if (event.eventType === 'click') {
+                    totalClicks++;
+                    const elementName = event.eventData?.elementName || event.eventData?.elementId || 'Unknown';
+                    clickElements[elementName] = (clickElements[elementName] || 0) + 1;
+                    
+                    // 统计 AI Demo 卡片点击
+                    if (elementName.includes('ai-demo') || elementName.includes('AI Demo')) {
+                        const demoName = event.eventData?.demoName || elementName;
+                        aiDemoClicks[demoName] = (aiDemoClicks[demoName] || 0) + 1;
+                    }
+                }
+
+                if (event.eventType === 'project_interaction') {
+                    const projectName = event.eventData?.projectName || 'Unknown';
+                    if (!projectInteractions[projectName]) {
+                        projectInteractions[projectName] = 0;
+                    }
+                    projectInteractions[projectName]++;
+                }
+
+                if (event.eventType === 'document_interaction') {
+                    documentInteractions++;
+                }
+
+                if (event.eventType === 'demo_link_click') {
+                    demoLinkClicks++;
+                }
+                
+                if (event.eventType === 'time_spent') {
+                    totalTimeSpent += event.eventData?.totalSeconds || 0;
+                    timeSpentCount++;
+                }
+                
+                if (event.eventType === 'scroll_depth') {
+                    scrollDepths.push(event.eventData?.maxScroll || 0);
+                }
+            });
+
+            return {
+                uniqueSessions: sessions.size,
+                totalPageViews,
+                avgTimeSpent: timeSpentCount > 0 ? Math.round(totalTimeSpent / timeSpentCount) : 0,
+                totalClicks,
+                documentInteractions,
+                demoLinkClicks,
+                sectionViews,
+                homepageSectionViews,
+                projectInteractions,
+                aiDemoClicks,
+                scrollDepths,
+                clickElements,
+                eventTypeCounts
+            };
+        }
+
+        // 渲染模块热度
+        function renderSectionHeatmap(sectionViews) {
+            const container = document.getElementById('sectionHeatmap');
+            const sorted = Object.entries(sectionViews).sort((a, b) => b[1] - a[1]);
+            
+            if (sorted.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">暂无数据</p>';
+                return;
+            }
+
+            const maxViews = Math.max(...sorted.map(([, count]) => count));
+            
+            container.innerHTML = sorted.map(([name, count], index) => {
+                const percentage = (count / maxViews) * 100;
+                const rankIcon = getRankIcon(index);
+                return `
+                    <div class="flex items-center gap-4">
+                        <span class="text-2xl font-bold text-gray-400 w-8">${rankIcon}</span>
+                        <div class="flex-1">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium text-gray-700">${name}</span>
+                                <span class="text-sm font-bold text-gray-900">${count} 次浏览</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-gradient-to-r from-blue-500 to-purple-500 h-2.5 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 渲染项目排行
+        function renderProjectRanking(projectInteractions) {
+            const container = document.getElementById('projectRanking');
+            const sorted = Object.entries(projectInteractions).sort((a, b) => b[1] - a[1]);
+            
+            if (sorted.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">暂无数据</p>';
+                return;
+            }
+
+            container.innerHTML = sorted.map(([name, count], index) => {
+                const rankIcon = getRankIcon(index);
+                return `
+                    <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                        <span class="text-2xl font-bold text-gray-400 w-8">${rankIcon}</span>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-gray-800">${name}</h3>
+                            <p class="text-sm text-gray-500">${count} 次交互</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-2xl font-bold text-blue-500">${count}</span>
+                            <p class="text-xs text-gray-500">兴趣度</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 渲染 AI Demo 热度
+        function renderAiDemoHeatmap(aiDemoClicks) {
+            const container = document.getElementById('aiDemoHeatmap');
+            const sorted = Object.entries(aiDemoClicks).sort((a, b) => b[1] - a[1]);
+            
+            if (sorted.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">暂无数据</p>';
+                return;
+            }
+
+            const maxClicks = Math.max(...sorted.map(([, count]) => count));
+            
+            container.innerHTML = sorted.map(([name, count], index) => {
+                const percentage = maxClicks > 0 ? (count / maxClicks) * 100 : 0;
+                const rankIcon = getRankIcon(index);
+                return `
+                    <div class="flex items-center gap-4">
+                        <span class="text-2xl font-bold text-gray-400 w-8">${rankIcon}</span>
+                        <div class="flex-1">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium text-gray-700">${name}</span>
+                                <span class="text-sm font-bold text-gray-900">${count} 次点击</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-2.5 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 渲染事件表格
+        function renderEventsTable(data) {
+            const container = document.getElementById('eventsTable');
+            const filterType = document.getElementById('eventTypeFilter')?.value || '';
+            const sortOrder = document.getElementById('sortOrder')?.value || 'desc';
+            
+            let filteredData = data;
+            
+            if (filterType) {
+                filteredData = data.filter(event => event.eventType === filterType);
+            }
+            
+            if (sortOrder === 'asc') {
+                filteredData = filteredData.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+            } else {
+                filteredData = filteredData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            }
+            
+            const displayData = filteredData.slice(0, 50);
+            
+            if (displayData.length === 0) {
+                container.innerHTML = '<tr><td colspan="4" class="px-4 py-8 text-center text-gray-500">暂无事件记录</td></tr>';
+                return;
+            }
+
+            container.innerHTML = displayData.map(event => {
+                const time = new Date(event.timestamp).toLocaleString('zh-CN');
+                const eventType = getEventTypeLabel(event.eventType);
+                const details = JSON.stringify(event.eventData, null, 2).replace(/"/g, '').replace(/{|}/g, '').substring(0, 100);
+                
+                return `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">${time}</td>
+                        <td class="px-4 py-3 text-sm text-gray-600 font-mono">${event.sessionId ? event.sessionId.substring(0, 20) : 'N/A'}...</td>
+                        <td class="px-4 py-3 text-sm">
+                            <span class="px-2 py-1 rounded-full text-xs font-medium ${getEventTypeColor(event.eventType)}">
+                                ${eventType}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-600 truncate max-w-md">${details}</td>
+                    </tr>`;
+            }).join('');
+        }
+
+        // 筛选事件
+        function filterEvents() {
+            const data = getStoredData();
+            renderEventsTable(data);
+        }
+
+        // 排序事件
+        function sortEvents(column) {
+            const sortOrder = document.getElementById('sortOrder');
+            if (sortOrder.value === 'desc') {
+                sortOrder.value = 'asc';
+            } else {
+                sortOrder.value = 'desc';
+            }
+            filterEvents();
+        }
+
+        // 渲染交互分析（柱状图、折线图、饼图）
+        function renderInteractionAnalytics(stats) {
+            // 渲染柱状图 - 元素点击排行
+            renderClickBarChart(stats.clickElements);
+            
+            // 渲染饼图 - 事件类型分布
+            renderEventTypePieChart(stats.eventTypeCounts);
+            
+            // 渲染折线图 - 交互趋势
+            renderInteractionTrend(data);
+        }
+
+        // 柱状图 - 元素点击排行
+        function renderClickBarChart(clickElements) {
+            const container = document.getElementById('clickBarChart');
+            if (!container) return;
+            
+            const sorted = Object.entries(clickElements).sort((a, b) => b[1] - a[1]).slice(0, 10);
+            
+            if (sorted.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">暂无点击数据</p>';
+                return;
+            }
+
+            const maxClicks = Math.max(...sorted.map(([, count]) => count));
+            
+            container.innerHTML = `
+                <div class="space-y-3">
+                    ${sorted.map(([name, count]) => {
+                        const percentage = (count / maxClicks) * 100;
+                        return `
+                            <div class="flex items-center gap-3">
+                                <span class="text-sm text-gray-600 w-32 truncate">${name}</span>
+                                <div class="flex-1 bg-gray-200 rounded-full h-4">
+                                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 h-4 rounded-full" style="width: ${percentage}%"></div>
+                                </div>
+                                <span class="text-sm font-bold text-gray-800 w-12 text-right">${count}</span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        // 饼图 - 事件类型分布
+        function renderEventTypePieChart(eventTypeCounts) {
+            const container = document.getElementById('eventTypePieChart');
+            if (!container) return;
+            
+            const entries = Object.entries(eventTypeCounts).sort((a, b) => b[1] - a[1]);
+            
+            if (entries.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">暂无数据</p>';
+                return;
+            }
+
+            const total = entries.reduce((sum, [, count]) => sum + count, 0);
+            const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16'];
+            
+            let cumulativePercentage = 0;
+            
+            container.innerHTML = `
+                <div class="flex items-center gap-8">
+                    <div class="w-48 h-48 relative">
+                        <svg viewBox="0 0 36 36" class="w-full h-full transform -rotate-90">
+                            ${entries.map(([type, count], index) => {
+                                const percentage = (count / total) * 100;
+                                const dashArray = percentage + ', ' + (100 - percentage);
+                                const dashOffset = 25 - cumulativePercentage;
+                                cumulativePercentage += percentage;
+                                return `
+                                    <circle cx="18" cy="18" r="15.9155" fill="transparent" stroke="${colors[index % colors.length]}" stroke-width="3" stroke-dasharray="${dashArray}" stroke-dashoffset="${dashOffset}" />
+                                `;
+                            }).join('')}
+                        </svg>
+                    </div>
+                    <div class="flex-1 space-y-2">
+                        ${entries.map(([type, count], index) => {
+                            const percentage = ((count / total) * 100).toFixed(1);
+                            return `
+                                <div class="flex items-center gap-2">
+                                    <span class="w-3 h-3 rounded-full" style="background-color: ${colors[index % colors.length]}"></span>
+                                    <span class="text-sm text-gray-600">${getEventTypeLabel(type)}</span>
+                                    <span class="text-sm font-bold text-gray-800">${count}</span>
+                                    <span class="text-xs text-gray-500">(${percentage}%)</span>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // 折线图 - 交互趋势
+        function renderInteractionTrend(data) {
+            const container = document.getElementById('interactionTrendChart');
+            if (!container) return;
+            
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">暂无趋势数据</p>';
+                return;
+            }
+
+            const eventsByHour = {};
+            data.forEach(event => {
+                const date = new Date(event.timestamp);
+                const hourKey = `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:00`;
+                eventsByHour[hourKey] = (eventsByHour[hourKey] || 0) + 1;
+            });
+
+            const sortedEntries = Object.entries(eventsByHour).sort((a, b) => new Date(a[0]) - new Date(b[0])).slice(-24);
+            const maxCount = Math.max(...sortedEntries.map(([, count]) => count), 1);
+
+            container.innerHTML = `
+                <div class="h-48 flex items-end gap-1">
+                    ${sortedEntries.map(([hour, count]) => {
+                        const height = (count / maxCount) * 100;
+                        return `
+                            <div class="flex-1 flex flex-col items-center gap-1">
+                                <div class="w-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-t" style="height: ${height}%"></div>
+                                <span class="text-xs text-gray-500 transform -rotate-45 origin-left whitespace-nowrap">${hour}</span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        // 切换导出菜单
+        function toggleExportMenu() {
+            const menu = document.getElementById('exportMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // 点击其他地方关闭导出菜单
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('exportMenu');
+            const button = document.querySelector('button[onclick="toggleExportMenu()"]');
+            if (menu && !menu.contains(e.target) && !button.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        // 导出数据为 CSV
+        function exportAsCSV() {
+            const data = getStoredData();
+            if (!data || data.length === 0) {
+                alert('没有数据可导出');
+                return;
+            }
+
+            const headers = ['时间', '会话ID', '事件类型', '详情'];
+            const rows = data.map(event => [
+                new Date(event.timestamp).toLocaleString('zh-CN'),
+                event.sessionId,
+                event.eventType,
+                JSON.stringify(event.eventData).replace(/"/g, '""')
+            ]);
+
+            const csv = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `analytics_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // 导出数据为 Excel (使用 CSV 格式)
+        function exportAsExcel() {
+            exportAsCSV();
+        }
+
+        // 渲染滚动深度
+        function renderScrollDepth(scrollDepths) {
+            const container = document.getElementById('scrollDepthChart');
+            
+            if (scrollDepths.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">暂无数据</p>';
+                return;
+            }
+
+            const thresholds = [
+                { label: '25%', count: scrollDepths.filter(d => d >= 25).length },
+                { label: '50%', count: scrollDepths.filter(d => d >= 50).length },
+                { label: '75%', count: scrollDepths.filter(d => d >= 75).length },
+                { label: '90%', count: scrollDepths.filter(d => d >= 90).length }
+            ];
+
+            const maxCount = Math.max(...thresholds.map(t => t.count));
+
+            container.innerHTML = thresholds.map(threshold => {
+                const percentage = maxCount > 0 ? (threshold.count / maxCount) * 100 : 0;
+                return `
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm font-medium text-gray-700 w-16">${threshold.label}</span>
+                        <div class="flex-1">
+                            <div class="w-full bg-gray-200 rounded-full h-3">
+                                <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-3 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
+                            </div>
+                        </div>
+                        <span class="text-sm font-bold text-gray-900 w-20 text-right">${threshold.count} 人</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 获取排名图标
+        function getRankIcon(index) {
+            if (index === 0) return '🥇';
+            if (index === 1) return '🥈';
+            if (index === 2) return '🥉';
+            return `#${index + 1}`;
+        }
+
+        // 获取事件类型标签
+        function getEventTypeLabel(type) {
+            const labels = {
+                page_view: '页面浏览',
+                section_view: '模块曝光',
+                click: '点击交互',
+                project_interaction: '项目交互',
+                scroll_depth: '滚动深度',
+                time_spent: '停留时长',
+                file_download: '文件下载',
+                external_link: '外部链接',
+                document_interaction: '文档交互',
+                demo_link_click: '演示链接点击',
+                session_summary: '会话总结',
+                media_interaction: '媒体交互'
+            };
+            return labels[type] || type;
+        }
+
+        // 获取事件类型颜色
+        function getEventTypeColor(type) {
+            const colors = {
+                page_view: 'bg-blue-100 text-blue-800',
+                section_view: 'bg-green-100 text-green-800',
+                click: 'bg-orange-100 text-orange-800',
+                project_interaction: 'bg-purple-100 text-purple-800',
+                scroll_depth: 'bg-indigo-100 text-indigo-800',
+                time_spent: 'bg-pink-100 text-pink-800',
+                file_download: 'bg-red-100 text-red-800',
+                external_link: 'bg-yellow-100 text-yellow-800'
+            };
+            return colors[type] || 'bg-gray-100 text-gray-800';
+        }
+
+        // 清除数据
+        function clearData() {
+            if (confirm('确定要清除所有埋点数据吗？此操作不可恢复！')) {
+                Analytics.clearStoredData();
+                alert('数据已清除！');
+                loadData();
+            }
+        }
+
+        // 导出数据
+        function exportData() {
+            const data = Analytics.getStoredData();
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `analytics_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+</html>

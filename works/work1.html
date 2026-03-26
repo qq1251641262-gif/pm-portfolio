@@ -287,7 +287,7 @@
     </nav>
 
     <!-- 项目标题区域 -->
-    <section class="hero-bg pt-32 pb-16">
+    <section class="hero-bg pt-32 pb-16" data-track-section data-section-name="项目概览" data-page-type="project-detail" data-project-id="project1" data-project-name="B2B 电商平台">
         <div class="container mx-auto px-6">
             <div class="flex flex-wrap gap-2 mb-4">
                 <span class="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-sm">B2B</span>
@@ -309,19 +309,19 @@
     </section>
 
     <!-- 项目图片轮播 -->
-    <section class="py-8 bg-white">
+    <section class="py-8 bg-white" data-track-section data-section-name="轮播图" data-page-type="project-detail" data-project-id="project1" data-project-name="B2B 电商平台">
         <div class="container mx-auto px-4 md:px-6">
             <div id="project-carousel" class="carousel-container" style="min-height: 600px;"></div>
         </div>
     </section>
 
     <!-- 项目概述 -->
-    <section class="py-16 bg-[#F9F9F1]">
+    <section class="py-16 bg-[#F9F9F1]" data-track-section data-section-name="项目概述" data-page-type="project-detail" data-project-id="project1" data-project-name="B2B 电商平台">
         <div class="container mx-auto px-6">
             <div class="max-w-4xl mx-auto">
                 <h2 class="text-3xl font-bold mb-8">项目概述</h2>
                 <p class="text-gray-600 text-lg leading-relaxed mb-6">
-                    某化集团独立开发的电商产品化平台，主打模块化、可定制化的B2B电商系统，打通交易全链路，包括产品管理、订单管理、客户管理、营销工具等核心模块。
+                    某化集团独立开发的电商产品化平台，主打模块化、可定制化的 B2B 电商系统，打通交易全链路，包括产品管理、订单管理、客户管理、营销工具等核心模块。
                 </p>
                 <p class="text-gray-600 text-lg leading-relaxed">
                     该平台专为化工行业设计，满足行业特殊的合规要求和交易流程，同时提供灵活的定制化能力，适应不同客户的业务需求。
@@ -331,7 +331,7 @@
     </section>
 
     <!-- 项目详情 -->
-    <section class="py-16 bg-white">
+    <section class="py-16 bg-white" data-track-section data-section-name="项目详情" data-page-type="project-detail" data-project-id="project1" data-project-name="B2B 电商平台">
         <div class="container mx-auto px-6">
             <div class="max-w-4xl mx-auto">
                 <h2 class="text-3xl font-bold mb-12">项目详情</h2>
@@ -376,18 +376,18 @@
     </section>
 
     <!-- 原型展示 -->
-    <section class="py-16 bg-[#F9F9F1]">
+    <section class="py-16 bg-[#F9F9F1]" data-track-section data-section-name="原型展示" data-page-type="project-detail" data-project-id="project1" data-project-name="B2B 电商平台">
         <div class="container mx-auto px-6">
             <div class="max-w-6xl mx-auto">
                 <div id="prototype-gallery-container">
-                    <!-- 原型展示内容将通过JS动态生成 -->
+                    <!-- 原型展示内容将通过 JS 动态生成 -->
                 </div>
             </div>
         </div>
     </section>
 
     <!-- 文档展示 -->
-    <section class="py-16 bg-[#E9E7F5]">
+    <section class="py-16 bg-[#E9E7F5]" data-track-section data-section-name="文档展示" data-page-type="project-detail" data-project-id="project1" data-project-name="B2B 电商平台">
         <div class="container mx-auto px-6">
             <div class="max-w-6xl mx-auto">
                 <h2 class="text-3xl font-bold mb-12 text-center">文档展示</h2>
@@ -454,7 +454,7 @@
     <!-- AI Demo 模块已隐藏 -->
 
     <!-- 使用工具 -->
-    <section class="py-16 bg-[#F9F9F1]">
+    <section class="py-16 bg-[#F9F9F1]" data-track-section data-section-name="使用工具" data-page-type="project-detail" data-project-id="project1" data-project-name="B2B 电商平台">
         <div class="container mx-auto px-6">
             <div class="max-w-4xl mx-auto">
                 <h2 class="text-3xl font-bold mb-8">工具</h2>
@@ -474,7 +474,7 @@
     </section>
 
     <!-- 返回按钮 -->
-    <section class="py-12 bg-white">
+    <section class="py-12 bg-white" data-track-section data-section-name="返回区域" data-page-type="project-detail" data-project-id="project1" data-project-name="B2B 电商平台">
         <div class="container mx-auto px-6 text-center">
             <a href="../index.html#projects" class="inline-flex items-center bg-gray-900 text-white px-8 py-3 rounded-full font-semibold hover:bg-gray-800 transition">
                 <i class="fas fa-arrow-left mr-2"></i> 返回所有项目
@@ -809,6 +809,29 @@
             renderPrototypeGallery();
             updateDisplay();
             console.log('原型展示模块初始化完成');
+        });
+    </script>
+    
+    <!-- 数据埋点统计 -->
+    <script src="../js/analytics.js"></script>
+    
+    <script>
+        // 数据埋点统计 - 项目详情页
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化模块曝光追踪（analytics.js 会自动处理）
+            console.log('项目详情页埋点初始化');
+            
+            // 上报页面浏览事件
+            if (window.Analytics) {
+                Analytics.trackPageView(null, 'project-detail');
+                
+                // 追踪项目详情页浏览
+                const projectId = 'project1';
+                const projectName = 'B2B 电商平台';
+                Analytics.trackProjectInteraction(projectId, projectName, 'page_view', {
+                    pageType: 'project-detail'
+                });
+            }
         });
     </script>
 </body>

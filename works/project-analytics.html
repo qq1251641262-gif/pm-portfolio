@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>项目详情页数据分析 - 数据埋点统计</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: #f5f5f5;
+        }
+        .stat-card {
+            transition: all 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .tab-active {
+            background: #3B82F6;
+            color: white;
+        }
+        .sidebar {
+            width: 260px;
+            min-height: calc(100vh - 73px);
+            position: fixed;
+            top: 73px;
+            left: 0;
+            background: white;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.05);
+            overflow-y: auto;
+        }
+        .main-content {
+            margin-left: 260px;
+            padding: 32px 24px;
+        }
+        .nav-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #6B7280;
+            text-decoration: none;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+            margin: 4px 0;
+        }
+        .nav-item:hover {
+            background: #F3F4F6;
+            color: #3B82F6;
+        }
+        .nav-item.active {
+            background: #EFF6FF;
+            color: #3B82F6;
+            border-left-color: #3B82F6;
+            font-weight: 500;
+        }
+        .nav-section {
+            padding: 12px 20px 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #9CA3AF;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .project-selector {
+            margin: 8px 20px;
+            padding: 8px 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            width: calc(100% - 40px);
+            font-size: 14px;
+            color: #374151;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .project-selector:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- 顶部导航 -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-gray-800">
+                    <i class="fas fa-chart-line text-blue-500 mr-2"></i>
+                    数据埋点统计后台
+                </h1>
+                <div class="flex gap-4">
+                    <button onclick="loadData()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                        <i class="fas fa-sync-alt mr-2"></i>刷新数据
+                    </button>
+                    <button onclick="clearData()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+                        <i class="fas fa-trash mr-2"></i>清除数据
+                    </button>
+                    <button onclick="exportData()" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
+                        <i class="fas fa-download mr-2"></i>导出数据
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 左侧导航栏 -->
+    <div class="sidebar">
+        <div class="py-4">
+            <div class="nav-section">统计分析</div>
+            <a href="analytics-dashboard.html" class="nav-item">
+                <i class="fas fa-home w-5"></i>
+                <span>首页统计</span>
+            </a>
+            <a href="project-analytics.html" class="nav-item active">
+                <i class="fas fa-folder-open w-5"></i>
+                <span>项目详情页统计</span>
+            </a>
+            
+            <div class="nav-section mt-6">项目详情页</div>
+            <select onchange="location.href=this.value" class="project-selector">
+                <option value="">-- 选择项目 --</option>
+                <option value="project-analytics.html?project=project1">项目 1 - B2B 电商平台</option>
+                <option value="project-analytics.html?project=project2">项目 2 - 电商 CRM 融合系统</option>
+                <option value="project-analytics.html?project=project3">项目 3 - BI 数据可视化平台</option>
+                <option value="project-analytics.html?project=project4">项目 4 - 企业级客户管理（CRM）系统</option>
+                <option value="project-analytics.html?project=project5">项目 5 - 新零售电商解决方案</option>
+                <option value="project-analytics.html?project=project6">项目 6 - 企业品牌官网（营销型）</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- 项目选择器 -->
+    <div class="main-content" style="padding-bottom: 0;">
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+            <div class="flex items-center gap-4">
+                <label class="text-gray-700 font-semibold text-lg">
+                    <i class="fas fa-folder-open text-blue-500 mr-2"></i>
+                    选择项目：
+                </label>
+                <select id="projectSelector" onchange="loadData()" class="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-gray-700 font-medium">
+                    <option value="project1" selected>项目 1 - B2B 电商平台（产品化方案）</option>
+                    <option value="project2">项目 2 - 电商 CRM 融合系统</option>
+                    <option value="project3">项目 3 - BI 数据可视化平台</option>
+                    <option value="project4">项目 4 - 企业级客户管理（CRM）系统</option>
+                    <option value="project5">项目 5 - 新零售电商解决方案</option>
+                    <option value="project6">项目 6 - 企业品牌官网（营销型）</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="main-content" style="padding-top: 8px;">
+        <!-- 项目信息卡片 -->
+        <div id="projectInfoCard" class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg p-6 mb-8 text-white hidden">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 id="projectName" class="text-3xl font-bold mb-2">-</h2>
+                    <p id="projectId" class="text-blue-100">-</p>
+                </div>
+                <div class="text-right">
+                    <div class="flex items-center gap-4 mb-2">
+                        <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full">
+                            <i class="fas fa-eye mr-2"></i>
+                            <span id="projectViews">0</span> 次浏览
+                        </span>
+                        <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full">
+                            <i class="fas fa-mouse-pointer mr-2"></i>
+                            <span id="projectInteractions">0</span> 次交互
+                        </span>
+                        <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full">
+                            <i class="fas fa-external-link-alt mr-2"></i>
+                            <span id="demoClickRate">0</span>% 点击率
+                        </span>
+                    </div>
+                    <p class="text-blue-100 text-sm">数据实时更新</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 提示卡片（未选择项目时显示） -->
+        <div id="noProjectCard" class="bg-white rounded-xl shadow-md p-12 text-center">
+            <i class="fas fa-folder-open text-gray-300 text-6xl mb-4"></i>
+            <p class="text-gray-500 text-lg">请从上方下拉框选择一个项目查看详情</p>
+        </div>
+
+        <!-- 数据统计内容（选择项目后显示） -->
+        <div id="projectStats" class="hidden">
+            <!-- 模块热度 -->
+            <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+                <h2 class="text-xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-fire text-red-500 mr-2"></i>
+                    模块热度排行
+                </h2>
+                <div id="sectionHeatmap" class="space-y-4">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+
+            <!-- 文档热度排行 -->
+            <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+                <h2 class="text-xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-file-alt text-blue-500 mr-2"></i>
+                    文档热度排行
+                </h2>
+                <div id="documentHeatmap" class="space-y-4">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+
+            <!-- 访问趋势 -->
+            <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+                <h2 class="text-xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-chart-line text-blue-500 mr-2"></i>
+                    访问事件记录
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">时间</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">会话 ID</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">事件类型</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">模块/操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="eventsTable" class="divide-y divide-gray-200">
+                            <!-- 动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 停留时长分析 -->
+            <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+                <h2 class="text-xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-clock text-purple-500 mr-2"></i>
+                    停留时长分析
+                </h2>
+                <div id="timeSpentAnalysis" class="space-y-4">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 数据埋点统计库 -->
+    <script src="../js/analytics.js"></script>
+    
+    <script>
+        let currentProjectId = null;
+        let currentProjectName = null;
+
+        // 加载数据
+        function loadData() {
+            const selector = document.getElementById('projectSelector');
+            currentProjectId = selector.value;
+            
+            if (!currentProjectId) {
+                document.getElementById('noProjectCard').classList.remove('hidden');
+                document.getElementById('projectInfoCard').classList.add('hidden');
+                document.getElementById('projectStats').classList.add('hidden');
+                return;
+            }
+            
+            // 获取项目名称
+            const selectedOption = selector.options[selector.selectedIndex];
+            currentProjectName = selectedOption.text.split(' - ')[1] || currentProjectId;
+            
+            // 显示统计内容
+            document.getElementById('noProjectCard').classList.add('hidden');
+            document.getElementById('projectInfoCard').classList.remove('hidden');
+            document.getElementById('projectStats').classList.remove('hidden');
+            
+            // 更新项目信息
+            document.getElementById('projectName').textContent = currentProjectName;
+            document.getElementById('projectId').textContent = currentProjectId;
+            
+            // 筛选当前项目的数据
+            const allData = Analytics.getStoredData();
+            const projectData = filterProjectData(allData, currentProjectId, currentProjectName);
+            
+            // 渲染统计
+            renderProjectStats(projectData);
+        }
+
+        // 筛选项目数据
+        function filterProjectData(data, projectId, projectName) {
+            console.log('Filtering data for project:', projectId, projectName);
+            console.log('Total events:', data.length);
+            
+            return data.filter(event => {
+                // 筛选条件：
+                // 1. pageType 为 project-detail
+                // 2. projectId 匹配 或 projectName 匹配
+                const isProjectDetail = event.eventData?.pageType === 'project-detail' ||
+                                       event.pageType === 'project-detail';
+                const isProjectMatch = event.eventData?.projectId === projectId ||
+                                      event.eventData?.projectName === projectName ||
+                                      event.projectId === projectId ||
+                                      event.projectName === projectName;
+                
+                // 对于 section_view 事件，只需要 pageType 匹配即可
+                if (event.eventType === 'section_view') {
+                    console.log('Section view event:', event.eventData);
+                    const result = isProjectDetail && isProjectMatch;
+                    console.log('Section view passes filter:', result);
+                    return result;
+                }
+                
+                // 对于其他事件，需要同时满足两个条件
+                return isProjectDetail && isProjectMatch;
+            });
+        }
+
+        // 渲染项目统计
+        function renderProjectStats(data) {
+            // 计算统计数据
+            const stats = calculateProjectStats(data);
+            
+            // 更新项目信息卡片
+            document.getElementById('projectViews').textContent = stats.pageViews;
+            document.getElementById('projectInteractions').textContent = stats.totalInteractions;
+            document.getElementById('demoClickRate').textContent = stats.demoClickRate + '%';
+
+            // 渲染模块热度
+            renderSectionHeatmap(stats.sectionViews);
+            
+            // 渲染文档热度
+            renderDocumentHeatmap(stats.documentViews);
+            
+            // 渲染事件表格
+            renderEventsTable(data);
+            
+            // 渲染停留时长分析
+            renderTimeSpentAnalysis(stats.timeSpentData);
+        }
+
+        // 计算项目统计数据
+        function calculateProjectStats(data) {
+            let pageViews = 0;
+            let totalInteractions = 0;
+            const sectionViews = {};
+            const documentViews = {};
+            const timeSpentData = [];
+            const sessionDemoClicks = {};
+
+            console.log('Calculating stats for', data.length, 'events');
+            
+            data.forEach(event => {
+                // 页面浏览
+                if (event.eventType === 'page_view' || event.eventType === 'project_interaction' && event.eventData?.action === 'page_view') {
+                    pageViews++;
+                }
+
+                // 模块曝光
+                if (event.eventType === 'section_view') {
+                    const sectionName = event.eventData?.sectionName || 'Unknown';
+                    console.log('Section view found:', sectionName);
+                    sectionViews[sectionName] = (sectionViews[sectionName] || 0) + 1;
+                }
+
+                // 文档交互
+                if (event.eventType === 'document_interaction') {
+                    const docId = event.eventData?.documentId || 'Unknown';
+                    documentViews[docId] = (documentViews[docId] || 0) + 1;
+                }
+
+                // 项目交互
+                if (event.eventType === 'project_interaction') {
+                    totalInteractions++;
+                }
+
+                // Demo 链接点击（二元统计：每个会话只统计一次）
+                if (event.eventType === 'demo_link_click') {
+                    sessionDemoClicks[event.sessionId] = true;
+                }
+
+                // 停留时长
+                if (event.eventType === 'time_spent') {
+                    timeSpentData.push({
+                        timestamp: event.timestamp,
+                        seconds: event.eventData?.totalSeconds || 0
+                    });
+                }
+            });
+
+            // 计算 Demo 点击率：点击的会话数 / 总会话数
+            const uniqueSessions = new Set(data.map(e => e.sessionId)).size;
+            const clickedSessions = Object.keys(sessionDemoClicks).length;
+            const demoClickRate = uniqueSessions > 0 ? Math.round((clickedSessions / uniqueSessions) * 100) : 0;
+
+            console.log('Section views calculated:', sectionViews);
+            console.log('Document views calculated:', documentViews);
+            console.log('Demo click rate calculated:', demoClickRate, '%');
+            
+            return {
+                pageViews,
+                totalInteractions,
+                sectionViews,
+                documentViews,
+                timeSpentData,
+                demoClickRate
+            };
+        }
+
+        // 渲染模块热度
+        function renderSectionHeatmap(sectionViews) {
+            const container = document.getElementById('sectionHeatmap');
+            const sorted = Object.entries(sectionViews).sort((a, b) => b[1] - a[1]);
+            
+            if (sorted.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">暂无数据</p>';
+                return;
+            }
+
+            const maxViews = Math.max(...sorted.map(([, count]) => count));
+            
+            container.innerHTML = sorted.map(([name, count], index) => {
+                const percentage = maxViews > 0 ? (count / maxViews) * 100 : 0;
+                const rankIcon = getRankIcon(index);
+                return `
+                    <div class="flex items-center gap-4">
+                        <span class="text-2xl font-bold text-gray-400 w-8">${rankIcon}</span>
+                        <div class="flex-1">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium text-gray-700">${name}</span>
+                                <span class="text-sm font-bold text-gray-900">${count} 次浏览</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-gradient-to-r from-blue-500 to-purple-500 h-2.5 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 渲染文档热度
+        function renderDocumentHeatmap(documentViews) {
+            const container = document.getElementById('documentHeatmap');
+            const sorted = Object.entries(documentViews).sort((a, b) => b[1] - a[1]);
+            
+            if (sorted.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">暂无数据</p>';
+                return;
+            }
+
+            const maxViews = Math.max(...sorted.map(([, count]) => count));
+            
+            container.innerHTML = sorted.map(([docId, count], index) => {
+                const percentage = maxViews > 0 ? (count / maxViews) * 100 : 0;
+                const rankIcon = getRankIcon(index);
+                const docName = docId.split('_').pop() || docId;
+                return `
+                    <div class="flex items-center gap-4">
+                        <span class="text-2xl font-bold text-gray-400 w-8">${rankIcon}</span>
+                        <div class="flex-1">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium text-gray-700">文档 ${docName}</span>
+                                <span class="text-sm font-bold text-gray-900">${count} 次交互</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-gradient-to-r from-teal-500 to-blue-500 h-2.5 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 渲染事件表格
+        function renderEventsTable(data) {
+            const container = document.getElementById('eventsTable');
+            const recentEvents = data.slice(-50).reverse();
+            
+            if (recentEvents.length === 0) {
+                container.innerHTML = '<tr><td colspan="4" class="px-4 py-8 text-center text-gray-500">暂无事件记录</td></tr>';
+                return;
+            }
+
+            container.innerHTML = recentEvents.map(event => {
+                const time = new Date(event.timestamp).toLocaleString('zh-CN');
+                const eventType = getEventTypeLabel(event.eventType);
+                const moduleOrAction = event.eventData?.sectionName || event.eventData?.action || '-';
+                
+                return `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">${time}</td>
+                        <td class="px-4 py-3 text-sm text-gray-600 font-mono">${event.sessionId?.substring(0, 20) || '-'}...</td>
+                        <td class="px-4 py-3 text-sm">
+                            <span class="px-2 py-1 rounded-full text-xs font-medium ${getEventTypeColor(event.eventType)}">
+                                ${eventType}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-600">${moduleOrAction}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // 渲染停留时长分析
+        function renderTimeSpentAnalysis(timeSpentData) {
+            const container = document.getElementById('timeSpentAnalysis');
+            
+            if (timeSpentData.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">暂无停留时长数据</p>';
+                return;
+            }
+
+            const totalSeconds = timeSpentData.reduce((sum, item) => sum + item.seconds, 0);
+            const avgSeconds = Math.round(totalSeconds / timeSpentData.length);
+            const maxSeconds = Math.max(...timeSpentData.map(item => item.seconds));
+
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-blue-50 rounded-xl p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-gray-600 text-sm font-medium">总停留时长</h3>
+                            <i class="fas fa-hourglass-half text-blue-500 text-xl"></i>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-800">${totalSeconds}s</p>
+                        <p class="text-xs text-gray-500 mt-2">累计访问时长</p>
+                    </div>
+                    
+                    <div class="bg-purple-50 rounded-xl p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-gray-600 text-sm font-medium">平均停留时长</h3>
+                            <i class="fas fa-clock text-purple-500 text-xl"></i>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-800">${avgSeconds}s</p>
+                        <p class="text-xs text-gray-500 mt-2">每次访问平均时长</p>
+                    </div>
+                    
+                    <div class="bg-green-50 rounded-xl p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-gray-600 text-sm font-medium">最长停留时长</h3>
+                            <i class="fas fa-trophy text-green-500 text-xl"></i>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-800">${maxSeconds}s</p>
+                        <p class="text-xs text-gray-500 mt-2">单次访问最长时长</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 获取排名图标
+        function getRankIcon(index) {
+            const icons = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+            return icons[index] || `${index + 1}`;
+        }
+
+        // 获取事件类型标签
+        function getEventTypeLabel(eventType) {
+            const labels = {
+                'page_view': '页面浏览',
+                'section_view': '模块曝光',
+                'click': '点击事件',
+                'project_interaction': '项目交互',
+                'time_spent': '停留时长',
+                'scroll_depth': '滚动深度',
+                'file_download': '文件下载',
+                'external_link': '外部链接'
+            };
+            return labels[eventType] || eventType;
+        }
+
+        // 获取事件类型颜色
+        function getEventTypeColor(eventType) {
+            const colors = {
+                'page_view': 'bg-blue-100 text-blue-800',
+                'section_view': 'bg-green-100 text-green-800',
+                'click': 'bg-orange-100 text-orange-800',
+                'project_interaction': 'bg-purple-100 text-purple-800',
+                'time_spent': 'bg-pink-100 text-pink-800',
+                'scroll_depth': 'bg-indigo-100 text-indigo-800',
+                'file_download': 'bg-yellow-100 text-yellow-800',
+                'external_link': 'bg-red-100 text-red-800'
+            };
+            return colors[eventType] || 'bg-gray-100 text-gray-800';
+        }
+
+        // 清除数据
+        function clearData() {
+            if (confirm('确定要清除所有埋点数据吗？此操作不可恢复！')) {
+                Analytics.clearStoredData();
+                alert('数据已清除！');
+                loadData();
+            }
+        }
+
+        // 导出数据
+        function exportData() {
+            const data = Analytics.getStoredData();
+            const projectData = filterProjectData(data, currentProjectId, currentProjectName);
+            
+            const exportData = {
+                exportTime: new Date().toISOString(),
+                projectId: currentProjectId,
+                projectName: currentProjectName,
+                totalEvents: projectData.length,
+                events: projectData
+            };
+
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `project_${currentProjectId}_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const projectId = params.get('project');
+
+            if (projectId) {
+                document.getElementById('projectSelector').value = projectId;
+            }
+
+            // 延迟一下确保 analytics.js 已加载
+            setTimeout(() => {
+                loadData();
+            }, 100);
+        });
+    </script>
+    
+    <!-- 数据埋点统计库 -->
+    <script src="../js/analytics.js"></script>
+</body>
+</html>
