@@ -10,7 +10,7 @@
             scrollThreshold: 300,
             scrollDuration: 500,
             showOnScrollUp: false,
-            position: { right: '24px', bottom: '24px' },
+            position: { right: '24px', bottom: '15%' }, // 调整位置到右侧中间偏下
             zIndex: 9999,
             buttonSize: 48,
             showShadow: true
